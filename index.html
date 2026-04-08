@@ -490,7 +490,10 @@ function EfCard({data,accounts,totalExp,months}){
   const ef=data.emergencyFund||{accountIds:[],targetMonths:6};
   const efAccs=accounts.filter(a=>ef.accountIds.includes(a.id));
   const efBalance=efAccs.reduce((s,a)=>s+a.balance,0);
-  const avgMonthlyExp=months.length>0?totalExp/months.length:0;
+  // Emergency Fund target = Total monthly budget of ★ Major categories × target months
+  const majorCats=data.majorExpenseCategories||[];
+  const majorMonthlyBudget=majorCats.reduce((s,c)=>(data.budgetLimits[c]||0)+s,0);
+  const avgMonthlyExp=majorMonthlyBudget>0?majorMonthlyBudget:(months.length>0?totalExp/months.length:0);
   const target=avgMonthlyExp*(ef.targetMonths||6);
   const efPct=target>0?Math.min(100,efBalance/target*100):0;
   const monthsCovered=avgMonthlyExp>0?efBalance/avgMonthlyExp:0;
@@ -511,7 +514,12 @@ function EfCard({data,accounts,totalExp,months}){
           <div style={{fontSize:10,opacity:.5,marginTop:4}}>Target: {ef.targetMonths||6} months</div>
         </div>
       </div>
-      <div style={{marginTop:14,position:'relative',zIndex:1}}>
+      <div style={{marginTop:8,position:'relative',zIndex:1,fontSize:10,opacity:.6}}>
+        {majorCats.length>0
+          ?`Based on Major categories budget: ${fmtINR(majorMonthlyBudget,true)}/mo (${majorCats.join(', ')})`
+          :'No Major categories set. Using avg monthly expense as fallback. Mark categories as Major in Master Settings.'}
+      </div>
+      <div style={{marginTop:8,position:'relative',zIndex:1}}>
         <div style={{height:6,background:'rgba(255,255,255,.15)',borderRadius:99,overflow:'hidden'}}>
           <div style={{height:'100%',width:`${efPct}%`,background:progressColor,borderRadius:99,transition:'width .5s'}}/>
         </div>
@@ -576,7 +584,8 @@ function PageDashboard({data,setPage}){
   const loanOS=loans.reduce((s,l)=>s+l.outstanding,0);
   const totalLimit=creditCards.reduce((s,c)=>s+c.limit,0);
   const ccUtil=totalLimit>0?(ccPay+ccProv)/totalLimit*100:0;
-  const netWorth=liquid+fdBal-(ccPay+ccProv)-loanOS;
+  const provTotal=(data.provisions||[]).reduce((s,p)=>s+p.amount,0);
+  const netWorth=liquid+fdBal-(ccPay+ccProv)-loanOS-provTotal;
 
   const periodTxs=transactions.filter(t=>months.some(m=>m.key===t.month));
   const totalInc=periodTxs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
@@ -613,14 +622,14 @@ function PageDashboard({data,setPage}){
             <div style={{fontSize:10,opacity:.6,textTransform:'uppercase',letterSpacing:.5,marginBottom:3}}>Net Worth</div>
             <div style={{fontFamily:'var(--m)',fontSize:22,fontWeight:800,color:'#6ee7b7'}}>{fmtINR(netWorth)}</div>
             <div style={{fontSize:10,opacity:.4,fontFamily:'var(--m)',marginTop:1}}>{fmtINR(netWorth,true)}</div>
-            <div style={{fontSize:10,opacity:.5,marginTop:2}}>Assets − Liabilities</div>
+            <div style={{fontSize:10,opacity:.5,marginTop:2}}>Assets − Liabilities − Provisions</div>
           </div>
         </div>
         <div className="hero-pills">
           {[
             {l:'Period Income',v:fmtINR(totalInc,true),c:'gr'},{l:'Period Expense',v:fmtINR(totalExp,true),c:'rd'},
             {l:'Surplus',v:fmtINR(surplus,true),c:surplus>=0?'gr':'rd'},{l:'FD Value',v:fmtINR(fdBal,true),c:'yw'},
-            {l:'Loan O/S',v:fmtINR(loanOS,true),c:'rd'},{l:'CC Liability',v:fmtINR(ccPay+ccProv,true),c:'rd'},
+            {l:'Loan O/S',v:fmtINR(loanOS,true),c:'rd'},{l:'CC Liability',v:fmtINR(ccPay+ccProv,true),c:'rd'},{l:'Provisions',v:fmtINR(provTotal,true),c:'rd'},
           ].map(p=>(
             <div key={p.l} className="hero-pill">
               <div className="hero-pill-label">{p.l}</div>
@@ -799,6 +808,28 @@ function PageFund({data,setData,toast}){
   const [modal,setModal]=useState(null);
   const ef={name:'',type:'bank',accNo:'XXXX-0000',balance:'',color:'#1a4a6e'};
   const [form,setForm]=useState(ef);
+  const fundFileRef=useRef();
+  const handleFundCSV=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      const lines=ev.target.result.split('\n').filter(l=>l.trim());
+      const hdr=lines[0].toLowerCase().split(',').map(h=>h.trim().replace(/"/g,''));
+      const accs=lines.slice(1).map(line=>{
+        const cols=line.split(',').map(c=>c.trim().replace(/"/g,''));
+        const o={};hdr.forEach((h,i)=>o[h]=cols[i]||'');
+        if(!o.name)return null;
+        return{id:uid(),name:o.name,type:o.type||'bank',accNo:o.accno||o['acc no']||o['account number']||'XXXX-0000',balance:parseFloat(o.balance)||0,color:o.color||'#1a4a6e'};
+      }).filter(Boolean);
+      setData(d=>({...d,accounts:[...d.accounts,...accs]}));
+      toast(`Imported ${accs.length} accounts`,'g');
+    };
+    r.readAsText(f);e.target.value='';
+  };
+  const downloadFundTemplate=()=>{
+    const b=new Blob(['name,type,accNo,balance,color\nHDFC Bank Savings,bank,XXXX-1234,150000,#003366\nCash In Hand,cash,CASH-001,5000,#065f46\nPaytm Wallet,wallet,PAYTM-001,2500,#002970\nSBI FD,fd,FD-001,200000,#007A62\n'],{type:'text/csv'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='finmanager-accounts-template.csv';a.click();
+  };
 
   const banks=accounts.filter(a=>a.type==='bank');
   const cashes=accounts.filter(a=>a.type==='cash');
@@ -888,7 +919,12 @@ function PageFund({data,setData,toast}){
     <div className="page">
       <div className="ph">
         <div><div className="ptitle">Fund Balance Sheet</div><div className="psub">All accounts · Daily unspent tracker · Fully editable</div></div>
+        <div style={{display:'flex',gap:8}}>
+          <button className="btn btn-s btn-sm" onClick={downloadFundTemplate}><Ic n="dl" s={12}/>Template</button>
+          <button className="btn btn-s btn-sm" onClick={()=>fundFileRef.current.click()}><Ic n="up" s={12}/>CSV Import</button>
+        </div>
       </div>
+      <input type="file" ref={fundFileRef} accept=".csv" style={{display:'none'}} onChange={handleFundCSV}/>
 
       <div className="g4 mb3">
         <div className="card"><div className="ci" style={{background:'var(--gl)'}}><Ic n="bank" c="var(--g)"/></div><div className="cl">Bank Total</div><div className={`cv ${bT<0?'r':'g'}`}>{fmtINR(bT)}</div><div className="cm">{banks.filter(a=>a.balance>0).length} active</div></div>
@@ -1221,6 +1257,28 @@ function PageCC({data,setData,toast}){
   const dues=creditCards.filter(c=>c.dueDate&&c.payable>0).sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
 
   const openAdd=()=>{setForm(ef);setModal('add');};
+  const ccFileRef=useRef();
+  const handleCCCSV=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      const lines=ev.target.result.split('\n').filter(l=>l.trim());
+      const hdr=lines[0].toLowerCase().split(',').map(h=>h.trim().replace(/"/g,''));
+      const cards=lines.slice(1).map(line=>{
+        const cols=line.split(',').map(c=>c.trim().replace(/"/g,''));
+        const o={};hdr.forEach((h,i)=>o[h]=cols[i]||'');
+        if(!o.bank||!o.type)return null;
+        return{id:uid(),bank:o.bank,type:o.type||o['card type']||'',accNo:o.accno||o['acc no']||o['card number']||'XXXX-0000',limit:parseFloat(o.limit||o['credit limit'])||0,payable:parseFloat(o.payable||o.billed)||0,provision:parseFloat(o.provision||o.unbilled)||0,dueDate:o.duedate||o['due date']||null};
+      }).filter(Boolean);
+      setData(d=>({...d,creditCards:[...d.creditCards,...cards]}));
+      toast(`Imported ${cards.length} credit cards`,'g');
+    };
+    r.readAsText(f);e.target.value='';
+  };
+  const downloadCCTemplate=()=>{
+    const b=new Blob(['bank,type,accNo,limit,payable,provision,dueDate\nHDFC Bank,Visa Infinite,XXXX-XXXX-XXXX-1234,300000,15000,5000,2026-05-15\nICICI Bank,Amazon Pay,XXXX-XXXX-XXXX-5678,200000,8000,2000,2026-05-20\n'],{type:'text/csv'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='finmanager-cc-template.csv';a.click();
+  };
   const openEdit=c=>{setForm({bank:c.bank,type:c.type,accNo:c.accNo,limit:String(c.limit),payable:String(c.payable),provision:String(c.provision),dueDate:c.dueDate||''});setModal({eid:c.id});};
   const close=()=>{setModal(null);setForm(ef);};
   const save=()=>{
@@ -1240,7 +1298,14 @@ function PageCC({data,setData,toast}){
 
   return(
     <div className="page">
-      <div className="ph"><div><div className="ptitle">Credit Card Manager</div><div className="psub">Billed vs Unbilled · Due Date Tracker</div></div><button className="btn btn-p" onClick={openAdd}><Ic n="plus" s={13} c="#fff"/>Add Card</button></div>
+      <div className="ph"><div><div className="ptitle">Credit Card Manager</div><div className="psub">Billed vs Unbilled · Due Date Tracker</div></div>
+        <div style={{display:'flex',gap:8}}>
+          <button className="btn btn-s btn-sm" onClick={downloadCCTemplate}><Ic n="dl" s={12}/>Template</button>
+          <button className="btn btn-s btn-sm" onClick={()=>ccFileRef.current.click()}><Ic n="up" s={12}/>CSV Import</button>
+          <button className="btn btn-p" onClick={openAdd}><Ic n="plus" s={13} c="#fff"/>Add Card</button>
+        </div>
+      </div>
+      <input type="file" ref={ccFileRef} accept=".csv" style={{display:'none'}} onChange={handleCCCSV}/>
       <div className="g4 mb3">
         <div className="card"><div className="cl">Total Limit</div><div className="cv b">{fmtINR(tL,true)}</div><div className="cm">{creditCards.length} cards</div></div>
         <div className="card"><div className="cl">Billed (Payable)</div><div className="cv r">{fmtINR(tP)}</div><div className="cm">Due now</div></div>
@@ -1252,6 +1317,45 @@ function PageCC({data,setData,toast}){
           </div>
         </div>
       </div>
+
+      {/* 🔔 Payment Due Notification Panel (within 3 days) */}
+      {(()=>{
+        const urgentDues=creditCards.filter(c=>{const d=daysDiff(c.dueDate);return d!==null&&d<=3&&d>=0&&c.payable>0;}).sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
+        if(urgentDues.length===0)return null;
+        return(
+          <div className="card mb3" style={{border:'2px solid var(--r)',background:'linear-gradient(135deg,#fff5f5,#fff0f0)'}}>
+            <div className="sh mb2">
+              <div className="sh-t" style={{color:'var(--r)'}}><Ic n="bell" s={15} c="var(--r)"/>⚡ Payment Due Within 3 Days</div>
+              <span className="tag tr" style={{fontSize:11,padding:'3px 10px'}}>{urgentDues.length} urgent</span>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:10}}>
+              {urgentDues.map(cc=>{
+                const d=daysDiff(cc.dueDate);
+                return(
+                  <div key={cc.id} style={{display:'flex',gap:12,alignItems:'center',padding:'12px 14px',background:'#fff',borderRadius:'var(--r8)',border:'1.5px solid rgba(220,38,38,.2)',boxShadow:'0 2px 8px rgba(220,38,38,.08)'}}>
+                    <div style={{width:44,height:44,borderRadius:10,background:d===0?'var(--r)':'var(--o)',display:'grid',placeItems:'center',flexShrink:0}}>
+                      <Ic n="bell" s={20} c="#fff"/>
+                    </div>
+                    <div style={{flex:1}}>
+                      <div style={{fontWeight:700,fontSize:13}}>{cc.bank} – {cc.type}</div>
+                      <div style={{fontSize:11,color:'var(--n500)',marginTop:1}}>
+                        {d===0?'⚠ DUE TODAY — Pay immediately!':d===1?'⚠ Due TOMORROW!':d===2?'⚠ Due in 2 days':d===3?'Due in 3 days':''}
+                      </div>
+                    </div>
+                    <div style={{textAlign:'right'}}>
+                      <div style={{fontFamily:'var(--m)',fontSize:16,fontWeight:800,color:'var(--r)'}}>{fmtINR(cc.payable)}</div>
+                      <div style={{fontSize:10.5,color:'var(--n400)',fontWeight:600}}>{fmtDate(cc.dueDate)}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{marginTop:10,fontSize:11.5,color:'#7f1d1d',fontWeight:600,display:'flex',alignItems:'center',gap:6}}>
+              <Ic n="prov" s={12} c="#7f1d1d"/>Pay on time to avoid late fees and protect your credit score.
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Beautiful due cards */}
       {dues.length>0&&(
@@ -1346,6 +1450,35 @@ function PageLoans({data,setData,toast}){
   const calcEnd=(s,t)=>{if(!s||!t)return'';const d=new Date(s);d.setMonth(d.getMonth()+parseInt(t));return d.toISOString().slice(0,10);};
   const calcRem=(s,t)=>{if(!s||!t)return+t||0;const e=new Date(calcEnd(s,t)),now=new Date();return Math.max(0,Math.round((e-now)/(30*24*3600*1000)));};
   const openAdd=()=>{setForm(ef);setModal('add');};
+  const loanFileRef=useRef();
+  const handleLoanCSV=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      const lines=ev.target.result.split('\n').filter(l=>l.trim());
+      const hdr=lines[0].toLowerCase().split(',').map(h=>h.trim().replace(/"/g,''));
+      const lns=lines.slice(1).map(line=>{
+        const cols=line.split(',').map(c=>c.trim().replace(/"/g,''));
+        const o={};hdr.forEach((h,i)=>o[h]=cols[i]||'');
+        if(!o.bank)return null;
+        const orig=parseFloat(o.original||o['loan amount']||o.amount)||0;
+        const os=parseFloat(o.outstanding)||orig;
+        const emi=parseFloat(o.emi)||0;
+        const roi=parseFloat(o.roi||o['rate']||o['interest rate'])||0;
+        const ten=parseInt(o.tenure||o['tenure months'])||60;
+        const sd=o.startdate||o['start date']||'';
+        const ed=o.enddate||o['end date']||calcEnd(sd,ten);
+        return{id:uid(),bank:o.bank,accNo:o.accno||o['acc no']||'XXXX-0000',type:o.type||'Personal Loan',original:orig,outstanding:os,emi,roi,startDate:sd||null,endDate:ed||null,tenure:ten,remaining:calcRem(sd,ten)};
+      }).filter(Boolean);
+      setData(d=>({...d,loans:[...d.loans,...lns]}));
+      toast(`Imported ${lns.length} loans`,'g');
+    };
+    r.readAsText(f);e.target.value='';
+  };
+  const downloadLoanTemplate=()=>{
+    const b=new Blob(['bank,accNo,type,original,outstanding,emi,roi,tenure,startDate,endDate\nHDFC Bank,XXXX-0001,Home Loan,5000000,4500000,42000,8.5,240,2024-01-15,2044-01-15\nSBI,XXXX-0002,Personal Loan,300000,200000,8500,11.5,48,2025-06-01,2029-06-01\n'],{type:'text/csv'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='finmanager-loan-template.csv';a.click();
+  };
   const openEdit=l=>{setForm({bank:l.bank,accNo:l.accNo,type:l.type,original:String(l.original),outstanding:String(l.outstanding),emi:String(l.emi),roi:String(l.roi),startDate:l.startDate||'',endDate:l.endDate||'',tenure:String(l.tenure)});setModal({eid:l.id});};
   const close=()=>{setModal(null);setForm(ef);};
   const save=()=>{
@@ -1371,12 +1504,52 @@ function PageLoans({data,setData,toast}){
 
   return(
     <div className="page">
-      <div className="ph"><div><div className="ptitle">Loan &amp; Debt Tracker</div><div className="psub">EMI calendar · ROI analysis · Amortization</div></div><button className="btn btn-p" onClick={openAdd}><Ic n="plus" s={13} c="#fff"/>Add Loan</button></div>
+      <div className="ph"><div><div className="ptitle">Loan &amp; Debt Tracker</div><div className="psub">EMI calendar · ROI analysis · Amortization</div></div>
+        <div style={{display:'flex',gap:8}}>
+          <button className="btn btn-s btn-sm" onClick={downloadLoanTemplate}><Ic n="dl" s={12}/>Template</button>
+          <button className="btn btn-s btn-sm" onClick={()=>loanFileRef.current.click()}><Ic n="up" s={12}/>CSV Import</button>
+          <button className="btn btn-p" onClick={openAdd}><Ic n="plus" s={13} c="#fff"/>Add Loan</button>
+        </div>
+      </div>
+      <input type="file" ref={loanFileRef} accept=".csv" style={{display:'none'}} onChange={handleLoanCSV}/>
       <div className="g4 mb3">
         <div className="card"><div className="cl">Total Outstanding</div><div className="cv r">{fmtINR(tOS,true)}</div><div className="cm">{loans.length} active loans</div></div>
         <div className="card"><div className="cl">Monthly EMI</div><div className="cv o">{fmtINR(tEMI)}</div><div className="cm">{fmtINR(tEMI*12,true)}/year</div></div>
         <div className="card"><div className="cl">Blended ROI</div><div className="cv b">{bROI}% p.a.</div><div className="cm">Weighted average</div></div>
         <div className="card"><div className="cl">Total Interest Est.</div><div className="cv r">{fmtINR(loans.reduce((s,l)=>s+Math.max(0,l.emi*l.tenure-l.original),0),true)}</div><div className="cm">All loans combined</div></div>
+      </div>
+      {/* Remaining Interest Payable Summary */}
+      <div className="card mb3" style={{background:'linear-gradient(135deg,#fefce8,#fff7ed)',border:'1.5px solid #fcd34d'}}>
+        <div className="sh mb2"><div className="sh-t" style={{color:'#92400e'}}><Ic n="prov" s={14} c="#d97706"/>Remaining Interest Payable (Future Interest Cost)</div></div>
+        <div className="alert aw" style={{marginBottom:12}}><Ic n="prov" s={13}/>Formula: (Remaining Tenure × EMI) − Outstanding Principal. This is the total interest you will pay from today until loan closure.</div>
+        <div className="tw">
+          <table>
+            <thead><tr><th>Loan</th><th className="num">Remaining Months</th><th className="num">EMI (₹)</th><th className="num">Remaining Payout (₹)</th><th className="num">Outstanding (₹)</th><th className="num" style={{background:'var(--ol)'}}>Remaining Interest (₹)</th></tr></thead>
+            <tbody>
+              {loans.map(l=>{
+                const rem=l.remaining||0;
+                const remainingPayout=l.emi*rem;
+                const remainingInterest=Math.max(0,remainingPayout-l.outstanding);
+                return(<tr key={l.id}>
+                  <td style={{fontWeight:700}}>{l.bank} <span className="tag tb" style={{fontSize:10}}>{l.type}</span></td>
+                  <td className="num">{rem}</td>
+                  <td className="num">{fmtINR(l.emi)}</td>
+                  <td className="num">{fmtINR(remainingPayout)}</td>
+                  <td className="num neg">{fmtINR(l.outstanding)}</td>
+                  <td className="num bold" style={{color:'var(--o)',background:'rgba(217,119,6,.06)'}}>{fmtINR(remainingInterest)}</td>
+                </tr>);
+              })}
+            </tbody>
+            <tfoot><tr className="tft">
+              <td style={{fontWeight:700}}>Total</td>
+              <td className="num">–</td>
+              <td className="num bold">{fmtINR(tEMI)}/mo</td>
+              <td className="num bold">{fmtINR(loans.reduce((s,l)=>s+l.emi*(l.remaining||0),0))}</td>
+              <td className="num neg bold">{fmtINR(tOS)}</td>
+              <td className="num bold" style={{color:'var(--r)',background:'rgba(220,38,38,.06)'}}>{fmtINR(loans.reduce((s,l)=>s+Math.max(0,l.emi*(l.remaining||0)-l.outstanding),0))}</td>
+            </tr></tfoot>
+          </table>
+        </div>
       </div>
       {loans.map(l=>{
         const pct=l.original>0?(l.original-l.outstanding)/l.original*100:0;
@@ -1392,8 +1565,8 @@ function PageLoans({data,setData,toast}){
               </div>
             </div>
             <div className="g4 mb2" style={{gap:10}}>
-              {[{l:'EMI/Month',v:fmtINR(l.emi)},{l:'ROI',v:`${l.roi}% p.a.`},{l:'Remaining',v:`${l.remaining}/${l.tenure} mo`},{l:'End Date',v:fmtDate(l.endDate)},{l:'Loan Amount',v:fmtINR(l.original)},{l:'Total Payable',v:fmtINR(l.emi*l.tenure)},{l:'Total Interest',v:fmtINR(tInt)},{l:'Months Paid',v:`${l.tenure-l.remaining} of ${l.tenure}`}].map(x=>(
-                <div key={x.l}><div style={{fontSize:9.5,color:'var(--n400)',textTransform:'uppercase',fontWeight:600,marginBottom:2}}>{x.l}</div><div style={{fontSize:12.5,fontWeight:700}}>{x.v}</div></div>
+              {[{l:'EMI/Month',v:fmtINR(l.emi)},{l:'ROI',v:`${l.roi}% p.a.`},{l:'Remaining',v:`${l.remaining}/${l.tenure} mo`},{l:'End Date',v:fmtDate(l.endDate)},{l:'Loan Amount',v:fmtINR(l.original)},{l:'Total Payable',v:fmtINR(l.emi*l.tenure)},{l:'Total Interest',v:fmtINR(tInt)},{l:'Months Paid',v:`${l.tenure-l.remaining} of ${l.tenure}`},{l:'Remaining Interest',v:fmtINR(Math.max(0,l.emi*(l.remaining||0)-l.outstanding)),c:'var(--o)'},{l:'Future Payout',v:fmtINR(l.emi*(l.remaining||0)),c:'var(--r)'}].map(x=>(
+                <div key={x.l}><div style={{fontSize:9.5,color:'var(--n400)',textTransform:'uppercase',fontWeight:600,marginBottom:2}}>{x.l}</div><div style={{fontSize:12.5,fontWeight:700,color:x.c||''}}>{x.v}</div></div>
               ))}
             </div>
             <div style={{display:'flex',alignItems:'center',gap:8}}>
@@ -1416,16 +1589,44 @@ function PageProvision({data,setData,toast}){
   const {provisions}=data;
   const ef={month:new Date().toISOString().slice(0,7),entity:'Self',type:'',narration:'',amount:''};
   const [form,setForm]=useState(ef);const [eid,setEid]=useState(null);
+  const provFileRef=useRef();
   const total=provisions.reduce((s,p)=>s+p.amount,0);
+  const handleProvCSV=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      const lines=ev.target.result.split('\n').filter(l=>l.trim());
+      const hdr=lines[0].toLowerCase().split(',').map(h=>h.trim().replace(/"/g,''));
+      const provs=lines.slice(1).map(line=>{
+        const cols=line.split(',').map(c=>c.trim().replace(/"/g,''));
+        const o={};hdr.forEach((h,i)=>o[h]=cols[i]||'');
+        if(!o.narration&&!o.description)return null;
+        return{id:uid(),month:o.month||new Date().toISOString().slice(0,7),entity:o.entity||'Self',type:o.type||'',narration:o.narration||o.description||'',amount:parseFloat(o.amount)||0};
+      }).filter(Boolean);
+      setData(d=>({...d,provisions:[...d.provisions,...provs]}));
+      toast(`Imported ${provs.length} provisions`,'g');
+    };
+    r.readAsText(f);e.target.value='';
+  };
+  const downloadProvTemplate=()=>{
+    const b=new Blob(['month,entity,type,narration,amount\n2026-04,Self,Medical,Annual health checkup,8000\n2026-05,Family,Repair,AC servicing,3500\n'],{type:'text/csv'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='finmanager-provision-template.csv';a.click();
+  };
   const save=()=>{if(!form.narration)return;if(eid){setData(d=>({...d,provisions:d.provisions.map(p=>p.id===eid?{...p,...form,amount:+form.amount}:p)}));toast('Updated','g');setEid(null);}else{setData(d=>({...d,provisions:[...d.provisions,{id:uid(),...form,amount:+form.amount}]}));toast('Added','g');}setForm(ef);};
   const del=id=>{setData(d=>({...d,provisions:d.provisions.filter(p=>p.id!==id)}));toast('Removed','x');};
   const se=p=>{setEid(p.id);setForm({month:p.month,entity:p.entity,type:p.type,narration:p.narration,amount:String(p.amount)});};
   return(
     <div className="page">
-      <div className="ph"><div><div className="ptitle">Provision Tab</div><div className="psub">Non-recurring / irregular expense provisioning</div></div></div>
-      <div className="alert ai mb3"><Ic n="prov" s={13}/>Provisions are for future or uncertain expenses outside your regular monthly budget — repairs, legal fees, medical contingencies, etc.</div>
+      <div className="ph"><div><div className="ptitle">Provision Tab</div><div className="psub">Non-recurring / irregular expense provisioning</div></div>
+        <div style={{display:'flex',gap:8}}>
+          <button className="btn btn-s btn-sm" onClick={downloadProvTemplate}><Ic n="dl" s={12}/>Template</button>
+          <button className="btn btn-s btn-sm" onClick={()=>provFileRef.current.click()}><Ic n="up" s={12}/>CSV Import</button>
+        </div>
+      </div>
+      <input type="file" ref={provFileRef} accept=".csv" style={{display:'none'}} onChange={handleProvCSV}/>
+      <div className="alert ai mb3"><Ic n="prov" s={13}/>Provisions are for future or uncertain expenses outside your regular monthly budget — repairs, legal fees, medical contingencies, etc. <strong>Provisions reduce your Net Worth</strong> as they represent committed future outflows.</div>
       <div className="g3 mb3">
-        <div className="card"><div className="cl">Total Provisioned</div><div className="cv o">{fmtINR(total)}</div></div>
+        <div className="card"><div className="cl">Total Provisioned</div><div className="cv o">{fmtINR(total)}</div><div className="cm" style={{color:'var(--r)',fontWeight:600}}>Deducted from Net Worth</div></div>
         <div className="card"><div className="cl">Active (Non-zero)</div><div className="cv">{provisions.filter(p=>p.amount>0).length}</div></div>
         <div className="card"><div className="cl">Total Entries</div><div className="cv">{provisions.length}</div></div>
       </div>
@@ -1466,11 +1667,35 @@ function PageMaster({data,setData,toast}){
   const {expenseCategories,incomeCategories,budgetLimits,accounts}=data;
   const [view,setView]=useState('monthly');
   const [nec,setNec]=useState('');const [nic,setNic]=useState('');
+  const [editCat,setEditCat]=useState(null);const [editCatVal,setEditCatVal]=useState('');
   const fileRef=useRef();
   const getDisp=cat=>view==='monthly'?(budgetLimits[cat]||0):(budgetLimits[cat]||0)*12;
   const save=(cat,val,mode)=>{const monthly=mode==='monthly'?parseFloat(val)||0:Math.round((parseFloat(val)||0)/12*100)/100;setData(d=>({...d,budgetLimits:{...d.budgetLimits,[cat]:monthly}}));};
   const addEC=()=>{if(!nec.trim())return;setData(d=>({...d,expenseCategories:[...d.expenseCategories,nec.trim()]}));setNec('');toast('Added','g');};
   const addIC=()=>{if(!nic.trim())return;setData(d=>({...d,incomeCategories:[...d.incomeCategories,nic.trim()]}));setNic('');toast('Added','g');};
+  const startEditCat=(cat,type)=>{setEditCat({name:cat,type});setEditCatVal(cat);};
+  const saveEditCat=()=>{
+    if(!editCatVal.trim()||!editCat)return;
+    const oldName=editCat.name,newName=editCatVal.trim();
+    if(oldName===newName){setEditCat(null);return;}
+    if(editCat.type==='expense'){
+      setData(d=>{
+        const newCats=d.expenseCategories.map(c=>c===oldName?newName:c);
+        const newBL={...d.budgetLimits};
+        if(newBL[oldName]!==undefined){newBL[newName]=newBL[oldName];delete newBL[oldName];}
+        const newMaj=(d.majorExpenseCategories||[]).map(c=>c===oldName?newName:c);
+        const newTxs=d.transactions.map(t=>t.category===oldName?{...t,category:newName}:t);
+        return{...d,expenseCategories:newCats,budgetLimits:newBL,majorExpenseCategories:newMaj,transactions:newTxs};
+      });
+    }else{
+      setData(d=>{
+        const newCats=d.incomeCategories.map(c=>c===oldName?newName:c);
+        const newTxs=d.transactions.map(t=>t.category===oldName?{...t,category:newName}:t);
+        return{...d,incomeCategories:newCats,transactions:newTxs};
+      });
+    }
+    setEditCat(null);toast(`Renamed "${oldName}" → "${newName}"`,'g');
+  };
   const handleCSV=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const lines=ev.target.result.split('\n').filter(l=>l.trim());const hdr=lines[0].toLowerCase().split(',').map(h=>h.trim().replace(/"/g,''));const txs=lines.slice(1).map(line=>{const cols=line.split(',').map(c=>c.trim().replace(/"/g,''));const o={};hdr.forEach((h,i)=>o[h]=cols[i]||'');if(!o.date||!o.amount||!o.type)return null;const amount=parseFloat(o.amount);if(isNaN(amount))return null;return{id:uid(),date:o.date,type:o.type.toLowerCase().trim(),category:o.category||'Other Expense',desc:o.description||o.desc||'',amount,month:o.date.slice(0,7)};}).filter(Boolean);setData(d=>({...d,transactions:[...d.transactions,...txs]}));toast(`Imported ${txs.length} transactions`,'g');};r.readAsText(f);e.target.value='';};
   return(
     <div className="page">
@@ -1506,25 +1731,52 @@ function PageMaster({data,setData,toast}){
           <div style={{display:'flex',gap:7,marginBottom:10}}><input style={{flex:1,padding:'7px 11px',border:'1.5px solid var(--n200)',borderRadius:'var(--r6)',fontSize:12.5,outline:'none',fontFamily:'var(--f)'}} placeholder="Add expense category…" value={nec} onChange={e=>setNec(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addEC()}/><button className="btn btn-p btn-sm" onClick={addEC}><Ic n="plus" s={12} c="#fff"/></button></div>
           <div style={{maxHeight:220,overflowY:'auto'}}>{expenseCategories.map(c=>{
             const isMajor=data.majorExpenseCategories?.includes(c);
+            const isEditing=editCat?.name===c&&editCat?.type==='expense';
             return(<div key={c} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid var(--n50)'}}>
-              <span style={{fontSize:12.5,display:'flex',alignItems:'center',gap:6}}>
-                {c}
-                {isMajor&&<span className="major-flag">★ Major</span>}
-              </span>
-              <div style={{display:'flex',gap:4}}>
-                <button className="bic" title={isMajor?'Remove Major Flag':'Mark as Major Expense'} onClick={()=>{setData(d=>{const mec=d.majorExpenseCategories||[];const newMec=mec.includes(c)?mec.filter(x=>x!==c):[...mec,c];return{...d,majorExpenseCategories:newMec};});}} style={{color:isMajor?'var(--o)':''}}><span style={{fontSize:10}}>{isMajor?'★':'☆'}</span></button>
+              {isEditing?(
+                <div style={{display:'flex',alignItems:'center',gap:6,flex:1}}>
+                  <input value={editCatVal} onChange={e=>setEditCatVal(e.target.value)} onKeyDown={e=>e.key==='Enter'&&saveEditCat()} style={{flex:1,padding:'4px 8px',border:'1.5px solid var(--g)',borderRadius:5,fontSize:12.5,outline:'none',fontFamily:'var(--f)'}} autoFocus/>
+                  <button className="bic" onClick={saveEditCat} style={{color:'var(--g)'}}><Ic n="ok" s={11}/></button>
+                  <button className="bic" onClick={()=>setEditCat(null)}><Ic n="x" s={11}/></button>
+                </div>
+              ):(
+                <span style={{fontSize:12.5,display:'flex',alignItems:'center',gap:6}}>
+                  {c}
+                  {isMajor&&<span className="major-flag">Major</span>}
+                </span>
+              )}
+              {!isEditing&&<div style={{display:'flex',gap:4}}>
+                <button className="bic" title={isMajor?'Remove Major Flag':'Mark as Major Expense'} onClick={()=>{setData(d=>{const mec=d.majorExpenseCategories||[];const newMec=mec.includes(c)?mec.filter(x=>x!==c):[...mec,c];return{...d,majorExpenseCategories:newMec};});}} style={{color:isMajor?'var(--o)':''}}><span style={{fontSize:10}}>{isMajor?'⭐':'⭐'}</span></button>
+                <button className="bic" title="Rename Category" onClick={()=>startEditCat(c,'expense')}><Ic n="edit" s={11}/></button>
                 <button className="bic red" onClick={()=>{
                   if(!window.confirm(`Delete category "${c}"? Budget limit for this category will also be removed.`))return;
                   setData(d=>{const bl={...d.budgetLimits};delete bl[c];return{...d,expenseCategories:d.expenseCategories.filter(x=>x!==c),budgetLimits:bl,majorExpenseCategories:(d.majorExpenseCategories||[]).filter(x=>x!==c)};});
                   toast('Category and budget limit removed','x');
                 }}><Ic n="del" s={11}/></button>
-              </div>
+              </div>}
             </div>);
           })}</div>
         </div>
         <div className="card"><div className="sh mb2"><div className="sh-t"><Ic n="inc" s={14} c="var(--g)"/>Income Categories</div><span className="tag tg" style={{fontSize:10}}>{incomeCategories.length}</span></div>
           <div style={{display:'flex',gap:7,marginBottom:10}}><input style={{flex:1,padding:'7px 11px',border:'1.5px solid var(--n200)',borderRadius:'var(--r6)',fontSize:12.5,outline:'none',fontFamily:'var(--f)'}} placeholder="Add income category…" value={nic} onChange={e=>setNic(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addIC()}/><button className="btn btn-p btn-sm" onClick={addIC}><Ic n="plus" s={12} c="#fff"/></button></div>
-          <div style={{maxHeight:220,overflowY:'auto'}}>{incomeCategories.map(c=>(<div key={c} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid var(--n50)'}}><span style={{fontSize:12.5}}>{c}</span><button className="bic red" onClick={()=>setData(d=>({...d,incomeCategories:d.incomeCategories.filter(x=>x!==c)}))}><Ic n="del" s={11}/></button></div>))}</div>
+          <div style={{maxHeight:220,overflowY:'auto'}}>{incomeCategories.map(c=>{
+            const isEditing=editCat?.name===c&&editCat?.type==='income';
+            return(<div key={c} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid var(--n50)'}}>
+              {isEditing?(
+                <div style={{display:'flex',alignItems:'center',gap:6,flex:1}}>
+                  <input value={editCatVal} onChange={e=>setEditCatVal(e.target.value)} onKeyDown={e=>e.key==='Enter'&&saveEditCat()} style={{flex:1,padding:'4px 8px',border:'1.5px solid var(--g)',borderRadius:5,fontSize:12.5,outline:'none',fontFamily:'var(--f)'}} autoFocus/>
+                  <button className="bic" onClick={saveEditCat} style={{color:'var(--g)'}}><Ic n="ok" s={11}/></button>
+                  <button className="bic" onClick={()=>setEditCat(null)}><Ic n="x" s={11}/></button>
+                </div>
+              ):(
+                <span style={{fontSize:12.5}}>{c}</span>
+              )}
+              {!isEditing&&<div style={{display:'flex',gap:4}}>
+                <button className="bic" title="Rename Category" onClick={()=>startEditCat(c,'income')}><Ic n="edit" s={11}/></button>
+                <button className="bic red" onClick={()=>setData(d=>({...d,incomeCategories:d.incomeCategories.filter(x=>x!==c)}))}><Ic n="del" s={11}/></button>
+              </div>}
+            </div>);
+          })}</div>
         </div>
       </div>
       <div className="card mb3">
@@ -1760,10 +2012,48 @@ const DriveService = {
 ══════════════════════════════════════ */
 function PageData({data,setData,toast}){
   const fileRef=useRef();
+  const legacyRef=useRef();
   // localStorage auto-save handled by App useEffect
-  const expLocal=()=>{const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`finmanager-${new Date().toISOString().slice(0,10)}.json`;a.click();toast('Exported','g');};
+  const expLocal=()=>{const b=new Blob([JSON.stringify({...data,_version:'v6'},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`finmanager-${new Date().toISOString().slice(0,10)}.json`;a.click();toast('Exported','g');};
   const imp=()=>fileRef.current.click();
-  const himp=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{setData(JSON.parse(ev.target.result));toast('Imported','g');}catch{toast('Invalid JSON','r');}};r.readAsText(f);e.target.value='';};
+  /* ── Migration: normalise any old JSON export to current schema ── */
+  const migrateData=(raw)=>{
+    const d={...raw};
+    // Ensure all required top-level keys exist
+    if(!d.profile)d.profile={name:'Your Name',email:'you@example.com',phone:'',pan:'',currency:'INR',city:'',avatar:'YN',periodStart:'2025-04',periodEnd:'2026-03'};
+    if(!d.profile.periodStart)d.profile.periodStart='2025-04';
+    if(!d.profile.periodEnd)d.profile.periodEnd='2026-03';
+    if(!d.accounts)d.accounts=[];
+    if(!d.creditCards)d.creditCards=[];
+    if(!d.loans)d.loans=[];
+    if(!d.provisions)d.provisions=[];
+    if(!d.transactions)d.transactions=[];
+    if(!d.incomeCategories)d.incomeCategories=['Salary / Consultancy','Freelance Income','Interest Income','Other Income'];
+    if(!d.expenseCategories)d.expenseCategories=['House Rent','Groceries & Food','Electricity','Insurance','Other Expense'];
+    if(!d.budgetLimits)d.budgetLimits={};
+    if(!d.majorExpenseCategories)d.majorExpenseCategories=[];
+    if(!d.emergencyFund)d.emergencyFund={accountIds:[],targetMonths:6};
+    // Ensure every transaction has required fields
+    d.transactions=d.transactions.map(t=>({
+      id:t.id||uid(),date:t.date||'',type:t.type||'expense',category:t.category||'Other Expense',
+      desc:t.desc||t.description||t.narration||'',amount:parseFloat(t.amount)||0,
+      month:t.month||(t.date?t.date.slice(0,7):''),paymentMode:t.paymentMode||t.payment_mode||t.mode||'',
+    }));
+    // Ensure every account has required fields
+    d.accounts=d.accounts.map(a=>({id:a.id||uid(),name:a.name||'Unknown',type:a.type||'bank',accNo:a.accNo||a.acc_no||'XXXX-0000',balance:parseFloat(a.balance)||0,color:a.color||'#1a4a6e'}));
+    // Ensure every CC has required fields
+    d.creditCards=d.creditCards.map(c=>({id:c.id||uid(),bank:c.bank||'Unknown',type:c.type||c.card_type||'Card',accNo:c.accNo||c.acc_no||'XXXX-0000',limit:parseFloat(c.limit||c.credit_limit)||0,payable:parseFloat(c.payable||c.billed)||0,provision:parseFloat(c.provision||c.unbilled)||0,dueDate:c.dueDate||c.due_date||null}));
+    // Ensure every loan has required fields
+    d.loans=d.loans.map(l=>({id:l.id||uid(),bank:l.bank||l.lender||'Unknown',accNo:l.accNo||l.acc_no||'XXXX-0000',type:l.type||l.loan_type||'Personal Loan',original:parseFloat(l.original||l.loan_amount||l.principal)||0,outstanding:parseFloat(l.outstanding||l.balance)||0,emi:parseFloat(l.emi)||0,roi:parseFloat(l.roi||l.rate||l.interest_rate)||0,startDate:l.startDate||l.start_date||null,endDate:l.endDate||l.end_date||null,tenure:parseInt(l.tenure)||60,remaining:parseInt(l.remaining)||parseInt(l.tenure)||0}));
+    // Ensure every provision has required fields
+    d.provisions=(d.provisions||[]).map(p=>({id:p.id||uid(),month:p.month||new Date().toISOString().slice(0,7),entity:p.entity||'Self',type:p.type||'',narration:p.narration||p.description||p.desc||'',amount:parseFloat(p.amount)||0}));
+    // Handle old localStorage key format (ff_v3, ff_v4 etc)
+    if(d.funds&&!d.accounts.length){d.accounts=d.funds;}
+    delete d.funds;delete d._version;
+    return d;
+  };
+  const himp=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const raw=JSON.parse(ev.target.result);const migrated=migrateData(raw);setData(migrated);toast('Imported successfully (with auto-migration)','g');}catch{toast('Invalid JSON','r');}};r.readAsText(f);e.target.value='';};
+  const himpLegacy=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const raw=JSON.parse(ev.target.result);const migrated=migrateData(raw);setData(migrated);toast('Legacy data imported & migrated to current version!','g');}catch{toast('Invalid JSON file','r');}};r.readAsText(f);e.target.value='';};
   // ── RESET: clears ALL financial data but PRESERVES user profile
   const reset=()=>{
     if(window.confirm('Reset all financial data?\n\nThis will PERMANENTLY DELETE:\n• All transactions\n• All accounts & balances\n• All credit cards\n• All loans\n• All provisions\n• All budget limits\n• All categories\n\nYour Profile & Period settings will be KEPT.\n\nThis cannot be undone.')){
@@ -1790,6 +2080,7 @@ function PageData({data,setData,toast}){
     <div className="page">
       <div className="ph"><div><div className="ptitle">Data Management</div><div className="psub">Export · Import · Restore · Reset</div></div></div>
       <input type="file" ref={fileRef} accept=".json" style={{display:'none'}} onChange={himp}/>
+      <input type="file" ref={legacyRef} accept=".json" style={{display:'none'}} onChange={himpLegacy}/>
 
       {/* Stats */}
       <div className="g4 mb3">
@@ -1806,8 +2097,25 @@ function PageData({data,setData,toast}){
         </div>
         <div className="card">
           <div className="sh mb2"><div className="sh-t"><Ic n="up" s={14} c="var(--b)"/>Import Backup File</div></div>
-          <p style={{fontSize:12.5,color:'var(--n500)',marginBottom:12}}>Restore from a previously exported backup JSON file. This overwrites all current data.</p>
+          <p style={{fontSize:12.5,color:'var(--n500)',marginBottom:12}}>Restore from a previously exported backup JSON file. Auto-detects and migrates older versions.</p>
           <button className="btn btn-s" onClick={imp}><Ic n="up" s={13}/>Choose JSON File</button>
+        </div>
+      </div>
+
+      {/* Legacy / Old Version Import */}
+      <div className="card mb3" style={{border:'1.5px solid var(--b)',background:'linear-gradient(135deg,#eff6ff,#f0f9ff)'}}>
+        <div className="sh mb2"><div className="sh-t" style={{color:'var(--bd)'}}><Ic n="refresh" s={14} c="var(--b)"/>Import from Older Version (v3 / v4 / v5 / FundFlow)</div></div>
+        <div className="alert ai mb2" style={{marginBottom:10}}>
+          <Ic n="prov" s={13}/>
+          <div style={{fontSize:12}}>
+            Have a JSON export from an older version of Personal FinManager, FundFlow, or any prior release?<br/>
+            This importer <strong>auto-migrates</strong> your data — filling missing fields, converting old field names, and ensuring compatibility with the current schema.<br/>
+            <strong>Supported:</strong> FundFlow v3, v4, v5, FinManager v1–v5, and any JSON with transactions/accounts/creditCards arrays.
+          </div>
+        </div>
+        <div style={{display:'flex',gap:10,alignItems:'center'}}>
+          <button className="btn btn-p" onClick={()=>legacyRef.current.click()} style={{background:'var(--b)'}}><Ic n="up" s={13} c="#fff"/>Import Old Version JSON</button>
+          <span style={{fontSize:11.5,color:'var(--n400)'}}>Overwrites current data after migration</span>
         </div>
       </div>
 
@@ -2195,7 +2503,8 @@ function PageCFO({data}){
   const liquid=bankBal+cashBal;
   const ccLiab=creditCards.reduce((s,c)=>s+c.payable+c.provision,0);
   const loanOS=loans.reduce((s,l)=>s+l.outstanding,0);
-  const netWorth=liquid+fdBal-ccLiab-loanOS;
+  const provTotal=(data.provisions||[]).reduce((s,p)=>s+p.amount,0);
+  const netWorth=liquid+fdBal-ccLiab-loanOS-provTotal;
 
   const periodTxs=transactions.filter(t=>months.some(m=>m.key===t.month));
   const totalInc=periodTxs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
@@ -2493,12 +2802,28 @@ function App(){
   const [pg,setPg]=useState('dashboard');
   const [data,setData]=useState(()=>{
     try{
-      const s=localStorage.getItem('ff_v5');
+      // Try current version first
+      let s=localStorage.getItem('ff_v5');
+      // Fallback to older versions
+      if(!s)s=localStorage.getItem('ff_v4');
+      if(!s)s=localStorage.getItem('ff_v3');
+      if(!s)s=localStorage.getItem('fundflow_data');
       if(s){
         const p=JSON.parse(s);
-        if(!p.profile?.periodStart)p.profile={...p.profile,periodStart:'2025-04',periodEnd:'2026-03'};
+        if(!p.profile)p.profile={name:'Your Name',email:'you@example.com',phone:'',pan:'',currency:'INR',city:'',avatar:'YN',periodStart:'2025-04',periodEnd:'2026-03'};
+        if(!p.profile.periodStart)p.profile={...p.profile,periodStart:'2025-04',periodEnd:'2026-03'};
         if(!p.majorExpenseCategories)p.majorExpenseCategories=['House Rent','Insurance','Medical Expense'];
         if(!p.emergencyFund)p.emergencyFund={accountIds:[],targetMonths:6};
+        if(!p.provisions)p.provisions=[];
+        if(!p.transactions)p.transactions=[];
+        if(!p.accounts)p.accounts=p.funds||[];
+        if(!p.creditCards)p.creditCards=[];
+        if(!p.loans)p.loans=[];
+        if(!p.incomeCategories)p.incomeCategories=['Salary / Consultancy','Freelance Income','Interest Income','Other Income'];
+        if(!p.expenseCategories)p.expenseCategories=['House Rent','Groceries & Food','Electricity','Insurance','Other Expense'];
+        if(!p.budgetLimits)p.budgetLimits={};
+        // Ensure transactions have paymentMode
+        p.transactions=p.transactions.map(t=>({...t,paymentMode:t.paymentMode||t.payment_mode||t.mode||'',month:t.month||(t.date?t.date.slice(0,7):'')}));
         return p;
       }
       return JSON.parse(JSON.stringify(SEED));
@@ -2509,7 +2834,7 @@ function App(){
   const [toast,setToast]=useState(null);
   const showToast=(msg,type)=>setToast({msg,type});
 
-  const ccAlerts=data.creditCards.filter(c=>{const d=daysDiff(c.dueDate);return d!==null&&d<=7&&d>=0&&c.payable>0;}).length;
+  const ccAlerts=data.creditCards.filter(c=>{const d=daysDiff(c.dueDate);return d!==null&&d<=3&&d>=0&&c.payable>0;}).length;
   const months=useMemo(()=>getPeriodMonths(data.profile.periodStart,data.profile.periodEnd),[data.profile.periodStart,data.profile.periodEnd]);
 
   const rp=()=>{
@@ -2603,6 +2928,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </body>
 <div style="position:fixed;bottom:0;left:0;right:0;background:#0f172a;color:#94a3b8;font-size:10.5px;font-family:'Plus Jakarta Sans',sans-serif;padding:5px 20px;display:flex;align-items:center;justify-content:space-between;z-index:9999;border-top:1px solid #1e293b;">
   <span>© 2024–2026 <strong style="color:#fff">Vipin Nair</strong> · Personal FinManager · All Rights Reserved</span>
-  <span>Suggestions &amp; Feedback: <a href="mailto:audit.vipin@gmail.com" style="color:#6ee7b7;text-decoration:none">audit.vipin@gmail.com</a></span>
-</div>
-</html>
+  <span>Suggestions &amp; Feedback: <a href="/cdn-cgi/l/email-protection#4d2c38292439633b243d24230d2a202c2421632e2220" style="color:#6ee7b7;text-decoration:none"><spa
