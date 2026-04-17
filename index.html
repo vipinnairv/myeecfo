@@ -666,6 +666,38 @@ function PageDashboard({data,setPage}){
         </div>
       </div>
 
+      {/* FUND BALANCE TILE */}
+      {(()=>{
+        const fundBalance=bankBal+fdBal-(ccPay+ccProv)-provTotal;
+        const fdMinusLiab=fdBal-(ccPay+ccProv)-provTotal;
+        return(
+          <div className="mb3" style={{background:'linear-gradient(135deg,#1a2e1a 0%,#14532d 50%,#166534 100%)',borderRadius:'var(--r16)',padding:'18px 22px',color:'#fff',display:'flex',alignItems:'center',gap:24,flexWrap:'wrap',position:'relative',overflow:'hidden',boxShadow:'var(--lg)'}}>
+            <div style={{position:'absolute',right:-30,top:-30,width:130,height:130,background:'rgba(255,255,255,.05)',borderRadius:'50%'}}/>
+            <div style={{position:'absolute',right:60,bottom:-50,width:100,height:100,background:'rgba(0,179,134,.08)',borderRadius:'50%'}}/>
+            <div style={{flex:'0 0 auto',width:42,height:42,borderRadius:12,background:'rgba(110,231,183,.15)',border:'1.5px solid rgba(110,231,183,.3)',display:'grid',placeItems:'center',zIndex:1}}>
+              <Ic n="bank" s={20} c="#6ee7b7"/>
+            </div>
+            <div style={{zIndex:1}}>
+              <div style={{fontSize:10,opacity:.6,textTransform:'uppercase',letterSpacing:.8,marginBottom:3}}>Net Fund Balance · FD + Bank − CC Liability − Provisions</div>
+              <div style={{fontFamily:'var(--m)',fontSize:28,fontWeight:800,letterSpacing:'-1px',lineHeight:1,color:fundBalance>=0?'#6ee7b7':'#fca5a5'}}>{fmtINR(fundBalance)}</div>
+              <div style={{fontSize:11,opacity:.55,marginTop:4,fontFamily:'var(--m)'}}>{fmtINR(fundBalance,true)}</div>
+            </div>
+            <div style={{display:'flex',gap:20,marginLeft:'auto',flexWrap:'wrap',zIndex:1}}>
+              {[
+                {l:'FD Value',v:fdBal,c:'#6ee7b7'},{l:'Bank Balance',v:bankBal,c:'#93c5fd'},
+                {l:'CC Liability',v:-(ccPay+ccProv),c:ccPay+ccProv>0?'#fca5a5':'#6ee7b7'},
+                {l:'Provisions',v:-provTotal,c:provTotal>0?'#fcd34d':'#6ee7b7'},
+              ].map(p=>(
+                <div key={p.l} style={{textAlign:'right'}}>
+                  <div style={{fontSize:9.5,opacity:.5,textTransform:'uppercase',letterSpacing:.5,marginBottom:2}}>{p.l}</div>
+                  <div style={{fontFamily:'var(--m)',fontSize:13,fontWeight:700,color:p.c}}>{p.v<0?`−${fmtINR(-p.v,true)}`:fmtINR(p.v,true)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ROW 1: KPIs */}
       <div className="g4 mb3">
         {[
@@ -1989,6 +2021,7 @@ const DriveService = {
 function PageData({data,setData,toast}){
   const fileRef=useRef();
   const legacyRef=useRef();
+  const mergeRef=useRef();
   // localStorage auto-save handled by App useEffect
   const expLocal=()=>{const b=new Blob([JSON.stringify({...data,_version:'v6'},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`finmanager-${new Date().toISOString().slice(0,10)}.json`;a.click();toast('Exported','g');};
   const imp=()=>fileRef.current.click();
@@ -2030,6 +2063,38 @@ function PageData({data,setData,toast}){
   };
   const himp=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const raw=JSON.parse(ev.target.result);const migrated=migrateData(raw);setData(migrated);toast('Imported successfully (with auto-migration)','g');}catch{toast('Invalid JSON','r');}};r.readAsText(f);e.target.value='';};
   const himpLegacy=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const raw=JSON.parse(ev.target.result);const migrated=migrateData(raw);setData(migrated);toast('Legacy data imported & migrated to current version!','g');}catch{toast('Invalid JSON file','r');}};r.readAsText(f);e.target.value='';};
+  const himpMerge=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      try{
+        const raw=JSON.parse(ev.target.result);
+        const migrated=migrateData(raw);
+        setData(cur=>{
+          // Merge by id — skip any record whose id already exists in current data
+          const existTx=new Set(cur.transactions.map(t=>t.id));
+          const existAcc=new Set(cur.accounts.map(a=>a.id));
+          const existCC=new Set(cur.creditCards.map(c=>c.id));
+          const existLoan=new Set(cur.loans.map(l=>l.id));
+          const existProv=new Set(cur.provisions.map(p=>p.id));
+          const newTx=(migrated.transactions||[]).filter(t=>!existTx.has(t.id));
+          const newAcc=(migrated.accounts||[]).filter(a=>!existAcc.has(a.id));
+          const newCC=(migrated.creditCards||[]).filter(c=>!existCC.has(c.id));
+          const newLoan=(migrated.loans||[]).filter(l=>!existLoan.has(l.id));
+          const newProv=(migrated.provisions||[]).filter(p=>!existProv.has(p.id));
+          toast(`Merged: +${newTx.length} txns, +${newAcc.length} accounts, +${newCC.length} cards, +${newLoan.length} loans, +${newProv.length} provisions`,'g');
+          return{...cur,
+            transactions:[...cur.transactions,...newTx],
+            accounts:[...cur.accounts,...newAcc],
+            creditCards:[...cur.creditCards,...newCC],
+            loans:[...cur.loans,...newLoan],
+            provisions:[...cur.provisions,...newProv],
+          };
+        });
+      }catch{toast('Invalid JSON file','r');}
+    };
+    r.readAsText(f);e.target.value='';
+  };
   // ── RESET: clears ALL financial data but PRESERVES user profile
   const reset=()=>{
     if(window.confirm('Reset all financial data?\n\nThis will PERMANENTLY DELETE:\n• All transactions\n• All accounts & balances\n• All credit cards\n• All loans\n• All provisions\n• All budget limits\n• All categories\n\nYour Profile & Period settings will be KEPT.\n\nThis cannot be undone.')){
@@ -2057,6 +2122,7 @@ function PageData({data,setData,toast}){
       <div className="ph"><div><div className="ptitle">Data Management</div><div className="psub">Export · Import · Restore · Reset</div></div></div>
       <input type="file" ref={fileRef} accept=".json" style={{display:'none'}} onChange={himp}/>
       <input type="file" ref={legacyRef} accept=".json" style={{display:'none'}} onChange={himpLegacy}/>
+      <input type="file" ref={mergeRef} accept=".json" style={{display:'none'}} onChange={himpMerge}/>
 
       {/* Stats */}
       <div className="g4 mb3">
@@ -2065,7 +2131,7 @@ function PageData({data,setData,toast}){
 
       <div className="alert as mb3"><Ic n="ok" s={13}/>Auto-backup active — data saved to browser storage on every change. Use Google Drive Sync for cloud backup.</div>
 
-      <div className="g2 mb3">
+      <div className="g3 mb3">
         <div className="card">
           <div className="sh mb2"><div className="sh-t"><Ic n="dl" s={14} c="var(--g)"/>Export Local Backup</div></div>
           <p style={{fontSize:12.5,color:'var(--n500)',marginBottom:12}}>Download a complete JSON snapshot to your computer. Recommended: save this to your Google Drive folder monthly.</p>
@@ -2073,8 +2139,13 @@ function PageData({data,setData,toast}){
         </div>
         <div className="card">
           <div className="sh mb2"><div className="sh-t"><Ic n="up" s={14} c="var(--b)"/>Import Backup File</div></div>
-          <p style={{fontSize:12.5,color:'var(--n500)',marginBottom:12}}>Restore from a previously exported backup JSON file. Auto-detects and migrates older versions.</p>
+          <p style={{fontSize:12.5,color:'var(--n500)',marginBottom:12}}>Restore from a previously exported backup JSON file. <strong>Replaces</strong> all current data. Auto-migrates older versions.</p>
           <button className="btn btn-s" onClick={imp}><Ic n="up" s={13}/>Choose JSON File</button>
+        </div>
+        <div className="card" style={{border:'1.5px solid var(--g)',background:'var(--gxl)'}}>
+          <div className="sh mb2"><div className="sh-t" style={{color:'var(--gd)'}}><Ic n="refresh" s={14} c="var(--g)"/>Merge Import Old Data</div></div>
+          <p style={{fontSize:12.5,color:'var(--n600)',marginBottom:12}}><strong>Adds</strong> transactions, accounts, cards, loans & provisions from an old backup into your current data — without overwriting anything. Duplicate IDs are skipped automatically.</p>
+          <button className="btn btn-p" onClick={()=>mergeRef.current.click()}><Ic n="up" s={13} c="#fff"/>Choose JSON to Merge</button>
         </div>
       </div>
 
@@ -2567,7 +2638,14 @@ function PageCFO({data}){
   const savingsRate=totalInc>0?(surplus/totalInc*100):0;
   const avgMonthlyExp=months.length>0?totalExp/months.length:0;
   const avgMonthlyInc=months.length>0?totalInc/months.length:0;
-  const burnRate=avgMonthlyExp;
+  const today=new Date();
+  const periodStartDate=new Date(profile.periodStart+'-01');
+  const [pey,pem]=profile.periodEnd.split('-').map(Number);
+  const periodEndDate=new Date(pey,pem,0); // last day of periodEnd month
+  const effectiveDate=today<=periodEndDate?today:periodEndDate;
+  const daysElapsed=Math.max(1,Math.round((effectiveDate-periodStartDate)/86400000));
+  const avgDailyBurnRate=totalExp/daysElapsed;
+  const burnRate=avgDailyBurnRate*30; // avg monthly burn
   const runway=burnRate>0?liquid/burnRate:99;
   const activeBudget=expenseCategories.reduce((s,c)=>(budgetLimits[c]||0)+s,0);
 
@@ -2615,9 +2693,9 @@ function PageCFO({data}){
         </div>
         <div className="kpi-card o">
           <div className="kpi-ic-wrap"><div className="kpi-ic" style={{background:'var(--ol)'}}><Ic n="exp" c="var(--o)"/></div></div>
-          <div className="cl">Monthly Burn Rate</div>
-          <div className="cv o" style={{fontSize:18}}>{fmtINR(burnRate,true)}</div>
-          <div className="cm">Avg monthly expense</div>
+          <div className="cl">Avg Daily Burn Rate</div>
+          <div className="cv o" style={{fontSize:18}}>{fmtINR(avgDailyBurnRate,true)}</div>
+          <div className="cm">{daysElapsed}d elapsed · {fmtINR(burnRate,true)}/mo</div>
         </div>
         <div className={`kpi-card ${runway>=6?'g':runway>=3?'o':'r'}`}>
           <div className="kpi-ic-wrap">
@@ -2657,6 +2735,7 @@ function PageCFO({data}){
             {l:'Net Surplus',v:fmtINR(surplus),c:surplus>=0?'pos':'neg'},
             {l:'Savings Rate',v:`${savingsRate.toFixed(2)}%`,c:savingsRate>=20?'pos':'neg'},
             {l:'Avg Monthly Income',v:fmtINR(avgMonthlyInc,true),c:''},
+            {l:'Avg Daily Burn Rate',v:`${fmtINR(avgDailyBurnRate,true)} (${daysElapsed}d)`,c:'neg'},
             {l:'Avg Monthly Burn',v:fmtINR(burnRate,true),c:'neg'},
             {l:'Debt-to-Income (Monthly)',v:`${avgMonthlyInc>0?(loans.reduce((s,l)=>s+l.emi,0)/avgMonthlyInc*100).toFixed(1):0}%`,c:''},
             {l:'CC Liability / Net Worth',v:`${netWorth>0?(ccLiab/netWorth*100).toFixed(1):0}%`,c:''},
@@ -3472,7 +3551,7 @@ function App(){
     <>
       <aside className="sb">
         <div className="sb-head">
-          <div className="sb-mark"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.31 14.14c-1.51.29-2.72 1.16-2.73 2.77h-2.34v-1.67c-1.5-.31-2.76-1.27-2.86-2.97h1.71c.09.92.72 1.64 2.32 1.64 1.71 0 2.1-.86 2.1-1.39 0-.72-.39-1.41-2.34-1.87-2.17-.52-3.66-1.42-3.66-3.21 0-1.51 1.21-2.49 2.72-2.81V5h2.34v1.71c1.62.4 2.44 1.63 2.49 2.97h-1.71c-.04-.98-.56-1.64-1.94-1.64-1.31 0-2.1.59-2.1 1.43 0 .73.57 1.22 2.34 1.67 1.76.46 3.65 1.22 3.66 3.42-.01 1.61-1.21 2.48-2.73 2.77v-.19h-.07z"/></svg></div>
+          <div className="sb-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg></div>
           <div>
             <div className="sb-app" style={{fontSize:12}}>Personal FinManager</div>
             <div className="sb-period">by Vipin Nair · {periodLabel(data.profile.periodStart,data.profile.periodEnd)}</div>
