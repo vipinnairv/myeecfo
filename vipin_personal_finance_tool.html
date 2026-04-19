@@ -1,0 +1,2542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Personal Finance Made Simple — by Vipin Nair</title>
+<meta name="description" content="A complete personal finance planner for Indian households — insurance, emergency fund, SIPs, gold, tax. Built by Vipin Nair." />
+
+<!-- React + Babel via CDN -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- Chart.js for visuals -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+/* ==========================================================================
+   DESIGN TOKENS — light mode, matches Vipin's PPT
+   ========================================================================== */
+:root {
+  --ink:         #0F1B2D;
+  --ink-soft:    #4A5568;
+  --ink-muted:   #94A3B8;
+  --bg:          #FFFFFF;
+  --bg-alt:      #F8FAFC;
+  --bg-card:     #FFFFFF;
+  --rule:        #E5E9F0;
+  --rule-strong: #CBD5E1;
+
+  --brand:       #0B5394;
+  --brand-dark:  #073763;
+  --brand-lite:  #E7F0F9;
+  --accent:      #D97706;
+  --accent-lt:   #FEF3C7;
+  --green:       #059669;
+  --green-lt:    #D1FAE5;
+  --red:         #DC2626;
+  --red-lt:      #FEE2E2;
+  --purple:      #7C3AED;
+  --purple-lt:   #EDE9FE;
+
+  --shadow-sm:   0 1px 2px 0 rgba(15, 27, 45, 0.04);
+  --shadow:      0 4px 12px -2px rgba(15, 27, 45, 0.06), 0 2px 4px -1px rgba(15, 27, 45, 0.04);
+  --shadow-lg:   0 14px 30px -8px rgba(15, 27, 45, 0.1), 0 6px 10px -4px rgba(15, 27, 45, 0.05);
+
+  --radius-sm:   6px;
+  --radius:      10px;
+  --radius-lg:   14px;
+
+  --font-head:   "Calibri", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-body:   "Calibri", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
+  --transition:  180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg-alt);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-head);
+  color: var(--ink);
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 0.95rem; font-weight: 600; }
+p  { margin: 0 0 0.75rem 0; color: var(--ink-soft); }
+a  { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; font-size: 0.95rem; }
+
+/* ==========================================================================
+   TOP NAV
+   ========================================================================== */
+.app-nav {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+  backdrop-filter: saturate(180%) blur(8px);
+  box-shadow: var(--shadow-sm);
+}
+.app-nav-inner {
+  max-width: 1240px; margin: 0 auto;
+  padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+.brand {
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+}
+.brand-mark {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 1.15rem;
+  box-shadow: 0 4px 10px -2px rgba(11, 83, 148, 0.35);
+}
+.brand-text strong {
+  display: block; font-size: 1.02rem; color: var(--ink); font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.brand-text span {
+  display: block; font-size: 0.78rem; color: var(--ink-muted);
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem; font-weight: 600;
+  border: 1px solid transparent;
+  transition: var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--brand); color: white; border-color: var(--brand);
+}
+.btn-primary:hover { background: var(--brand-dark); border-color: var(--brand-dark); text-decoration: none; }
+.btn-accent {
+  background: var(--accent); color: white; border-color: var(--accent);
+}
+.btn-accent:hover { background: #B45309; border-color: #B45309; text-decoration: none; }
+.btn-ghost {
+  background: transparent; color: var(--ink); border-color: var(--rule-strong);
+}
+.btn-ghost:hover { background: var(--bg-alt); }
+.btn-sm { padding: 6px 12px; font-size: 0.82rem; }
+.btn-lg { padding: 12px 22px; font-size: 0.95rem; }
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+.app-shell {
+  max-width: 1240px; margin: 0 auto;
+  padding: 28px 24px 80px;
+}
+.hero {
+  background: linear-gradient(135deg, #FFFFFF 0%, var(--brand-lite) 100%);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: 32px 36px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 5px; height: 100%;
+  background: linear-gradient(180deg, var(--brand) 0%, var(--accent) 100%);
+}
+.hero-eyebrow {
+  font-size: 0.72rem; font-weight: 700;
+  color: var(--accent); letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.hero h1 {
+  font-size: 2rem; line-height: 1.15; margin-bottom: 8px;
+  color: var(--ink);
+}
+.hero h1 .highlight { color: var(--brand); }
+.hero p {
+  font-size: 1.02rem; color: var(--ink-soft); max-width: 720px;
+  margin: 0;
+}
+.hero-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px; margin-top: 24px;
+}
+.hero-stat {
+  background: rgba(255,255,255,0.7);
+  border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.hero-stat-value { font-size: 1.3rem; font-weight: 700; color: var(--brand); }
+.hero-stat-label { font-size: 0.78rem; color: var(--ink-muted); margin-top: 2px; }
+
+/* ==========================================================================
+   DASHBOARD MODULE GRID
+   ========================================================================== */
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 28px 0 16px;
+  gap: 12px;
+}
+.section-head h2 {
+  font-size: 1.2rem; color: var(--ink); margin: 0;
+}
+.section-head p { color: var(--ink-muted); font-size: 0.85rem; margin: 0; }
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.module-card {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  display: flex; flex-direction: column; gap: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.module-card:hover {
+  border-color: var(--brand);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+.module-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--accent-color, var(--brand));
+  border-radius: var(--radius) var(--radius) 0 0;
+  opacity: 0; transition: var(--transition);
+}
+.module-card:hover::before { opacity: 1; }
+.module-card-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: var(--brand-lite);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--brand); font-size: 1.4rem;
+}
+.module-card.is-red .module-card-icon { background: var(--red-lt); color: var(--red); --accent-color: var(--red); }
+.module-card.is-brand .module-card-icon { background: var(--brand-lite); color: var(--brand); --accent-color: var(--brand); }
+.module-card.is-green .module-card-icon { background: var(--green-lt); color: var(--green); --accent-color: var(--green); }
+.module-card.is-accent .module-card-icon { background: var(--accent-lt); color: var(--accent); --accent-color: var(--accent); }
+.module-card.is-purple .module-card-icon { background: var(--purple-lt); color: var(--purple); --accent-color: var(--purple); }
+.module-card h3 {
+  font-size: 1.02rem; margin: 0;
+}
+.module-card p {
+  font-size: 0.86rem; color: var(--ink-soft); margin: 0;
+  flex: 1;
+}
+.module-card-cta {
+  font-size: 0.82rem; font-weight: 600;
+  color: var(--accent-color, var(--brand));
+  margin-top: 4px; display: flex; align-items: center; gap: 6px;
+}
+
+/* ==========================================================================
+   MODULE VIEW (individual module)
+   ========================================================================== */
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+.panel + .panel { margin-top: 20px; }
+.panel-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.panel-head h2 { margin: 0 0 4px 0; }
+.panel-head p { margin: 0; color: var(--ink-muted); font-size: 0.88rem; }
+.eyebrow {
+  font-size: 0.72rem; font-weight: 700;
+  color: var(--accent); letter-spacing: 2.5px;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--ink-soft); font-size: 0.88rem; font-weight: 600;
+  margin-bottom: 20px; cursor: pointer;
+  transition: var(--transition);
+}
+.back-link:hover { color: var(--brand); text-decoration: none; }
+
+/* ==========================================================================
+   FORM ELEMENTS
+   ========================================================================== */
+.form-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px; margin-bottom: 16px;
+}
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+  font-size: 0.82rem; font-weight: 600; color: var(--ink);
+}
+.form-hint {
+  font-size: 0.78rem; color: var(--ink-muted);
+}
+.form-input, .form-select {
+  padding: 9px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  transition: var(--transition);
+  width: 100%;
+}
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.12);
+}
+.input-with-prefix {
+  position: relative;
+}
+.input-with-prefix .form-input {
+  padding-left: 30px;
+}
+.input-prefix {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--ink-muted); font-weight: 600;
+  pointer-events: none;
+}
+.slider-row {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 10px; align-items: center;
+}
+.slider-row input[type="range"] { width: 100%; accent-color: var(--brand); }
+.slider-value {
+  font-weight: 700; color: var(--brand);
+  min-width: 60px; text-align: right;
+}
+
+/* ==========================================================================
+   STAT / RESULT CARDS
+   ========================================================================== */
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+.result-card {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+.result-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--brand);
+}
+.result-card.is-green::before { background: var(--green); }
+.result-card.is-accent::before { background: var(--accent); }
+.result-card.is-red::before { background: var(--red); }
+.result-card-label {
+  font-size: 0.78rem; color: var(--ink-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.result-card-value {
+  font-size: 1.4rem; font-weight: 700; color: var(--ink);
+  margin-top: 4px;
+  font-family: var(--font-head);
+}
+.result-card-value.is-brand { color: var(--brand); }
+.result-card-value.is-green { color: var(--green); }
+.result-card-value.is-accent { color: var(--accent); }
+.result-card-value.is-red { color: var(--red); }
+.result-card-sub {
+  font-size: 0.78rem; color: var(--ink-muted);
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
+.tbl-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--rule); }
+.tbl {
+  width: 100%; border-collapse: collapse; background: var(--bg);
+  font-size: 0.88rem;
+}
+.tbl thead th {
+  background: var(--brand);
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  letter-spacing: 0.3px;
+}
+.tbl tbody td {
+  padding: 10px 14px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink);
+}
+.tbl tbody tr:nth-child(even) td { background: var(--bg-alt); }
+.tbl tbody tr:hover td { background: var(--brand-lite); }
+.tbl .num { text-align: right; font-variant-numeric: tabular-nums; }
+.tbl .highlight { background: var(--accent-lt) !important; }
+
+/* ==========================================================================
+   CALLOUTS
+   ========================================================================== */
+.callout {
+  border-left: 4px solid var(--brand);
+  background: var(--brand-lite);
+  padding: 14px 18px;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin: 16px 0;
+  font-size: 0.92rem;
+}
+.callout.is-accent { border-color: var(--accent); background: var(--accent-lt); }
+.callout.is-green { border-color: var(--green); background: var(--green-lt); }
+.callout.is-red { border-color: var(--red); background: var(--red-lt); }
+.callout strong { color: var(--ink); }
+.callout-title {
+  font-weight: 700; color: var(--brand); margin-bottom: 4px;
+  font-family: var(--font-head);
+}
+.callout.is-accent .callout-title { color: var(--accent); }
+.callout.is-green .callout-title { color: var(--green); }
+.callout.is-red .callout-title { color: var(--red); }
+
+/* ==========================================================================
+   PILLS / TAGS
+   ========================================================================== */
+.pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 10px; font-size: 0.72rem; font-weight: 600;
+  border-radius: 999px; letter-spacing: 0.3px;
+}
+.pill-brand { background: var(--brand-lite); color: var(--brand); }
+.pill-green { background: var(--green-lt); color: var(--green); }
+.pill-red   { background: var(--red-lt); color: var(--red); }
+.pill-accent{ background: var(--accent-lt); color: var(--accent); }
+
+/* ==========================================================================
+   TABS
+   ========================================================================== */
+.tabs {
+  display: flex; gap: 4px; border-bottom: 1px solid var(--rule);
+  margin-bottom: 20px; overflow-x: auto;
+}
+.tab {
+  padding: 10px 16px;
+  border: none; background: transparent;
+  color: var(--ink-muted); font-weight: 600; font-size: 0.88rem;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab.is-active {
+  color: var(--brand); border-bottom-color: var(--brand);
+}
+
+/* ==========================================================================
+   CHART CONTAINERS
+   ========================================================================== */
+.chart-wrap {
+  position: relative;
+  height: 320px;
+  margin: 12px 0;
+}
+.chart-wrap-sm { height: 220px; }
+
+/* ==========================================================================
+   MODAL
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(15, 27, 45, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal {
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  max-width: 520px; width: 100%;
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+  max-height: 85vh; overflow-y: auto;
+}
+.modal h2 { margin-bottom: 8px; }
+.modal .actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+  margin-top: 20px;
+}
+.contact-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-alt); border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid var(--rule);
+}
+.contact-item-label { font-size: 0.78rem; color: var(--ink-muted); }
+.contact-item-value { font-weight: 600; color: var(--ink); font-size: 0.95rem; }
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.app-footer {
+  max-width: 1240px; margin: 20px auto 0;
+  padding: 24px 24px 40px;
+  border-top: 1px solid var(--rule);
+  display: grid; grid-template-columns: 1fr auto; gap: 16px;
+  align-items: center;
+  color: var(--ink-muted); font-size: 0.82rem;
+}
+.app-footer a { color: var(--brand); font-weight: 600; }
+.credit { display: flex; align-items: center; gap: 10px; }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 720px) {
+  .hero { padding: 24px 20px; }
+  .hero h1 { font-size: 1.5rem; }
+  .panel { padding: 20px; }
+  .brand-text span { display: none; }
+  .nav-actions .btn-lg-hide { display: none; }
+  .app-footer { grid-template-columns: 1fr; text-align: center; }
+}
+
+/* ==========================================================================
+   UTILS
+   ========================================================================== */
+.muted { color: var(--ink-muted); }
+.text-right { text-align: right; }
+.mt-2 { margin-top: 16px; } .mt-3 { margin-top: 24px; }
+.mb-2 { margin-bottom: 16px; } .mb-3 { margin-bottom: 24px; }
+.flex { display: flex; gap: 10px; } .flex-1 { flex: 1; }
+.flex-wrap { flex-wrap: wrap; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+
+.print-only { display: none; }
+@media print {
+  .app-nav, .app-footer, .no-print, .btn { display: none !important; }
+  .panel { border: none; box-shadow: none; }
+  body { background: white; }
+}
+
+/* ==========================================================================
+   GOALS MODULE (multi-goal tracker, Multipl-style)
+   ========================================================================== */
+.goals-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.goals-summary {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin-bottom: 20px;
+}
+.goals-summary .result-card { padding: 14px 16px; }
+.goal-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+}
+.goal-card {
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  display: flex; flex-direction: column; gap: 12px;
+  position: relative; overflow: hidden;
+}
+.goal-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--goal-color, var(--brand));
+}
+.goal-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.goal-card-head { display: flex; align-items: flex-start; gap: 12px; }
+.goal-card-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: var(--goal-tint, var(--brand-lite));
+  color: var(--goal-color, var(--brand));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; flex-shrink: 0;
+}
+.goal-card-title { flex: 1; min-width: 0; }
+.goal-card-title h4 { font-size: 1.02rem; margin: 0 0 2px 0; color: var(--ink); }
+.goal-card-title .meta { font-size: 0.78rem; color: var(--ink-muted); }
+.goal-progress {
+  height: 10px; background: var(--bg-alt);
+  border-radius: 999px; overflow: hidden; position: relative;
+  border: 1px solid var(--rule);
+}
+.goal-progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--goal-color, var(--brand)) 0%, var(--goal-color-dark, var(--brand-dark)) 100%);
+  border-radius: 999px;
+  transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.goal-progress-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.82rem; color: var(--ink-soft);
+}
+.goal-progress-row strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+.goal-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;
+  font-size: 0.82rem;
+  padding: 10px 0; border-top: 1px dashed var(--rule); border-bottom: 1px dashed var(--rule);
+}
+.goal-stat-label { color: var(--ink-muted); }
+.goal-stat-value { color: var(--ink); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.goal-actions {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.goal-actions .btn { padding: 6px 10px; font-size: 0.78rem; }
+
+.goal-empty {
+  border: 2px dashed var(--rule-strong);
+  border-radius: var(--radius-lg);
+  padding: 40px 24px;
+  text-align: center;
+  background: var(--bg-alt);
+}
+.goal-empty h3 { color: var(--ink); margin-bottom: 8px; }
+.goal-empty p { color: var(--ink-muted); margin-bottom: 16px; }
+
+.template-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 8px; margin-bottom: 16px;
+}
+.template-btn {
+  padding: 12px 6px; border: 1px solid var(--rule-strong);
+  border-radius: var(--radius); background: var(--bg);
+  cursor: pointer; transition: var(--transition);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 0.76rem; color: var(--ink-soft); font-weight: 600;
+}
+.template-btn:hover { border-color: var(--brand); color: var(--brand); }
+.template-btn.is-active { border-color: var(--brand); background: var(--brand-lite); color: var(--brand); }
+.template-btn .emoji { font-size: 1.6rem; line-height: 1; }
+
+.modal-lg { max-width: 640px; }
+
+/* ==========================================================================
+   ICON HELPERS (for emoji-style SVG fallbacks)
+   ========================================================================== */
+.icon-emoji {
+  font-size: 1.3rem;
+  line-height: 1;
+  display: inline-block;
+}
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+/* =============================================================================
+   DATA — FUNDS, INSURANCE PLANS, TAX RATES (April 2026)
+   ============================================================================= */
+
+const MUTUAL_FUNDS = [
+  { name: "Parag Parikh Flexi Cap",           category: "Flexi Cap",        cagr3: 20.5, cagr5: 17.1, expense: 0.74, risk: "High",      note: "Gold standard — up to 35% international exposure (Alphabet, Amazon)." },
+  { name: "HDFC Flexi Cap Direct",             category: "Flexi Cap",        cagr3: 20.3, cagr5: 20.9, expense: 0.76, risk: "High",      note: "Very consistent across market cycles." },
+  { name: "UTI Nifty 50 Index Fund",           category: "Index / Passive",  cagr3: 14.5, cagr5: 14.8, expense: 0.20, risk: "Moderate",  note: "Lowest expense ratio. Core holding." },
+  { name: "Motilal Oswal Midcap",              category: "Mid Cap",          cagr3: 25.9, cagr5: 21.1, expense: 0.75, risk: "High",      note: "Picks quality mid-caps early." },
+  { name: "HDFC Mid Cap Opportunities",        category: "Mid Cap",          cagr3: 27.3, cagr5: 30.7, expense: 0.74, risk: "High",      note: "Largest & most consistent mid-cap (AUM ₹85k+ cr)." },
+  { name: "Nippon India Small Cap",            category: "Small Cap",        cagr3: 24.2, cagr5: 33.9, expense: 0.64, risk: "Very High", note: "Well-diversified. For 7+ year SIPs." },
+  { name: "HDFC Small Cap Fund",               category: "Small Cap",        cagr3: 24.5, cagr5: 31.7, expense: 0.66, risk: "Very High", note: "Strong research depth." },
+  { name: "Motilal Oswal NASDAQ 100 FoF",      category: "International",    cagr3: 20.0, cagr5: 18.5, expense: 0.27, risk: "High",      note: "Apple, Microsoft, Google — plus a USD hedge." },
+  { name: "Quant ELSS Tax Saver",              category: "ELSS (Tax Saver)", cagr3: 19.5, cagr5: 22.0, expense: 0.77, risk: "High",      note: "For 80C tax-saving (Old Regime). 3-year lock-in." },
+  { name: "ICICI Pru Equity & Debt",           category: "Aggressive Hybrid",cagr3: 18.0, cagr5: 17.5, expense: 1.05, risk: "Moderate",  note: "65–80% equity. Smoother ride for beginners." },
+];
+
+const HEALTH_PLANS = [
+  { name: "HDFC ERGO Optima Secure",        csr: 97, hospitals: "15,000+", strength: "Doubles cover in 2 yrs; non-medical items covered", bestFor: "Most families — safest default" },
+  { name: "Niva Bupa ReAssure 2.0",         csr: 92, hospitals: "10,000+", strength: "Unlimited restoration; 'lock the clock' on age",       bestFor: "Younger couples, long-term cover" },
+  { name: "Care Supreme",                   csr: 96, hospitals: "11,400+", strength: "Modular — pay only for what you need",                 bestFor: "Budget-conscious buyers" },
+  { name: "Aditya Birla Activ One Max",     csr: 96, hospitals: "12,900+", strength: "Rewards fitness; wide OPD & day-care",                 bestFor: "Young professionals" },
+  { name: "ICICI Lombard Complete Health",  csr: 97, hospitals: "10,600+", strength: "Strong service, fast cashless claims",                 bestFor: "Service-sensitive buyers" },
+  { name: "Star Health Comprehensive",      csr: 99, hospitals: "14,000+", strength: "Largest senior-citizen network; Tier-2/3 friendly",    bestFor: "Senior citizens, smaller towns" },
+];
+
+const TERM_PLANS = [
+  { name: "Axis Max Life Smart Term Plan Plus",  csr: 99.70, premium: "₹11-13k/yr", strength: "★ Top-rated; 64 critical illnesses; zero-cost exit", highlight: true },
+  { name: "HDFC Life Click 2 Protect Super",     csr: 99.50, premium: "₹12-14k/yr", strength: "Return-of-premium option; 1-year premium break on job loss" },
+  { name: "ICICI Pru iProtect Smart Plus",       csr: 99.60, premium: "₹10-12k/yr", strength: "Cheapest top-rated brand; great first-time buy" },
+  { name: "Tata AIA Sampoorna Raksha Promise",   csr: 99.41, premium: "₹11.5-13.5k/yr", strength: "Lump sum + monthly income option" },
+  { name: "Bajaj Allianz Life eTouch II",        csr: 99.29, premium: "₹10.5-12.5k/yr", strength: "Inflation-linked cover (auto-increase)" },
+  { name: "LIC Tech Term",                       csr: 98.00, premium: "₹14-16k/yr",   strength: "Highest trust; largest claim volumes; pricier" },
+];
+
+const ACCIDENT_PLANS = [
+  { name: "Bajaj Allianz Personal Guard",    range: "₹10L – ₹25L",   highlight: "125% PTD payout + kids' education bonus", bestFor: "Families with young children" },
+  { name: "ICICI Lombard Personal Protect",  range: "₹3L – ₹25L",    highlight: "Covers terrorism; daily hospital allowance", bestFor: "Frequent travellers, metro residents" },
+  { name: "Niva Bupa Personal Accident",     range: "₹5L – ₹5 Cr",   highlight: "Global coverage; 5% education benefit",     bestFor: "High-income professionals" },
+  { name: "HDFC ERGO Elite Plan",            range: "Up to 10x income", highlight: "Cover linked to income; customisable",   bestFor: "Salaried professionals" },
+  { name: "ManipalCigna Standard PA",        range: "Up to ₹25 Cr",  highlight: "Highest limits; loss-of-job cover",          bestFor: "HNIs, senior executives" },
+];
+
+const TAX_RATES = [
+  { asset: "Stocks, Equity MFs, ELSS", shortTerm: "20% (< 12 months)",   longTerm: "12.5% over ₹1.25 L (≥ 12 months)", good: "long" },
+  { asset: "Debt Mutual Funds",        shortTerm: "Slab rate",            longTerm: "12.5% (no indexation)" },
+  { asset: "Gold ETFs / Gold Funds",   shortTerm: "Slab rate",            longTerm: "12.5% (≥ 12 months)" },
+  { asset: "SGB (held to maturity)",   shortTerm: "—",                    longTerm: "100% TAX-FREE ★", good: "long", special: true },
+  { asset: "Real Estate",              shortTerm: "Slab (< 24 months)",   longTerm: "12.5% (≥ 24 months)" },
+  { asset: "Bank FD / Savings",        shortTerm: "Slab rate",             longTerm: "Slab rate" },
+  { asset: "Crypto / NFTs",            shortTerm: "30% + cess",            longTerm: "30% + cess", bad: true },
+];
+
+const RISK_PROFILES = {
+  conservative: { equity: 30, debt: 55, gold: 10, cash: 5,   label: "Conservative" },
+  moderate:     { equity: 55, debt: 30, gold: 10, cash: 5,   label: "Moderate" },
+  growth:       { equity: 70, debt: 15, gold: 10, cash: 5,   label: "Growth" },
+  aggressive:   { equity: 85, debt: 5,  gold: 7,  cash: 3,   label: "Aggressive" },
+};
+
+const SAMPLE_PORTFOLIO = [
+  { label: "Core Equity — India (Nifty 50 + Flexi Cap)", pct: 40, color: "#0B5394" },
+  { label: "Growth Equity — Mid/Small Cap",              pct: 20, color: "#1E88E5" },
+  { label: "International Equity (NASDAQ 100)",          pct: 10, color: "#14B8A6" },
+  { label: "Gold (ETF / SGB)",                           pct: 10, color: "#D97706" },
+  { label: "Debt / Stability (PPF, EPF, Bonds)",         pct: 15, color: "#6B7280" },
+  { label: "Optional — Crypto",                          pct: 5,  color: "#7C3AED" },
+];
+
+/* =============================================================================
+   HELPERS
+   ============================================================================= */
+
+const STORAGE_KEY = "vipinPFM_v1";
+const FM_KEY = "ff_v5"; // FinSaveManager's localStorage key — shared sync bridge
+
+function loadState() {
+  try {
+    const own = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {};
+    // Fallback: if FinManager has restored from Drive on a new device and PFM key is empty, rehydrate from ff_v5.pfmModule
+    if (Object.keys(own).length === 0) {
+      const fm = JSON.parse(localStorage.getItem(FM_KEY) || "{}");
+      if (fm && fm.pfmModule) return fm.pfmModule;
+    }
+    return own;
+  }
+  catch { return {}; }
+}
+function saveState(partial) {
+  try {
+    const existing = loadState();
+    const merged = { ...existing, ...partial };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    // Mirror into FinManager's data blob so its Google Drive sync carries PFM state too
+    const fmRaw = localStorage.getItem(FM_KEY);
+    if (fmRaw) {
+      try {
+        const fm = JSON.parse(fmRaw);
+        fm.pfmModule = merged;
+        fm.pfmUpdatedAt = new Date().toISOString();
+        localStorage.setItem(FM_KEY, JSON.stringify(fm));
+      } catch {}
+    }
+  } catch {}
+}
+
+// Read derived financial profile from FinManager if present
+function readFinManagerProfile() {
+  try {
+    const fm = JSON.parse(localStorage.getItem(FM_KEY) || "null");
+    if (!fm || !fm.accounts) return null;
+    const accounts = fm.accounts || [];
+    const txns = fm.transactions || [];
+    const liquidNetWorth = accounts
+      .filter(a => ["bank","cash","wallet","fd"].includes(a.type))
+      .reduce((s, a) => s + (Number(a.balance) || 0), 0);
+    // Average monthly expense over last 3 months of data
+    const months = [...new Set(txns.map(t => t.month))].sort().slice(-3);
+    const expByMonth = months.map(m => txns.filter(t => t.month === m && t.type === "expense").reduce((s,t) => s + (Number(t.amount)||0), 0));
+    const avgMonthlyExpense = expByMonth.length ? expByMonth.reduce((a,b)=>a+b,0) / expByMonth.length : 0;
+    const budgetMonthly = fm.budgetLimits ? Object.values(fm.budgetLimits).reduce((s,v)=>s+(Number(v)||0),0) : 0;
+    const name = (fm.profile && fm.profile.name) || null;
+    return { liquidNetWorth, avgMonthlyExpense, budgetMonthly, name, monthsAvailable: months.length };
+  } catch { return null; }
+}
+
+function fmtINR(n, opts = {}) {
+  if (n === null || n === undefined || isNaN(n)) return "₹0";
+  const num = Math.round(n);
+  if (opts.compact) {
+    if (num >= 10000000) return "₹" + (num / 10000000).toFixed(2) + " Cr";
+    if (num >= 100000)   return "₹" + (num / 100000).toFixed(2) + " L";
+    if (num >= 1000)     return "₹" + (num / 1000).toFixed(1) + "k";
+    return "₹" + num;
+  }
+  return "₹" + num.toLocaleString("en-IN");
+}
+
+function fmtPct(n, digits = 1) {
+  return (n ?? 0).toFixed(digits) + "%";
+}
+
+// SIP future value — monthly compounding
+function sipFV(monthly, annualRatePct, years) {
+  const r = (annualRatePct / 100) / 12;
+  const n = years * 12;
+  if (r === 0) return monthly * n;
+  return monthly * (((Math.pow(1 + r, n) - 1) / r) * (1 + r));
+}
+
+// Lumpsum future value
+function lumpsumFV(amount, annualRatePct, years) {
+  return amount * Math.pow(1 + annualRatePct / 100, years);
+}
+
+/* =============================================================================
+   SHARED SUB-COMPONENTS
+   ============================================================================= */
+
+function BackLink({ onClick }) {
+  return (
+    <a className="back-link" onClick={onClick}>
+      ← Back to dashboard
+    </a>
+  );
+}
+
+function Eyebrow({ children }) {
+  return <div className="eyebrow">{children}</div>;
+}
+
+function Callout({ title, children, variant = "brand" }) {
+  return (
+    <div className={`callout is-${variant}`}>
+      {title && <div className="callout-title">{title}</div>}
+      <div>{children}</div>
+    </div>
+  );
+}
+
+function StatCard({ label, value, sub, variant = "brand" }) {
+  return (
+    <div className={`result-card is-${variant}`}>
+      <div className="result-card-label">{label}</div>
+      <div className={`result-card-value is-${variant}`}>{value}</div>
+      {sub && <div className="result-card-sub">{sub}</div>}
+    </div>
+  );
+}
+
+function NumberInput({ label, value, onChange, placeholder, prefix = "₹", hint, min = 0, step = 1 }) {
+  return (
+    <div className="form-group">
+      <label className="form-label">{label}</label>
+      <div className="input-with-prefix">
+        {prefix && <span className="input-prefix">{prefix}</span>}
+        <input
+          type="number"
+          className="form-input"
+          value={value === 0 && placeholder ? "" : value}
+          onChange={e => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
+          placeholder={placeholder}
+          min={min}
+          step={step}
+        />
+      </div>
+      {hint && <div className="form-hint">{hint}</div>}
+    </div>
+  );
+}
+
+function Slider({ label, value, onChange, min = 0, max = 100, step = 1, suffix = "%" }) {
+  return (
+    <div className="form-group">
+      <label className="form-label">{label}</label>
+      <div className="slider-row">
+        <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(Number(e.target.value))} />
+        <span className="slider-value">{value}{suffix}</span>
+      </div>
+    </div>
+  );
+}
+
+/* =============================================================================
+   CHART HELPERS
+   ============================================================================= */
+
+function ChartWrap({ renderChart, deps = [], className = "chart-wrap" }) {
+  const canvasRef = useRef(null);
+  const chartRef = useRef(null);
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null; }
+    chartRef.current = renderChart(canvasRef.current);
+    return () => { if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null; } };
+  }, deps);
+  return (
+    <div className={className}>
+      <canvas ref={canvasRef}></canvas>
+    </div>
+  );
+}
+
+/* =============================================================================
+   MODULE 1: HEALTH INSURANCE
+   ============================================================================= */
+
+function HealthModule({ onBack }) {
+  const [tier, setTier] = useState("metro");
+  const [members, setMembers] = useState(3);
+  const [seniorCitizens, setSeniorCitizens] = useState(0);
+  const [income, setIncome] = useState(1500000);
+
+  useEffect(() => { saveState({ health: { tier, members, seniorCitizens, income } }); },
+    [tier, members, seniorCitizens, income]);
+
+  useEffect(() => {
+    const s = loadState().health;
+    if (s) { setTier(s.tier ?? "metro"); setMembers(s.members ?? 3); setSeniorCitizens(s.seniorCitizens ?? 0); setIncome(s.income ?? 1500000); }
+  }, []);
+
+  const rec = useMemo(() => {
+    const tierCover = {
+      metro:  { base: 2000000, floater: 3000000 },
+      tier2:  { base: 1000000, floater: 2500000 },
+      tier3:  { base: 500000,  floater: 1500000 },
+    }[tier];
+    let recommendedBase = members > 1 ? tierCover.floater : tierCover.base;
+    if (seniorCitizens > 0) recommendedBase = Math.max(recommendedBase, 2000000);
+    const incomeRule = Math.max(income, income * 2);
+    const totalWithSuperTopUp = Math.max(5000000, recommendedBase * 5, incomeRule * 1.5);
+    const superTopUp = totalWithSuperTopUp - recommendedBase;
+    return { recommendedBase, superTopUp, totalWithSuperTopUp };
+  }, [tier, members, seniorCitizens, income]);
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Part 1 · Health Insurance</Eyebrow>
+        <h2>How much cover do you really need?</h2>
+        <p>One hospital admission can wipe years of savings. Medical inflation runs 12–14% a year — significantly faster than normal inflation.</p>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">City Type</label>
+            <select className="form-select" value={tier} onChange={e => setTier(e.target.value)}>
+              <option value="metro">Metro (Mumbai, Delhi, Bengaluru)</option>
+              <option value="tier2">Tier-2 (Ahmedabad, Pune, Jaipur)</option>
+              <option value="tier3">Tier-3 (Smaller towns)</option>
+            </select>
+          </div>
+          <NumberInput label="Family Members Covered" value={members} onChange={setMembers} prefix="" placeholder="3" min={1} />
+          <NumberInput label="Senior Citizens in Family (60+)" value={seniorCitizens} onChange={setSeniorCitizens} prefix="" placeholder="0" min={0} />
+          <NumberInput label="Annual Household Income" value={income} onChange={setIncome} placeholder="1500000" hint="All earning members combined" />
+        </div>
+
+        <div className="result-grid">
+          <StatCard label="Recommended Base Cover"
+            value={fmtINR(rec.recommendedBase, { compact: true })}
+            sub="Main family floater policy"
+            variant="brand" />
+          <StatCard label="Super Top-Up Cover"
+            value={fmtINR(rec.superTopUp, { compact: true })}
+            sub="Cheap add-on; activates after base exhausts"
+            variant="accent" />
+          <StatCard label="Total Protection"
+            value={fmtINR(rec.totalWithSuperTopUp, { compact: true })}
+            sub="Same as ₹1 Cr plan at 1/3rd the cost"
+            variant="green" />
+        </div>
+
+        <Callout title="The Base + Super Top-Up trick" variant="accent">
+          Instead of buying one expensive ₹1 Crore plan, buy a <strong>{fmtINR(rec.recommendedBase, { compact: true })} base policy + {fmtINR(rec.superTopUp, { compact: true })} super top-up</strong>.
+          Total cover: <strong>{fmtINR(rec.totalWithSuperTopUp, { compact: true })}</strong> at a fraction of the premium. A ₹50L super top-up alone can cost just ₹3,000–5,000 a year.
+        </Callout>
+      </div>
+
+      <div className="panel">
+        <h2>Best plans — April 2026</h2>
+        <p>Rankings from independent advisors (Ditto, PolicyX, Onsurity) based on claim settlement ratio, hospital network, and features.</p>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th className="num">CSR</th>
+                <th>Hospitals</th>
+                <th>What Makes It Good</th>
+                <th>Best For</th>
+              </tr>
+            </thead>
+            <tbody>
+              {HEALTH_PLANS.map((p, i) => (
+                <tr key={i}>
+                  <td><strong>{p.name}</strong></td>
+                  <td className="num"><span className="pill pill-green">{p.csr}%</span></td>
+                  <td>{p.hospitals}</td>
+                  <td>{p.strength}</td>
+                  <td className="muted">{p.bestFor}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <Callout title="Check the ICR (Incurred Claim Ratio), not just CSR" variant="brand">
+          A healthy insurer sits between <strong>75%–90% ICR</strong>. Too low = heavy claim rejection. Too high = premium hikes coming. <strong>HDFC ERGO (~85%)</strong> and <strong>ICICI Lombard (~82%)</strong> are in the sweet spot.
+        </Callout>
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   MODULE 2: TERM INSURANCE
+   ============================================================================= */
+
+function TermModule({ onBack }) {
+  const [income, setIncome] = useState(1500000);
+  const [loans, setLoans] = useState(0);
+  const [childEducation, setChildEducation] = useState(0);
+  const [existingCover, setExistingCover] = useState(0);
+  const [age, setAge] = useState(30);
+
+  useEffect(() => { saveState({ term: { income, loans, childEducation, existingCover, age } }); },
+    [income, loans, childEducation, existingCover, age]);
+
+  useEffect(() => {
+    const s = loadState().term;
+    if (s) { setIncome(s.income ?? 1500000); setLoans(s.loans ?? 0); setChildEducation(s.childEducation ?? 0); setExistingCover(s.existingCover ?? 0); setAge(s.age ?? 30); }
+  }, []);
+
+  const rec = useMemo(() => {
+    const incomeMultiplier = income * 12;
+    const totalNeed = incomeMultiplier + loans + childEducation;
+    const gap = Math.max(0, totalNeed - existingCover);
+    const optimalTerm = Math.max(65 - age, 10);
+    return { incomeMultiplier, totalNeed, gap, optimalTerm };
+  }, [income, loans, childEducation, existingCover, age]);
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Part 2 · Term Life Insurance</Eyebrow>
+        <h2>Pure protection. Nothing fancy.</h2>
+        <p>If you die during the policy, your family gets a lump sum. If you survive, you get nothing — and that's why it's cheap. <strong>Avoid endowment plans, ULIPs, and money-back policies</strong> — they mix insurance with investment and give poor returns on both.</p>
+
+        <div className="form-row">
+          <NumberInput label="Your Annual Income" value={income} onChange={setIncome} placeholder="1500000" hint="Take-home, not CTC" />
+          <NumberInput label="Your Current Age" value={age} onChange={setAge} prefix="" placeholder="30" min={18} />
+          <NumberInput label="Outstanding Loans (Home + Car + Personal)" value={loans} onChange={setLoans} placeholder="0" hint="What family would inherit" />
+          <NumberInput label="Children's Education Goal" value={childEducation} onChange={setChildEducation} placeholder="0" hint="₹30-50 L per child for higher studies" />
+          <NumberInput label="Existing Life Cover (EPF + policies)" value={existingCover} onChange={setExistingCover} placeholder="0" />
+        </div>
+
+        <div className="result-grid">
+          <StatCard label="Income Replacement (12× annual)"
+            value={fmtINR(rec.incomeMultiplier, { compact: true })} variant="brand" />
+          <StatCard label="Total Cover Needed"
+            value={fmtINR(rec.totalNeed, { compact: true })}
+            sub="Income + loans + education"
+            variant="accent" />
+          <StatCard label="Additional Cover to Buy"
+            value={fmtINR(rec.gap, { compact: true })}
+            sub="After existing policies"
+            variant={rec.gap > 0 ? "red" : "green"} />
+          <StatCard label="Ideal Policy Term"
+            value={`Till age ${age + rec.optimalTerm}`}
+            sub={`${rec.optimalTerm} more years`}
+            variant="green" />
+        </div>
+
+        <Callout title="Watch out for inflation" variant="brand">
+          ₹1 Crore today is worth only ₹55-60 L in 12 years at 6% inflation. Buy more than you think you need, or pick a plan with <strong>life-stage increase</strong> (cover auto-increases when you marry or have a child).
+        </Callout>
+      </div>
+
+      <div className="panel">
+        <h2>Best term plans — April 2026</h2>
+        <p>Premium shown for a 30-year-old non-smoking male, ₹1 Cr cover till age 70.</p>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th className="num">Claim Ratio</th>
+                <th>Sample Premium</th>
+                <th>Why pick it</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TERM_PLANS.map((p, i) => (
+                <tr key={i} className={p.highlight ? "highlight" : ""}>
+                  <td><strong>{p.highlight ? "★ " : ""}{p.name}</strong></td>
+                  <td className="num"><span className="pill pill-green">{p.csr}%</span></td>
+                  <td>{p.premium}</td>
+                  <td>{p.strength}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <Callout title="If you want one answer without reading further" variant="accent">
+          <strong>Axis Max Life Smart Term Plan Plus</strong> — rated 4.7/5 by Ditto, highest CSR in the industry (99.70%). Safe default pick.
+        </Callout>
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   MODULE 3: PERSONAL ACCIDENT
+   ============================================================================= */
+
+function AccidentModule({ onBack }) {
+  const [income, setIncome] = useState(1500000);
+  const [multiplier, setMultiplier] = useState(7);
+
+  useEffect(() => { saveState({ accident: { income, multiplier } }); }, [income, multiplier]);
+  useEffect(() => {
+    const s = loadState().accident;
+    if (s) { setIncome(s.income ?? 1500000); setMultiplier(s.multiplier ?? 7); }
+  }, []);
+
+  const rec = income * multiplier;
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Part 3 · Personal Accident Insurance</Eyebrow>
+        <h2>The overlooked policy that saves livelihoods</h2>
+        <p>Health insurance pays for treatment. Term insurance pays your family if you die. But what if an accident leaves you alive yet unable to earn? That's what Personal Accident insurance covers.</p>
+
+        <div className="grid-2">
+          <div>
+            <div className="form-row" style={{gridTemplateColumns: "1fr"}}>
+              <NumberInput label="Your Annual Income" value={income} onChange={setIncome} placeholder="1500000" />
+              <Slider label={`Cover Multiplier (${multiplier}×)`} value={multiplier} onChange={setMultiplier} min={5} max={15} step={1} suffix="×" />
+            </div>
+            <StatCard label="Recommended PA Cover"
+              value={fmtINR(rec, { compact: true })}
+              sub={`${multiplier}× your annual income`}
+              variant="brand" />
+            <Callout title="Premiums are tiny" variant="green">
+              A ₹25 lakh PA cover costs just ₹1,000–3,000 per year. Skipping this is penny-wise, pound-foolish — especially for freelancers and field workers.
+            </Callout>
+          </div>
+
+          <div>
+            <h4>What it covers</h4>
+            <div style={{display: "grid", gap: 10, marginTop: 10}}>
+              {[
+                { t: "Accidental Death", d: "100% of sum insured paid to family" },
+                { t: "Permanent Total Disability", d: "100–125% paid; you cannot work again" },
+                { t: "Permanent Partial Disability", d: "Proportional (loss of eye ~50%, finger ~15%)" },
+                { t: "Temporary Total Disability", d: "Weekly payout while you recover" },
+              ].map((x, i) => (
+                <div key={i} style={{
+                  padding: "10px 14px", border: "1px solid var(--rule)",
+                  borderRadius: 8, background: "var(--bg-alt)"
+                }}>
+                  <div style={{fontWeight: 600, color: "var(--ink)", marginBottom: 2}}>{x.t}</div>
+                  <div style={{fontSize: "0.85rem", color: "var(--ink-soft)"}}>{x.d}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="panel">
+        <h2>Top personal accident plans</h2>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead>
+              <tr><th>Plan</th><th>Cover Range</th><th>Highlight</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
+              {ACCIDENT_PLANS.map((p, i) => (
+                <tr key={i}>
+                  <td><strong>{p.name}</strong></td>
+                  <td><span className="pill pill-brand">{p.range}</span></td>
+                  <td>{p.highlight}</td>
+                  <td className="muted">{p.bestFor}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   MODULE 4: EMERGENCY FUND
+   ============================================================================= */
+
+function EmergencyFundModule({ onBack }) {
+  const [monthlyExpense, setMonthlyExpense] = useState(60000);
+  const [months, setMonths] = useState(6);
+  const [currentSaved, setCurrentSaved] = useState(0);
+  const [buildMonths, setBuildMonths] = useState(12);
+
+  useEffect(() => { saveState({ emergency: { monthlyExpense, months, currentSaved, buildMonths } }); },
+    [monthlyExpense, months, currentSaved, buildMonths]);
+  useEffect(() => {
+    const s = loadState().emergency;
+    if (s) { setMonthlyExpense(s.monthlyExpense ?? 60000); setMonths(s.months ?? 6); setCurrentSaved(s.currentSaved ?? 0); setBuildMonths(s.buildMonths ?? 12); }
+  }, []);
+
+  const calc = useMemo(() => {
+    const target = monthlyExpense * months;
+    const needed = Math.max(0, target - currentSaved);
+    const monthlyContribution = needed / buildMonths;
+    // 3-tier split
+    const tier1 = monthlyExpense;                         // 1 month
+    const tier2 = monthlyExpense * Math.min(2, months - 1); // 1-2 months
+    const tier3 = Math.max(0, target - tier1 - tier2);
+    const progress = target > 0 ? Math.min(100, (currentSaved / target) * 100) : 0;
+    return { target, needed, monthlyContribution, tier1, tier2, tier3, progress };
+  }, [monthlyExpense, months, currentSaved, buildMonths]);
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Part 4 · Emergency Fund</Eyebrow>
+        <h2>Your cushion for the unexpected</h2>
+        <p>An emergency fund absorbs job loss, medical surprises, and one-off expenses — so you don't have to sell investments at a bad time or take a high-interest loan.</p>
+
+        <div className="form-row">
+          <NumberInput label="Essential Monthly Expenses" value={monthlyExpense} onChange={setMonthlyExpense} placeholder="60000" hint="Rent + groceries + utilities + EMIs (skip discretionary)" />
+          <div className="form-group">
+            <label className="form-label">Months of Cover</label>
+            <select className="form-select" value={months} onChange={e => setMonths(Number(e.target.value))}>
+              <option value={3}>3 months (minimum)</option>
+              <option value={6}>6 months (recommended)</option>
+              <option value={9}>9 months (freelancer / gig)</option>
+              <option value={12}>12 months (maximum security)</option>
+            </select>
+          </div>
+          <NumberInput label="Already Saved" value={currentSaved} onChange={setCurrentSaved} placeholder="0" />
+          <div className="form-group">
+            <label className="form-label">Time to Build</label>
+            <select className="form-select" value={buildMonths} onChange={e => setBuildMonths(Number(e.target.value))}>
+              <option value={6}>6 months</option>
+              <option value={12}>12 months</option>
+              <option value={18}>18 months</option>
+              <option value={24}>24 months</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="result-grid">
+          <StatCard label="Target Corpus" value={fmtINR(calc.target, { compact: true })} variant="brand" />
+          <StatCard label="Amount to Save" value={fmtINR(calc.needed, { compact: true })} variant="accent" />
+          <StatCard label="Monthly Contribution" value={fmtINR(calc.monthlyContribution, { compact: true })} sub={`Over ${buildMonths} months`} variant="green" />
+          <StatCard label="Progress" value={fmtPct(calc.progress, 0)} sub={fmtINR(calc.target - calc.needed, { compact: true }) + " saved"} variant={calc.progress > 60 ? "green" : "red"} />
+        </div>
+      </div>
+
+      <div className="panel">
+        <h2>Where to park it — the 3-tier structure</h2>
+        <p>Don't put it all in one place. Balance instant access with better returns.</p>
+
+        <div className="grid-2" style={{gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))"}}>
+          {[
+            { tier: "TIER 1", title: "Instant Access", months: 1, amount: calc.tier1, detail: "Savings Account  •  UPI & ATM  •  2.5–3.5%", color: "red" },
+            { tier: "TIER 2", title: "Next-Day Access", months: 2, amount: calc.tier2, detail: "Liquid Mutual Fund  •  T+1 redemption  •  6–7%", color: "accent" },
+            { tier: "TIER 3", title: "Few-Days Access", months: months - 3, amount: calc.tier3, detail: "Sweep-in FD / Arbitrage Fund  •  7%+", color: "green" },
+          ].map((t, i) => (
+            <div key={i} style={{
+              padding: 18, border: "1px solid var(--rule)", borderRadius: "var(--radius)",
+              borderLeft: `4px solid var(--${t.color})`, background: "var(--bg)"
+            }}>
+              <div className="eyebrow">{t.tier}</div>
+              <h3 style={{margin: "4px 0"}}>{t.title}</h3>
+              <div style={{fontSize: "1.4rem", fontWeight: 700, color: "var(--brand)", marginTop: 4}}>
+                {fmtINR(t.amount, { compact: true })}
+              </div>
+              <div style={{fontSize: "0.82rem", color: "var(--ink-muted)", marginTop: 4}}>{t.detail}</div>
+            </div>
+          ))}
+        </div>
+
+        <Callout title="Smart move for home-loan borrowers" variant="brand">
+          If you have a home loan, park your emergency fund in a <strong>Mortgage Offset Account</strong> — it reduces your loan principal for interest calculation, effectively earning the mortgage rate (8.5%) <em>tax-free</em>, while staying fully accessible.
+        </Callout>
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   MODULE 5: SIP CALCULATOR & FUND PICKS
+   ============================================================================= */
+
+function SIPModule({ onBack }) {
+  const [monthly, setMonthly] = useState(25000);
+  const [years, setYears] = useState(15);
+  const [expectedReturn, setExpectedReturn] = useState(13);
+  const [stepUp, setStepUp] = useState(10);
+
+  useEffect(() => { saveState({ sip: { monthly, years, expectedReturn, stepUp } }); },
+    [monthly, years, expectedReturn, stepUp]);
+  useEffect(() => {
+    const s = loadState().sip;
+    if (s) { setMonthly(s.monthly ?? 25000); setYears(s.years ?? 15); setExpectedReturn(s.expectedReturn ?? 13); setStepUp(s.stepUp ?? 10); }
+  }, []);
+
+  const { fvPlain, fvStepUp, invested, investedStepUp, yearly } = useMemo(() => {
+    // Plain SIP
+    const fvPlain = sipFV(monthly, expectedReturn, years);
+    const invested = monthly * 12 * years;
+
+    // Step-up SIP (annual)
+    let investedStepUp = 0;
+    let fvStepUp = 0;
+    const r = expectedReturn / 100 / 12;
+    let currentMonthly = monthly;
+    for (let y = 0; y < years; y++) {
+      // FV at end of year: compound previous balance + SIP for 12 months
+      const yearInvested = currentMonthly * 12;
+      investedStepUp += yearInvested;
+      // grow existing FV to end-of-year
+      fvStepUp = fvStepUp * Math.pow(1 + r, 12);
+      // add SIP contributions for this year (ordinary annuity, month-end)
+      fvStepUp += currentMonthly * (((Math.pow(1 + r, 12) - 1) / r));
+      currentMonthly *= (1 + stepUp / 100);
+    }
+
+    // Yearly progression for chart
+    const yearly = [];
+    let curMonthly = monthly;
+    let fv = 0, inv = 0;
+    for (let y = 1; y <= years; y++) {
+      inv += curMonthly * 12;
+      fv = fv * Math.pow(1 + r, 12) + curMonthly * (((Math.pow(1 + r, 12) - 1) / r));
+      yearly.push({ year: y, invested: inv, fv });
+      curMonthly *= (1 + stepUp / 100);
+    }
+
+    return { fvPlain, fvStepUp, invested, investedStepUp, yearly };
+  }, [monthly, years, expectedReturn, stepUp]);
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Part 5 · SIP Calculator</Eyebrow>
+        <h2>See your money grow — with step-up SIPs</h2>
+        <p>An SIP (Systematic Investment Plan) is a monthly auto-debit into a mutual fund. The magic is compounding + step-up (increasing your SIP by 10% each year as your income grows).</p>
+
+        <div className="form-row">
+          <NumberInput label="Monthly SIP Amount" value={monthly} onChange={setMonthly} placeholder="25000" />
+          <Slider label={`Investment Period (${years} years)`} value={years} onChange={setYears} min={1} max={30} step={1} suffix=" yrs" />
+          <Slider label={`Expected Annual Return (${expectedReturn}%)`} value={expectedReturn} onChange={setExpectedReturn} min={6} max={20} step={0.5} suffix="%" />
+          <Slider label={`Annual Step-Up (${stepUp}%)`} value={stepUp} onChange={setStepUp} min={0} max={20} step={1} suffix="%" />
+        </div>
+
+        <div className="result-grid">
+          <StatCard label="Total Invested (Plain SIP)" value={fmtINR(invested, { compact: true })} variant="brand" />
+          <StatCard label="Future Value (Plain SIP)" value={fmtINR(fvPlain, { compact: true })} variant="green" />
+          <StatCard label="Total Invested (Step-Up SIP)" value={fmtINR(investedStepUp, { compact: true })} variant="brand" />
+          <StatCard label="Future Value (Step-Up SIP)" value={fmtINR(fvStepUp, { compact: true })}
+            sub={fmtINR(fvStepUp - fvPlain, { compact: true }) + " extra vs plain"} variant="accent" />
+        </div>
+
+        <ChartWrap
+          deps={[yearly]}
+          renderChart={(canvas) => new Chart(canvas, {
+            type: "line",
+            data: {
+              labels: yearly.map(p => `Y${p.year}`),
+              datasets: [
+                {
+                  label: "Amount Invested",
+                  data: yearly.map(p => p.invested),
+                  borderColor: "#6B7280", backgroundColor: "rgba(107,114,128,0.08)",
+                  fill: true, tension: 0.3,
+                },
+                {
+                  label: "Portfolio Value (Step-Up SIP)",
+                  data: yearly.map(p => p.fv),
+                  borderColor: "#0B5394", backgroundColor: "rgba(11,83,148,0.1)",
+                  fill: true, tension: 0.3, borderWidth: 2.5,
+                }
+              ]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: {
+                legend: { labels: { font: { family: "Calibri", size: 12 }, color: "#0F1B2D" } },
+                tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ": " + fmtINR(ctx.parsed.y, {compact: true}) } }
+              },
+              scales: {
+                y: {
+                  ticks: { callback: (v) => fmtINR(v, {compact: true}), color: "#94A3B8", font: { family: "Calibri", size: 11 } },
+                  grid: { color: "#F1F5F9" }
+                },
+                x: { ticks: { color: "#94A3B8", font: { family: "Calibri", size: 11 } }, grid: { display: false } }
+              }
+            }
+          })}
+        />
+      </div>
+
+      <div className="panel">
+        <h2>Top mutual funds — April 2026</h2>
+        <p>Selected on 3-year and 5-year CAGR, consistency, expense ratio, and fund-manager track record. Past returns are not a guarantee.</p>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>Fund</th>
+                <th>Category</th>
+                <th className="num">3Y CAGR</th>
+                <th className="num">5Y CAGR</th>
+                <th className="num">Expense</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MUTUAL_FUNDS.map((f, i) => (
+                <tr key={i}>
+                  <td><strong>{f.name}</strong><br /><span className="muted" style={{fontSize: "0.78rem"}}>{f.note}</span></td>
+                  <td>{f.category}</td>
+                  <td className="num"><span className="pill pill-green">{f.cagr3}%</span></td>
+                  <td className="num">{f.cagr5}%</td>
+                  <td className="num">{f.expense}%</td>
+                  <td>
+                    <span className={`pill ${f.risk.includes("Very") ? "pill-red" : f.risk === "High" ? "pill-accent" : "pill-brand"}`}>
+                      {f.risk}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <Callout title="Always buy DIRECT plans (not Regular)" variant="accent">
+          Regular plans have ~1% higher expense ratio. Over 20 years, that 1% difference = <strong>lakhs of rupees</strong> in your pocket. Buy via Groww, Kuvera, Zerodha Coin, INDmoney, or directly from the AMC website.
+        </Callout>
+
+        <Callout title="Active vs Passive — the big 2025 finding" variant="brand">
+          S&P SPIVA 2025: over 10 years, <strong>85% of actively managed large-cap funds FAILED to beat the Nifty 50</strong>. For large-cap exposure, just buy a Nifty 50 Index Fund. Active management still adds value in mid-cap and small-cap space.
+        </Callout>
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   MODULE: MY GOALS (multi-goal tracker, Multipl-style)
+   ============================================================================= */
+
+const GOAL_TEMPLATES = [
+  { key: "retirement", icon: "🏖️", name: "Retirement",       years: 25, inflation: 6, ret: 12, color: "#0B5394", tint: "#E7F0F9" },
+  { key: "education",  icon: "🎓", name: "Child's Education", years: 15, inflation: 8, ret: 12, color: "#7C3AED", tint: "#EDE9FE" },
+  { key: "home",       icon: "🏠", name: "Home / Down-payment", years: 7, inflation: 7, ret: 11, color: "#059669", tint: "#D1FAE5" },
+  { key: "car",        icon: "🚗", name: "Car",                years: 3, inflation: 6, ret: 8,  color: "#D97706", tint: "#FEF3C7" },
+  { key: "vacation",   icon: "✈️", name: "Vacation",           years: 2, inflation: 6, ret: 7,  color: "#14B8A6", tint: "#CCFBF1" },
+  { key: "wedding",    icon: "💍", name: "Wedding",            years: 5, inflation: 7, ret: 10, color: "#DC2626", tint: "#FEE2E2" },
+  { key: "baby",       icon: "👶", name: "New Baby",           years: 2, inflation: 7, ret: 8,  color: "#EC4899", tint: "#FCE7F3" },
+  { key: "custom",     icon: "🎯", name: "Custom Goal",        years: 5, inflation: 6, ret: 11, color: "#0B5394", tint: "#E7F0F9" },
+];
+
+function getTemplate(key) {
+  return GOAL_TEMPLATES.find(t => t.key === key) || GOAL_TEMPLATES[GOAL_TEMPLATES.length - 1];
+}
+
+function computeGoal(g) {
+  const now = new Date();
+  const tgt = new Date(g.targetDate);
+  const monthsLeft = Math.max(1, (tgt.getFullYear() - now.getFullYear()) * 12 + (tgt.getMonth() - now.getMonth()));
+  const yearsLeft = monthsLeft / 12;
+  const futureTarget = g.target * Math.pow(1 + (g.inflation || 0) / 100, yearsLeft);
+  const savedFV = lumpsumFV(g.saved || 0, g.ret, yearsLeft);
+  const contribFV = sipFV(g.monthly || 0, g.ret, yearsLeft);
+  const projected = savedFV + contribFV;
+  const progressPct = Math.min(100, ((g.saved || 0) / futureTarget) * 100);
+  const onTrackPct = Math.min(999, (projected / futureTarget) * 100);
+  // Required monthly SIP to close the gap on top of current savings
+  const shortfall = Math.max(0, futureTarget - savedFV);
+  const r = g.ret / 100 / 12;
+  const n = monthsLeft;
+  const requiredMonthly = shortfall > 0 ? shortfall / (((Math.pow(1 + r, n) - 1) / r) * (1 + r)) : 0;
+  let status = "behind";
+  if (onTrackPct >= 100) status = "ahead";
+  else if (onTrackPct >= 95) status = "on-track";
+  return { yearsLeft, monthsLeft, futureTarget, projected, progressPct, onTrackPct, requiredMonthly, status };
+}
+
+function uid() { return "g_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7); }
+
+function defaultTargetDate(years) {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() + (years || 5));
+  return d.toISOString().slice(0, 7); // YYYY-MM
+}
+
+function fmtTargetDate(ym) {
+  if (!ym) return "—";
+  const [y, m] = ym.split("-").map(Number);
+  return new Date(y, (m || 1) - 1, 1).toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+}
+
+function GoalsModule({ onBack }) {
+  const [goals, setGoals] = useState(() => loadState().goals || []);
+  const [editing, setEditing] = useState(null); // goal object or null
+  const [showCreate, setShowCreate] = useState(false);
+  const [fmProfile, setFmProfile] = useState(() => readFinManagerProfile());
+  const refreshFM = () => setFmProfile(readFinManagerProfile());
+
+  useEffect(() => { saveState({ goals }); }, [goals]);
+
+  const upsertGoal = (g) => {
+    setGoals(prev => {
+      const idx = prev.findIndex(x => x.id === g.id);
+      if (idx === -1) return [...prev, g];
+      const copy = [...prev]; copy[idx] = g; return copy;
+    });
+  };
+  const deleteGoal = (id) => {
+    if (!confirm("Delete this goal? This can't be undone.")) return;
+    setGoals(prev => prev.filter(g => g.id !== id));
+  };
+  const addFunds = (id) => {
+    const val = prompt("How much did you add to this goal? (₹)");
+    if (!val) return;
+    const amt = Number(val);
+    if (!isFinite(amt) || amt <= 0) return;
+    setGoals(prev => prev.map(g => g.id === id ? { ...g, saved: (g.saved || 0) + amt } : g));
+  };
+
+  // Aggregate summary
+  const summary = useMemo(() => {
+    let totalSaved = 0, totalTarget = 0, totalMonthly = 0, totalRequired = 0;
+    goals.forEach(g => {
+      const c = computeGoal(g);
+      totalSaved += g.saved || 0;
+      totalTarget += c.futureTarget;
+      totalMonthly += g.monthly || 0;
+      totalRequired += c.requiredMonthly;
+    });
+    return { totalSaved, totalTarget, totalMonthly, totalRequired, count: goals.length };
+  }, [goals]);
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>My Goals</Eyebrow>
+        <h2>Save with a purpose — one goal at a time</h2>
+        <p>Every rupee you invest should have a name on it. Create goals like Multipl does — retirement, your child's college, the down-payment — and we'll tell you the exact monthly SIP to get there.</p>
+
+        {fmProfile && (
+          <Callout title={`Synced with FinManager${fmProfile.name ? ` — ${fmProfile.name}` : ""}`} variant="green">
+            Liquid net worth: <strong>{fmtINR(fmProfile.liquidNetWorth, {compact:true})}</strong>
+            {fmProfile.avgMonthlyExpense > 0 && <> · Avg monthly expense: <strong>{fmtINR(fmProfile.avgMonthlyExpense, {compact:true})}</strong></>}
+            {fmProfile.budgetMonthly > 0 && <> · Budget: <strong>{fmtINR(fmProfile.budgetMonthly, {compact:true})}/mo</strong></>}
+            <div style={{fontSize:"0.78rem", marginTop:4, color:"var(--ink-muted)"}}>
+              Your goals are mirrored into FinManager's data file — they'll ride along next time you click <strong>☁ Sync</strong> in FinManager.
+              {" "}<a onClick={refreshFM} style={{cursor:"pointer"}}>Refresh</a>
+            </div>
+          </Callout>
+        )}
+
+        <div className="goals-toolbar">
+          <div style={{fontSize: "0.88rem", color: "var(--ink-muted)"}}>
+            {goals.length === 0 ? "No goals yet." : `${goals.length} goal${goals.length > 1 ? "s" : ""} · ${fmtINR(summary.totalMonthly, {compact:true})}/mo invested`}
+          </div>
+          <button className="btn btn-primary btn-sm" onClick={() => { setEditing(null); setShowCreate(true); }}>
+            + Add a Goal
+          </button>
+        </div>
+
+        {goals.length > 0 && (
+          <div className="goals-summary">
+            <StatCard label="Total Target (future)" value={fmtINR(summary.totalTarget, {compact:true})} variant="red" />
+            <StatCard label="Total Saved" value={fmtINR(summary.totalSaved, {compact:true})} variant="green" />
+            <StatCard label="Current Monthly SIP" value={fmtINR(summary.totalMonthly, {compact:true})} variant="brand" />
+            <StatCard label="Required Monthly SIP" value={fmtINR(summary.totalRequired, {compact:true})} sub={summary.totalRequired > summary.totalMonthly ? `Gap: ${fmtINR(summary.totalRequired - summary.totalMonthly, {compact:true})}/mo` : "You're on track ✓"} variant="accent" />
+          </div>
+        )}
+
+        {goals.length === 0 ? (
+          <div className="goal-empty">
+            <div style={{fontSize: "2.4rem", marginBottom: 8}}>🎯</div>
+            <h3>Start with your first goal</h3>
+            <p>Pick a template — retirement, a home, a child's education — set the amount and date, and we'll work out the monthly investment needed.</p>
+            <button className="btn btn-primary" onClick={() => { setEditing(null); setShowCreate(true); }}>
+              Create your first goal
+            </button>
+          </div>
+        ) : (
+          <div className="goal-grid">
+            {goals.map(g => {
+              const tpl = getTemplate(g.template);
+              const c = computeGoal(g);
+              const statusPill = c.status === "ahead"
+                ? <span className="pill pill-green">Ahead ✓</span>
+                : c.status === "on-track"
+                ? <span className="pill pill-brand">On track</span>
+                : <span className="pill pill-red">Behind</span>;
+              return (
+                <div key={g.id} className="goal-card" style={{"--goal-color": tpl.color, "--goal-color-dark": tpl.color, "--goal-tint": tpl.tint}}>
+                  <div className="goal-card-head">
+                    <div className="goal-card-icon">{g.icon || tpl.icon}</div>
+                    <div className="goal-card-title">
+                      <h4>{g.name}</h4>
+                      <div className="meta">{fmtTargetDate(g.targetDate)} · {c.yearsLeft.toFixed(1)} yrs left</div>
+                    </div>
+                    {statusPill}
+                  </div>
+
+                  <div className="goal-progress">
+                    <div className="goal-progress-fill" style={{width: c.progressPct + "%"}}></div>
+                  </div>
+                  <div className="goal-progress-row">
+                    <span><strong>{fmtINR(g.saved || 0, {compact:true})}</strong> saved</span>
+                    <span>of <strong>{fmtINR(c.futureTarget, {compact:true})}</strong></span>
+                  </div>
+
+                  <div className="goal-stats">
+                    <div className="goal-stat-label">Target (today)</div>
+                    <div className="goal-stat-value">{fmtINR(g.target, {compact:true})}</div>
+                    <div className="goal-stat-label">Your monthly SIP</div>
+                    <div className="goal-stat-value">{fmtINR(g.monthly || 0, {compact:true})}</div>
+                    <div className="goal-stat-label">Required SIP</div>
+                    <div className="goal-stat-value" style={{color: c.requiredMonthly > (g.monthly || 0) ? "var(--red)" : "var(--green)"}}>
+                      {fmtINR(c.requiredMonthly, {compact:true})}
+                    </div>
+                    <div className="goal-stat-label">Projected corpus</div>
+                    <div className="goal-stat-value">{fmtINR(c.projected, {compact:true})}</div>
+                  </div>
+
+                  <div className="goal-actions">
+                    <button className="btn btn-primary btn-sm" onClick={() => addFunds(g.id)}>+ Add Funds</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => { setEditing(g); setShowCreate(true); }}>Edit</button>
+                    <button className="btn btn-ghost btn-sm" style={{color: "var(--red)"}} onClick={() => deleteGoal(g.id)}>Delete</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <Callout title="How this works" variant="brand">
+          We inflate your target to its future value, grow your current savings and monthly SIP at the expected return, then compare. If your projected corpus is 100%+ of the future target, you're on track. The <strong>Required SIP</strong> is what you'd need to invest each month (on top of what's already saved) to hit the goal.
+        </Callout>
+      </div>
+
+      {showCreate && (
+        <GoalEditorModal
+          goal={editing}
+          onSave={(g) => { upsertGoal(g); setShowCreate(false); setEditing(null); }}
+          onClose={() => { setShowCreate(false); setEditing(null); }}
+        />
+      )}
+    </>
+  );
+}
+
+function GoalEditorModal({ goal, onSave, onClose }) {
+  const isNew = !goal;
+  const initial = goal || {
+    id: uid(),
+    template: "custom",
+    icon: "🎯",
+    name: "",
+    target: 1000000,
+    targetDate: defaultTargetDate(5),
+    saved: 0,
+    monthly: 10000,
+    ret: 11,
+    inflation: 6,
+    createdAt: new Date().toISOString(),
+  };
+  const [form, setForm] = useState(initial);
+  const update = (patch) => setForm(f => ({ ...f, ...patch }));
+
+  const pickTemplate = (key) => {
+    const t = getTemplate(key);
+    update({
+      template: key,
+      icon: t.icon,
+      name: form.name && !isNew ? form.name : t.name,
+      targetDate: defaultTargetDate(t.years),
+      ret: t.ret,
+      inflation: t.inflation,
+    });
+  };
+
+  const preview = useMemo(() => computeGoal(form), [form]);
+
+  const fm = readFinManagerProfile();
+  const pullFromFM = () => {
+    if (!fm) return;
+    const patch = {};
+    if (fm.liquidNetWorth > 0) patch.saved = Math.round(fm.liquidNetWorth);
+    // Suggest target = 6× monthly expense for emergency/retirement defaults if goal is new-ish
+    if (fm.avgMonthlyExpense > 0 && (!form.target || form.target === 1000000)) {
+      patch.target = Math.round(fm.avgMonthlyExpense * 6);
+    }
+    update(patch);
+  };
+
+  const submit = () => {
+    if (!form.name.trim()) { alert("Give your goal a name."); return; }
+    if (!form.target || form.target <= 0) { alert("Set a target amount."); return; }
+    onSave({ ...form, name: form.name.trim() });
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
+        <h2>{isNew ? "Create a goal" : "Edit goal"}</h2>
+        <p style={{color: "var(--ink-muted)", fontSize: "0.88rem"}}>
+          {isNew ? "Pick a template to get sensible defaults, then tweak." : "Update any field — projections recalculate live."}
+        </p>
+
+        {isNew && (
+          <>
+            <div className="form-label" style={{marginTop: 12, marginBottom: 8}}>Template</div>
+            <div className="template-grid">
+              {GOAL_TEMPLATES.map(t => (
+                <button
+                  key={t.key}
+                  className={`template-btn ${form.template === t.key ? "is-active" : ""}`}
+                  onClick={() => pickTemplate(t.key)}
+                  type="button"
+                >
+                  <span className="emoji">{t.icon}</span>
+                  <span>{t.name}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Goal name</label>
+            <input className="form-input" value={form.name} onChange={e => update({ name: e.target.value })} placeholder="e.g. Aanya's college" />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Target date</label>
+            <input type="month" className="form-input" value={form.targetDate} onChange={e => update({ targetDate: e.target.value })} />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <NumberInput label="Target amount (today's value)" value={form.target} onChange={v => update({ target: v })} placeholder="1000000" />
+          <NumberInput label="Already saved for this goal" value={form.saved} onChange={v => update({ saved: v })} placeholder="0" />
+          <NumberInput label="Monthly SIP you'll invest" value={form.monthly} onChange={v => update({ monthly: v })} placeholder="10000" />
+        </div>
+
+        <div className="form-row">
+          <Slider label={`Expected Return (${form.ret}%)`} value={form.ret} onChange={v => update({ ret: v })} min={4} max={18} step={0.5} suffix="%" />
+          <Slider label={`Inflation (${form.inflation}%)`} value={form.inflation} onChange={v => update({ inflation: v })} min={3} max={12} step={0.5} suffix="%" />
+        </div>
+
+        <Callout title="Live projection" variant={preview.status === "behind" ? "red" : preview.status === "ahead" ? "green" : "brand"}>
+          In <strong>{preview.yearsLeft.toFixed(1)} years</strong>, your target of {fmtINR(form.target, {compact:true})} today will cost <strong>{fmtINR(preview.futureTarget, {compact:true})}</strong>.
+          Your plan is projected to reach <strong>{fmtINR(preview.projected, {compact:true})}</strong> ({preview.onTrackPct.toFixed(0)}% of target).
+          {preview.requiredMonthly > (form.monthly || 0)
+            ? <> To fully fund it, invest <strong>{fmtINR(preview.requiredMonthly, {compact:true})}/month</strong> instead.</>
+            : <> You're set — current SIP is enough.</>}
+        </Callout>
+
+        <div className="actions">
+          {fm && (
+            <button className="btn btn-ghost" onClick={pullFromFM} title="Pre-fill 'already saved' from your FinManager liquid net worth" style={{marginRight:"auto"}}>
+              💼 Pull from FinManager
+            </button>
+          )}
+          <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
+          <button className="btn btn-primary" onClick={submit}>{isNew ? "Create Goal" : "Save Changes"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =============================================================================
+   MODULE 6: GOAL PLANNER
+   ============================================================================= */
+
+function GoalPlannerModule({ onBack }) {
+  const [goalAmount, setGoalAmount] = useState(5000000);
+  const [years, setYears] = useState(10);
+  const [currentSavings, setCurrentSavings] = useState(0);
+  const [inflation, setInflation] = useState(6);
+  const [returnRate, setReturnRate] = useState(12);
+
+  useEffect(() => { saveState({ goal: { goalAmount, years, currentSavings, inflation, returnRate } }); },
+    [goalAmount, years, currentSavings, inflation, returnRate]);
+  useEffect(() => {
+    const s = loadState().goal;
+    if (s) { setGoalAmount(s.goalAmount ?? 5000000); setYears(s.years ?? 10); setCurrentSavings(s.currentSavings ?? 0); setInflation(s.inflation ?? 6); setReturnRate(s.returnRate ?? 12); }
+  }, []);
+
+  const calc = useMemo(() => {
+    // Inflate target to future value
+    const futureGoal = goalAmount * Math.pow(1 + inflation / 100, years);
+    // Grow current savings
+    const savingsFV = lumpsumFV(currentSavings, returnRate, years);
+    // Shortfall to SIP
+    const shortfall = Math.max(0, futureGoal - savingsFV);
+    // Required monthly SIP to bridge shortfall
+    const r = returnRate / 100 / 12;
+    const n = years * 12;
+    const monthlySIP = shortfall > 0 ? shortfall / (((Math.pow(1 + r, n) - 1) / r) * (1 + r)) : 0;
+    // Recommended horizon-based allocation
+    let recommendedAllocation = "";
+    if (years <= 3)      recommendedAllocation = "Liquid Funds, Arbitrage Funds, FDs — no equity";
+    else if (years <= 7) recommendedAllocation = "Balanced Advantage / Aggressive Hybrid Funds, Corporate bonds (30-50% equity)";
+    else                 recommendedAllocation = "Equity Mutual Funds, Index Funds, some small-cap exposure, Gold";
+
+    return { futureGoal, savingsFV, shortfall, monthlySIP, recommendedAllocation };
+  }, [goalAmount, years, currentSavings, inflation, returnRate]);
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Goal Planner</Eyebrow>
+        <h2>Plan for anything — retirement, home, education</h2>
+        <p>Use the SMART method: Specific, Measurable, Achievable, Relevant, Time-bound. Not "save for retirement" — instead "accumulate ₹5 Cr by age 60." The clearer the goal, the easier the plan.</p>
+
+        <div className="form-row">
+          <NumberInput label="Goal Amount (in today's value)" value={goalAmount} onChange={setGoalAmount} placeholder="5000000" hint="What it costs today" />
+          <Slider label={`Years to Goal (${years})`} value={years} onChange={setYears} min={1} max={35} step={1} suffix=" yrs" />
+          <NumberInput label="Already Saved for This Goal" value={currentSavings} onChange={setCurrentSavings} placeholder="0" />
+          <Slider label={`Inflation Rate (${inflation}%)`} value={inflation} onChange={setInflation} min={3} max={10} step={0.5} suffix="%" />
+          <Slider label={`Expected Return (${returnRate}%)`} value={returnRate} onChange={setReturnRate} min={6} max={18} step={0.5} suffix="%" />
+        </div>
+
+        <div className="result-grid">
+          <StatCard label="Future Goal Cost" value={fmtINR(calc.futureGoal, { compact: true })} sub={`After ${inflation}% inflation`} variant="red" />
+          <StatCard label="Current Savings Will Grow To" value={fmtINR(calc.savingsFV, { compact: true })} variant="green" />
+          <StatCard label="Shortfall to Bridge" value={fmtINR(calc.shortfall, { compact: true })} variant="accent" />
+          <StatCard label="Required Monthly SIP" value={fmtINR(calc.monthlySIP, { compact: true })} variant="brand" />
+        </div>
+
+        <Callout title="Right investment for your horizon" variant="brand">
+          For a {years}-year goal: <strong>{calc.recommendedAllocation}</strong>
+        </Callout>
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   MODULE 7: GOLD COMPARATOR
+   ============================================================================= */
+
+function GoldModule({ onBack }) {
+  const [amount, setAmount] = useState(500000);
+  const [years, setYears] = useState(8);
+  const [goldReturn, setGoldReturn] = useState(9);
+
+  useEffect(() => { saveState({ gold: { amount, years, goldReturn } }); }, [amount, years, goldReturn]);
+  useEffect(() => {
+    const s = loadState().gold;
+    if (s) { setAmount(s.amount ?? 500000); setYears(s.years ?? 8); setGoldReturn(s.goldReturn ?? 9); }
+  }, []);
+
+  const calc = useMemo(() => {
+    const sgbMain = lumpsumFV(amount, goldReturn, years);
+    const sgbInterest = amount * 0.025 * years; // 2.5% simple interest on issue price
+    const sgbTotal = sgbMain + sgbInterest;
+    // ETF erosion by expense ratio ~0.35%
+    const etfReturn = goldReturn - 0.35;
+    const etfValue = lumpsumFV(amount, etfReturn, years);
+    const etfTax = (etfValue - amount) * 0.125;
+    const etfNet = etfValue - etfTax;
+    // Digital gold: 3% GST loss upfront
+    const digitalInitial = amount * 0.97;
+    const digitalValue = lumpsumFV(digitalInitial, goldReturn, years);
+    const digitalTax = (digitalValue - digitalInitial) * 0.125;
+    const digitalNet = digitalValue - digitalTax;
+    return { sgbTotal, sgbInterest, etfValue, etfNet, digitalNet };
+  }, [amount, years, goldReturn]);
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Part 5 · Gold</Eyebrow>
+        <h2>SGB vs Gold ETF vs Digital Gold</h2>
+        <p>Gold belongs in 5–15% of your portfolio. But how you hold it matters a lot.</p>
+
+        <div className="form-row">
+          <NumberInput label="Investment Amount" value={amount} onChange={setAmount} placeholder="500000" />
+          <Slider label={`Investment Period (${years} years)`} value={years} onChange={setYears} min={1} max={20} step={1} suffix=" yrs" />
+          <Slider label={`Expected Gold Return (${goldReturn}%)`} value={goldReturn} onChange={setGoldReturn} min={5} max={15} step={0.5} suffix="%" />
+        </div>
+
+        <div className="result-grid">
+          <StatCard label="SGB — Total Value"
+            value={fmtINR(calc.sgbTotal, { compact: true })}
+            sub={`Incl. ₹${fmtINR(calc.sgbInterest, {compact:true}).replace("₹","")} interest; tax-free at maturity`}
+            variant="green" />
+          <StatCard label="Gold ETF — Net Value"
+            value={fmtINR(calc.etfNet, { compact: true })}
+            sub="After 0.35% expense + 12.5% LTCG"
+            variant="brand" />
+          <StatCard label="Digital Gold — Net Value"
+            value={fmtINR(calc.digitalNet, { compact: true })}
+            sub="After 3% GST entry + 12.5% LTCG"
+            variant="accent" />
+          <StatCard label="SGB vs ETF Advantage"
+            value={fmtINR(calc.sgbTotal - calc.etfNet, { compact: true })}
+            sub="Extra over ETF in same period"
+            variant="green" />
+        </div>
+
+        <div className="tbl-wrap mt-2">
+          <table className="tbl">
+            <thead>
+              <tr><th></th><th>Sovereign Gold Bonds</th><th>Gold ETFs</th><th>Digital Gold (apps)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Extra Interest</strong></td><td className="highlight">2.5% per year ✓</td><td>None</td><td>None</td></tr>
+              <tr><td><strong>Tax on Gains</strong></td><td className="highlight">Zero at maturity (8 yrs)</td><td>12.5% LTCG after 1 yr</td><td>12.5% LTCG after 2 yrs</td></tr>
+              <tr><td><strong>Expense Ratio</strong></td><td className="highlight">Zero</td><td>0.10–0.60%/yr</td><td>Hidden spreads + 3% GST</td></tr>
+              <tr><td><strong>Liquidity</strong></td><td>Low (8-yr lock)</td><td className="highlight">High (trade instantly)</td><td>High (sell in-app)</td></tr>
+              <tr><td><strong>Best Use</strong></td><td>Long-term (5+ yrs)</td><td>Monthly SIP</td><td>Small amounts only</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <Callout title="Important (April 2026)" variant="accent">
+          RBI has paused new SGB issues since 2024. You can still buy existing SGBs on NSE/BSE exchanges — but <strong>tax-free gains at maturity only apply to direct-from-RBI purchases</strong>. For fresh gold investments today, <strong>Gold ETFs are the most practical choice</strong>.
+        </Callout>
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   MODULE 8: TAX CALCULATOR
+   ============================================================================= */
+
+function TaxModule({ onBack }) {
+  const [equityST, setEquityST] = useState(0);
+  const [equityLT, setEquityLT] = useState(200000);
+  const [debt, setDebt] = useState(0);
+  const [crypto, setCrypto] = useState(0);
+  const [slab, setSlab] = useState(30);
+
+  useEffect(() => { saveState({ tax: { equityST, equityLT, debt, crypto, slab } }); },
+    [equityST, equityLT, debt, crypto, slab]);
+  useEffect(() => {
+    const s = loadState().tax;
+    if (s) { setEquityST(s.equityST ?? 0); setEquityLT(s.equityLT ?? 200000); setDebt(s.debt ?? 0); setCrypto(s.crypto ?? 0); setSlab(s.slab ?? 30); }
+  }, []);
+
+  const taxes = useMemo(() => {
+    const tEquityST = equityST * 0.20;
+    const equityLTTaxable = Math.max(0, equityLT - 125000);
+    const tEquityLT = equityLTTaxable * 0.125;
+    const tDebt = debt * (slab / 100);
+    const tCrypto = crypto * 0.30 + crypto * 0.30 * 0.04; // 30% + 4% cess
+    const total = tEquityST + tEquityLT + tDebt + tCrypto;
+    const totalGains = equityST + equityLT + debt + crypto;
+    const effective = totalGains > 0 ? (total / totalGains) * 100 : 0;
+    return { tEquityST, tEquityLT, tDebt, tCrypto, total, effective, equityLTTaxable };
+  }, [equityST, equityLT, debt, crypto, slab]);
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Part 6 · Tax Calculator</Eyebrow>
+        <h2>After-tax returns are what matter</h2>
+        <p>Rules effective FY 2026-27. Big change from July 2024: indexation benefit on debt funds is gone.</p>
+
+        <div className="form-row">
+          <NumberInput label="Equity Gains — Short-Term (< 12 months)" value={equityST} onChange={setEquityST} placeholder="0" />
+          <NumberInput label="Equity Gains — Long-Term (≥ 12 months)" value={equityLT} onChange={setEquityLT} placeholder="200000" hint="First ₹1.25 L per year is tax-free" />
+          <NumberInput label="Debt Fund Gains / FD Interest" value={debt} onChange={setDebt} placeholder="0" />
+          <NumberInput label="Crypto Profits" value={crypto} onChange={setCrypto} placeholder="0" hint="30% flat regardless of holding period" />
+          <div className="form-group">
+            <label className="form-label">Your Income Tax Slab</label>
+            <select className="form-select" value={slab} onChange={e => setSlab(Number(e.target.value))}>
+              <option value={5}>5% slab</option>
+              <option value={10}>10% slab</option>
+              <option value={15}>15% slab</option>
+              <option value={20}>20% slab</option>
+              <option value={30}>30% slab</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="result-grid">
+          <StatCard label="Equity ST Tax (20%)" value={fmtINR(taxes.tEquityST, {compact: true})} variant="red" />
+          <StatCard label="Equity LT Tax (12.5%)" value={fmtINR(taxes.tEquityLT, {compact: true})} sub={`On ${fmtINR(taxes.equityLTTaxable, {compact: true})} after ₹1.25L exemption`} variant="accent" />
+          <StatCard label="Debt / FD Tax" value={fmtINR(taxes.tDebt, {compact: true})} sub={`${slab}% slab rate`} variant="red" />
+          <StatCard label="Crypto Tax (30% + cess)" value={fmtINR(taxes.tCrypto, {compact: true})} variant="red" />
+          <StatCard label="Total Tax Liability" value={fmtINR(taxes.total, {compact: true})} variant="red" />
+          <StatCard label="Effective Tax Rate" value={fmtPct(taxes.effective)} variant="accent" />
+        </div>
+      </div>
+
+      <div className="panel">
+        <h2>Tax rates at a glance — FY 2026-27</h2>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead>
+              <tr><th>Asset</th><th>Short-Term</th><th>Long-Term</th></tr>
+            </thead>
+            <tbody>
+              {TAX_RATES.map((t, i) => (
+                <tr key={i}>
+                  <td><strong>{t.asset}</strong></td>
+                  <td>{t.shortTerm}</td>
+                  <td className={t.special ? "highlight" : ""}>
+                    {t.bad ? <span className="pill pill-red">{t.longTerm}</span>
+                     : t.good ? <span className="pill pill-green">{t.longTerm}</span>
+                     : t.longTerm}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <Callout title="The Arbitrage Fund tax hack" variant="green">
+          Arbitrage funds are SEBI-classified as equity, so gains get the 12.5% LTCG rate instead of your slab rate. If you're in the 30% tax bracket and parking cash 1+ years, arbitrage funds beat FDs post-tax at similar pre-tax yields.
+        </Callout>
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   MODULE 9: PORTFOLIO ALLOCATION
+   ============================================================================= */
+
+function PortfolioModule({ onBack }) {
+  const [profile, setProfile] = useState("growth");
+  const [age, setAge] = useState(35);
+  const [monthlyInvestable, setMonthlyInvestable] = useState(40000);
+
+  useEffect(() => { saveState({ portfolio: { profile, age, monthlyInvestable } }); },
+    [profile, age, monthlyInvestable]);
+  useEffect(() => {
+    const s = loadState().portfolio;
+    if (s) { setProfile(s.profile ?? "growth"); setAge(s.age ?? 35); setMonthlyInvestable(s.monthlyInvestable ?? 40000); }
+  }, []);
+
+  const allocation = RISK_PROFILES[profile];
+
+  const amounts = {
+    equity: monthlyInvestable * allocation.equity / 100,
+    debt:   monthlyInvestable * allocation.debt / 100,
+    gold:   monthlyInvestable * allocation.gold / 100,
+    cash:   monthlyInvestable * allocation.cash / 100,
+  };
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Part 7 · Portfolio Allocation</Eyebrow>
+        <h2>Match your risk profile to an allocation</h2>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Your Risk Profile</label>
+            <select className="form-select" value={profile} onChange={e => setProfile(e.target.value)}>
+              <option value="conservative">Conservative — stability first</option>
+              <option value="moderate">Moderate — balanced</option>
+              <option value="growth">Growth — most people</option>
+              <option value="aggressive">Aggressive — long runway, high risk</option>
+            </select>
+          </div>
+          <NumberInput label="Your Age" value={age} onChange={setAge} prefix="" placeholder="35" min={18} max={80} />
+          <NumberInput label="Monthly Investable Amount" value={monthlyInvestable} onChange={setMonthlyInvestable} placeholder="40000" />
+        </div>
+
+        <div className="grid-2">
+          <ChartWrap
+            deps={[profile, monthlyInvestable]}
+            renderChart={(canvas) => new Chart(canvas, {
+              type: "doughnut",
+              data: {
+                labels: [
+                  `Equity (${allocation.equity}%)`,
+                  `Debt (${allocation.debt}%)`,
+                  `Gold (${allocation.gold}%)`,
+                  `Cash (${allocation.cash}%)`,
+                ],
+                datasets: [{
+                  data: [allocation.equity, allocation.debt, allocation.gold, allocation.cash],
+                  backgroundColor: ["#0B5394", "#6B7280", "#D97706", "#14B8A6"],
+                  borderWidth: 2,
+                  borderColor: "#FFFFFF"
+                }]
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: "60%",
+                plugins: {
+                  legend: { position: "bottom", labels: { font: { family: "Calibri", size: 11 }, color: "#0F1B2D", padding: 12 } },
+                  tooltip: { callbacks: { label: (ctx) => ctx.label + " — " + fmtINR(monthlyInvestable * ctx.parsed / 100, {compact: true}) + "/mo" } }
+                }
+              }
+            })}
+          />
+
+          <div>
+            <h3>Your monthly split — {allocation.label} profile</h3>
+            <div style={{display: "grid", gap: 8, marginTop: 10}}>
+              {[
+                { label: "Equity", amt: amounts.equity, pct: allocation.equity, sub: "Nifty 50 Index + Flexi Cap + Mid/Small", color: "brand" },
+                { label: "Debt",   amt: amounts.debt,   pct: allocation.debt,   sub: "PPF, EPF, short-term debt funds",         color: "red" },
+                { label: "Gold",   amt: amounts.gold,   pct: allocation.gold,   sub: "Gold ETF or existing SGBs",                color: "accent" },
+                { label: "Cash",   amt: amounts.cash,   pct: allocation.cash,   sub: "Liquid funds",                              color: "green" },
+              ].map((b, i) => (
+                <div key={i} style={{
+                  display: "grid", gridTemplateColumns: "1fr auto", gap: 10,
+                  padding: "12px 14px", background: "var(--bg-alt)",
+                  borderRadius: 8, border: "1px solid var(--rule)",
+                  borderLeft: `4px solid var(--${b.color})`
+                }}>
+                  <div>
+                    <div style={{fontWeight: 600}}>{b.label} <span className="muted" style={{fontWeight: 400}}>— {b.pct}%</span></div>
+                    <div className="muted" style={{fontSize: "0.8rem"}}>{b.sub}</div>
+                  </div>
+                  <div style={{fontWeight: 700, color: "var(--brand)", whiteSpace: "nowrap"}}>
+                    {fmtINR(b.amt, {compact: true})}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="panel">
+        <h2>Sample reference portfolio</h2>
+        <p>For a 35-year-old salaried professional earning ~₹15 L/year (after insurance + emergency fund are in place).</p>
+        <div className="grid-2">
+          <ChartWrap
+            deps={[]}
+            renderChart={(canvas) => new Chart(canvas, {
+              type: "doughnut",
+              data: {
+                labels: SAMPLE_PORTFOLIO.map(p => p.label),
+                datasets: [{
+                  data: SAMPLE_PORTFOLIO.map(p => p.pct),
+                  backgroundColor: SAMPLE_PORTFOLIO.map(p => p.color),
+                  borderWidth: 2, borderColor: "#FFFFFF"
+                }]
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: "55%",
+                plugins: {
+                  legend: { position: "bottom", labels: { font: { family: "Calibri", size: 10 }, color: "#0F1B2D", padding: 8, boxWidth: 14 } }
+                }
+              }
+            })}
+          />
+          <div>
+            <Callout title="Rebalance once a year" variant="brand">
+              If gold has grown from 10% to 15% of your portfolio, sell the extra 5% and buy whatever is lagging (usually equity). This forces "sell high, buy low" automatically.
+            </Callout>
+            <Callout title="Increase SIPs 10% yearly" variant="green">
+              Every salary hike: raise your SIP first, then lifestyle. Every bonus: split into three — emergency top-up, lump-sum investment, and a small indulgence.
+            </Callout>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   MODULE 10: 4-MONTH ACTION PLAN
+   ============================================================================= */
+
+function ActionPlanModule({ onBack }) {
+  const [checks, setChecks] = useState(loadState().checks || {});
+  const toggle = (k) => {
+    const updated = { ...checks, [k]: !checks[k] };
+    setChecks(updated);
+    saveState({ checks: updated });
+  };
+
+  const sections = [
+    {
+      title: "Month 1 — Protection", variant: "red", items: [
+        { k: "m1_1", t: "Buy family health cover: ₹10-30L base + ₹50L super top-up" },
+        { k: "m1_2", t: "Buy term insurance: 15× annual income, till age 65 or 70" },
+        { k: "m1_3", t: "Buy personal accident cover: 5× annual income" },
+        { k: "m1_4", t: "Share all policy details in a single doc with spouse/family" },
+      ]
+    },
+    {
+      title: "Months 2–3 — Emergency Fund", variant: "accent", items: [
+        { k: "m23_1", t: "Calculate your essential monthly expenses" },
+        { k: "m23_2", t: "Keep 1 month of expenses in savings account" },
+        { k: "m23_3", t: "Park 2 months in a Liquid Mutual Fund" },
+        { k: "m23_4", t: "Target 3 more months in sweep-in FD / arbitrage fund" },
+      ]
+    },
+    {
+      title: "Month 4+ — Investing", variant: "green", items: [
+        { k: "m4_1", t: "Open a direct MF account (Groww, Kuvera, or Zerodha Coin)" },
+        { k: "m4_2", t: "Start monthly SIPs across 3–4 fund categories" },
+        { k: "m4_3", t: "Set up annual SIP step-up (10% increase every year)" },
+        { k: "m4_4", t: "Automate — investments come out on salary day, not as leftover" },
+      ]
+    },
+    {
+      title: "Every Year", variant: "brand", items: [
+        { k: "y_1", t: "Review insurance — cover still adequate? Premiums paid?" },
+        { k: "y_2", t: "Review portfolio allocation — rebalance if needed" },
+        { k: "y_3", t: "Update nominees on all accounts" },
+        { k: "y_4", t: "File ITR; track capital gains carefully" },
+      ]
+    },
+  ];
+
+  const totalItems = sections.reduce((a, s) => a + s.items.length, 0);
+  const doneItems = sections.reduce((a, s) => a + s.items.filter(i => checks[i.k]).length, 0);
+  const progress = Math.round((doneItems / totalItems) * 100);
+
+  return (
+    <>
+      <BackLink onClick={onBack} />
+
+      <div className="panel">
+        <Eyebrow>Action Plan</Eyebrow>
+        <h2>Your 4-month roadmap</h2>
+        <p>Most people take 3–6 months to complete this. What matters is that you finish it. Check items off as you go — progress saves automatically.</p>
+
+        <div style={{
+          padding: "16px 20px", background: "var(--brand-lite)",
+          borderRadius: "var(--radius)", marginTop: 12
+        }}>
+          <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8}}>
+            <strong style={{color: "var(--brand)"}}>Overall Progress</strong>
+            <strong style={{color: "var(--brand)"}}>{doneItems} / {totalItems} done ({progress}%)</strong>
+          </div>
+          <div style={{height: 8, borderRadius: 4, background: "rgba(11,83,148,0.12)", overflow: "hidden"}}>
+            <div style={{
+              height: "100%", width: `${progress}%`,
+              background: "linear-gradient(90deg, var(--brand) 0%, var(--accent) 100%)",
+              transition: "width 400ms ease"
+            }}></div>
+          </div>
+        </div>
+      </div>
+
+      {sections.map((s, si) => (
+        <div key={si} className="panel">
+          <h3 style={{
+            color: `var(--${s.variant})`,
+            display: "flex", alignItems: "center", gap: 10
+          }}>
+            <span style={{
+              display: "inline-block", width: 8, height: 24,
+              background: `var(--${s.variant})`, borderRadius: 4
+            }}></span>
+            {s.title}
+          </h3>
+          <div style={{display: "grid", gap: 10, marginTop: 14}}>
+            {s.items.map((it, i) => (
+              <label key={i} style={{
+                display: "flex", alignItems: "flex-start", gap: 12,
+                padding: "12px 16px", border: "1px solid var(--rule)",
+                borderRadius: 8, background: checks[it.k] ? "var(--green-lt)" : "var(--bg)",
+                cursor: "pointer", transition: "all 180ms"
+              }}>
+                <input
+                  type="checkbox"
+                  checked={!!checks[it.k]}
+                  onChange={() => toggle(it.k)}
+                  style={{marginTop: 3, width: 18, height: 18, accentColor: "var(--green)"}}
+                />
+                <span style={{
+                  fontSize: "0.92rem",
+                  color: checks[it.k] ? "var(--green)" : "var(--ink)",
+                  textDecoration: checks[it.k] ? "line-through" : "none"
+                }}>{it.t}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <Callout title="A final thought" variant="accent">
+        Personal finance is 80% behaviour and 20% knowledge. What you do consistently over 20 years matters far more than picking the 'perfect' fund. <strong>Start imperfectly — start today.</strong>
+      </Callout>
+    </>
+  );
+}
+
+/* =============================================================================
+   CONTACT / BOOK CALL MODAL
+   ============================================================================= */
+
+function ContactModal({ onClose }) {
+  // Opens a pre-filled Google Calendar event-create page with Vipin as guest
+  const CALENDAR_URL = "https://calendar.google.com/calendar/r/eventedit?text=Personal+Finance+Consultation+with+Vipin+Nair&details=Consultation+request+via+the+Personal+Finance+Planner.+Contact:+audit.vipin@gmail.com&location=Google+Meet&add=audit.vipin@gmail.com";
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <Eyebrow>Personal Advisory</Eyebrow>
+        <h2>Book a consultation with Vipin</h2>
+        <p>Finance &amp; Accounts professional, personal finance enthusiast, and tool builder. Happy to talk through your situation — no obligation.</p>
+
+        <div className="contact-item">
+          <span className="icon-emoji">📧</span>
+          <div style={{flex: 1}}>
+            <div className="contact-item-label">Email</div>
+            <div className="contact-item-value">audit.vipin@gmail.com</div>
+          </div>
+          <a className="btn btn-sm btn-ghost" href="mailto:audit.vipin@gmail.com?subject=Personal%20Finance%20Consultation">Mail</a>
+        </div>
+
+        <div className="actions">
+          <button className="btn btn-ghost" onClick={onClose}>Close</button>
+          <a className="btn btn-accent" href={CALENDAR_URL} target="_blank" rel="noopener">📅 Book via Google Calendar</a>
+        </div>
+
+        <p className="muted" style={{fontSize: "0.78rem", marginTop: 14, marginBottom: 0}}>
+          Educational consultation only. Not SEBI-registered investment advice.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* =============================================================================
+   DISCLAIMER MODAL
+   ============================================================================= */
+
+function DisclaimerModal({ onClose }) {
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <h2>Important Disclaimers</h2>
+
+        <div style={{marginTop: 12}}>
+          <h4>SEBI Disclaimer</h4>
+          <p>This tool is for educational purposes only and should not be construed as investment advice. Mutual fund investments are subject to market risks. Please read all scheme-related documents carefully before investing. Past performance does not guarantee future results.</p>
+
+          <h4>Not Personalised Advice</h4>
+          <p>The projections and recommendations here are based on assumptions about returns, inflation, and market conditions. Actual results may vary significantly. For personalised guidance, consult a SEBI-registered Investment Advisor, a licensed insurance agent, or a Chartered Accountant.</p>
+
+          <h4>Data as of April 2026</h4>
+          <p>Insurance plans, mutual fund returns, tax rates, and other figures are current as of April 2026 from IRDAI, SEBI, Ditto Insurance, PolicyX, and S&amp;P SPIVA public disclosures. Always verify current details from the insurer or AMC website before acting.</p>
+        </div>
+
+        <div className="actions">
+          <button className="btn btn-primary" onClick={onClose}>I Understand</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =============================================================================
+   DASHBOARD (HOME)
+   ============================================================================= */
+
+function Dashboard({ onOpen }) {
+  const modules = [
+    { id: "goals",      icon: "🎯", title: "My Goals",              desc: "Track multiple goals — retirement, home, education — with progress & required SIPs.", variant: "accent" },
+    { id: "health",     icon: "🏥", title: "Health Insurance",     desc: "Figure out the right cover + see the best plans for April 2026.", variant: "red" },
+    { id: "term",       icon: "🛡️", title: "Term Life Insurance",  desc: "Calculate how much you need and see the top-rated term plans.", variant: "brand" },
+    { id: "accident",   icon: "🚑", title: "Personal Accident",    desc: "The overlooked policy — ₹25L cover for ₹1-3k/year.", variant: "brand" },
+    { id: "emergency",  icon: "💰", title: "Emergency Fund",        desc: "3-tier structure across savings, liquid funds, and FDs.", variant: "green" },
+    { id: "sip",        icon: "📈", title: "SIP Calculator",        desc: "See compounding with step-up SIPs + April 2026 fund picks.", variant: "brand" },
+    { id: "goal",       icon: "🧮", title: "Goal Calculator",       desc: "Single-goal calculator for detailed planning.", variant: "accent" },
+    { id: "gold",       icon: "🪙", title: "Gold Comparator",       desc: "SGB vs Gold ETF vs Digital Gold — crunch the numbers.", variant: "accent" },
+    { id: "tax",        icon: "🧾", title: "Tax Calculator",        desc: "Capital gains tax estimator across all asset classes (FY 26-27).", variant: "purple" },
+    { id: "portfolio",  icon: "📊", title: "Portfolio Allocation",  desc: "Match risk profile to allocation; see monthly split.", variant: "brand" },
+    { id: "action",     icon: "✅", title: "4-Month Action Plan",   desc: "The full roadmap — track your progress.", variant: "green" },
+  ];
+
+  return (
+    <>
+      <div className="hero">
+        <div className="hero-eyebrow">Personal Finance · Made Simple</div>
+        <h1>Protect. Save. Then <span className="highlight">Invest</span>.</h1>
+        <p>A complete planning workspace for Indian households — insurance, emergency fund, SIPs, gold, tax. Every calculation, benchmark, and recommendation is current as of April 2026.</p>
+
+        <div className="hero-stats">
+          <div className="hero-stat">
+            <div className="hero-stat-value">11</div>
+            <div className="hero-stat-label">Modules covered</div>
+          </div>
+          <div className="hero-stat">
+            <div className="hero-stat-value">April 2026</div>
+            <div className="hero-stat-label">Data freshness</div>
+          </div>
+          <div className="hero-stat">
+            <div className="hero-stat-value">100% local</div>
+            <div className="hero-stat-label">Data stays in your browser</div>
+          </div>
+          <div className="hero-stat">
+            <div className="hero-stat-value">Free</div>
+            <div className="hero-stat-label">No sign-up, no tracking</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section-head">
+        <div>
+          <h2>Choose a module to begin</h2>
+          <p>Work through in order — or jump to whatever you're solving today.</p>
+        </div>
+      </div>
+
+      <div className="module-grid">
+        {modules.map(m => (
+          <div key={m.id} className={`module-card is-${m.variant}`} onClick={() => onOpen(m.id)}>
+            <div className="module-card-icon"><span className="icon-emoji">{m.icon}</span></div>
+            <h3>{m.title}</h3>
+            <p>{m.desc}</p>
+            <div className="module-card-cta">Open →</div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+/* =============================================================================
+   APP ROOT
+   ============================================================================= */
+
+function App() {
+  const [view, setView] = useState("dashboard");
+  const [showContact, setShowContact] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+
+  const openModule = (id) => { setView(id); window.scrollTo(0, 0); };
+  const goHome = () => { setView("dashboard"); window.scrollTo(0, 0); };
+
+  const viewMap = {
+    dashboard: <Dashboard onOpen={openModule} />,
+    health:    <HealthModule onBack={goHome} />,
+    term:      <TermModule onBack={goHome} />,
+    accident:  <AccidentModule onBack={goHome} />,
+    emergency: <EmergencyFundModule onBack={goHome} />,
+    sip:       <SIPModule onBack={goHome} />,
+    goals:     <GoalsModule onBack={goHome} />,
+    goal:      <GoalPlannerModule onBack={goHome} />,
+    gold:      <GoldModule onBack={goHome} />,
+    tax:       <TaxModule onBack={goHome} />,
+    portfolio: <PortfolioModule onBack={goHome} />,
+    action:    <ActionPlanModule onBack={goHome} />,
+  };
+
+  return (
+    <>
+      <nav className="app-nav no-print">
+        <div className="app-nav-inner">
+          <div className="brand" onClick={goHome}>
+            <div className="brand-mark">VN</div>
+            <div className="brand-text">
+              <strong>Personal Finance Made Simple</strong>
+              <span>by Vipin Nair</span>
+            </div>
+          </div>
+          <div className="nav-actions">
+            <a href="FinSaveManager with Google Drive/index.html" className="btn btn-ghost btn-sm" title="Open your Personal FinManager — transactions, accounts, budgets, Google Drive sync" style={{textDecoration:'none'}}>
+              💼 FinManager
+            </a>
+            <button className="btn btn-ghost btn-sm btn-lg-hide" onClick={() => setShowDisclaimer(true)}>
+              Disclaimer
+            </button>
+            <button className="btn btn-accent btn-sm" onClick={() => setShowContact(true)}>
+              📅 Book a Call
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <div className="app-shell">
+        {viewMap[view]}
+      </div>
+
+      <footer className="app-footer">
+        <div className="credit">
+          <div className="brand-mark" style={{width: 32, height: 32, fontSize: "0.82rem"}}>VN</div>
+          <div>
+            <strong style={{color: "var(--ink)"}}>Vipin Nair</strong> · Finance &amp; Accounts ·
+            {" "}<a href="mailto:audit.vipin@gmail.com">audit.vipin@gmail.com</a> ·
+            {" "}<a href="tel:+918160203197">+91 8160203197</a>
+          </div>
+        </div>
+        <div>
+          <button className="btn btn-ghost btn-sm" onClick={() => setShowDisclaimer(true)}>Disclaimer</button>
+          {" "}
+          <button className="btn btn-primary btn-sm" onClick={() => setShowContact(true)}>Book a Call</button>
+        </div>
+      </footer>
+
+      {showContact    && <ContactModal onClose={() => setShowContact(false)} />}
+      {showDisclaimer && <DisclaimerModal onClose={() => setShowDisclaimer(false)} />}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+</body>
+</html>
