@@ -3342,7 +3342,9 @@ function PageCFO({data}){
   const daysElapsed=Math.max(1,Math.round((effectiveDate-periodStartDate)/86400000));
   const avgDailyBurnRate=totalExp/daysElapsed;
   const burnRate=avgDailyBurnRate*30; // avg monthly burn
-  const runway=burnRate>0?liquid/burnRate:99;
+  const liquidRunway=burnRate>0?liquid/burnRate:99;             // Bank+Cash+Wallet only
+  const fundRunway=burnRate>0?(liquid+fdBal)/burnRate:99;       // +FD (breakable in emergency)
+  const runway=fundRunway;                                       // used for health score & KPI
   const activeBudget=expenseCategories.reduce((s,c)=>(budgetLimits[c]||0)+s,0);
 
   // Financial Health Score (0-100)
@@ -3399,9 +3401,10 @@ function PageCFO({data}){
               <Ic n="cal" c={runway>=6?'var(--g)':runway>=3?'var(--o)':'var(--r)'}/>
             </div>
           </div>
-          <div className="cl">Liquid Runway</div>
+          <div className="cl">Fund Runway</div>
           <div className={`cv ${runway>=6?'g':runway>=3?'o':'r'}`} style={{fontSize:22}}>{runway>=99?'∞':runway.toFixed(1)}<span style={{fontSize:12,color:'var(--n400)'}}> mo</span></div>
-          <div className="cm">Liquid ÷ Burn Rate · {runway>=6?'Safe':runway>=3?'Moderate':'Critical'}</div>
+          <div className="cm">{fmtINR(liquid,true)} liquid + {fmtINR(fdBal,true)} FD · {runway>=6?'Safe':runway>=3?'Moderate':'Critical'}</div>
+          <div style={{fontSize:10,color:'var(--n400)',marginTop:2}}>Liquid only: {liquidRunway>=99?'∞':liquidRunway.toFixed(1)} mo</div>
         </div>
       </div>
 
@@ -3412,13 +3415,30 @@ function PageCFO({data}){
             <div style={{fontFamily:'var(--m)',fontSize:22,fontWeight:800,color:healthColor}}>{healthScore}<span style={{fontSize:12,color:'var(--n400)'}}>/100</span></div>
           </div>
           <ScoreBar label="Savings Rate (25 pts)" val={scores.savings} max={25} color="var(--g)"/>
-          <ScoreBar label="Liquid Runway (20 pts)" val={scores.runway} max={20} color="var(--b)"/>
+          <ScoreBar label="Fund Runway (20 pts)" val={scores.runway} max={20} color="var(--b)"/>
           <ScoreBar label="CC Utilization (20 pts)" val={scores.ccUtil} max={20} color="var(--o)"/>
           <ScoreBar label="Debt Burden (20 pts)" val={scores.debtBurden} max={20} color="var(--p)"/>
           <ScoreBar label="Period Surplus (15 pts)" val={scores.surplus} max={15} color="var(--g)"/>
           <div className="div"/>
-          <div style={{fontSize:11.5,color:'var(--n400)'}}>
+          <div style={{fontSize:11.5,color:'var(--n400)',marginBottom:10}}>
             {healthScore>=80?'✓ Excellent financial health! Keep up the momentum.':healthScore>=65?'✓ Good health. Work on savings rate and reducing CC utilization.':healthScore>=50?'⚠ Fair health. Focus on building emergency fund and reducing debt.':'⚠ Needs attention. Reduce burn rate and pay down high-interest debt.'}
+          </div>
+          {/* Scoring reference table */}
+          <div style={{background:'var(--n50)',borderRadius:'var(--r8)',padding:'10px 12px'}}>
+            <div style={{fontSize:9.5,fontWeight:700,textTransform:'uppercase',letterSpacing:.6,color:'var(--n400)',marginBottom:8}}>Scoring Thresholds</div>
+            {[
+              {l:'Savings Rate',max:25,bands:'≥30%→25 · ≥20%→20 · ≥10%→12 · else→5'},
+              {l:'Fund Runway',max:20,bands:'≥12mo→20 · ≥6mo→14 · ≥3mo→8 · else→2'},
+              {l:'CC Utilization',max:20,bands:'≤10%→20 · ≤20%→16 · ≤30%→10 · else→4'},
+              {l:'Debt Burden (EMI/Inc)',max:20,bands:'≤15%→20 · ≤25%→14 · ≤35%→8 · else→3'},
+              {l:'Period Surplus',max:15,bands:'Surplus>0→15 · else→0'},
+            ].map(t=>(
+              <div key={t.l} style={{display:'flex',justifyContent:'space-between',alignItems:'baseline',padding:'3px 0',borderBottom:'1px solid var(--n100)'}}>
+                <span style={{fontSize:11,color:'var(--n600)',fontWeight:600,minWidth:140}}>{t.l}</span>
+                <span style={{fontSize:9.5,color:'var(--n400)',textAlign:'right',fontFamily:'var(--m)'}}>{t.bands}</span>
+                <span style={{fontSize:10,color:'var(--n500)',marginLeft:8,flexShrink:0}}>/{t.max}</span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -3435,7 +3455,8 @@ function PageCFO({data}){
             {l:'Avg Monthly Burn',v:fmtINR(burnRate,true),c:'neg'},
             {l:'Debt-to-Income (Monthly)',v:`${avgMonthlyInc>0?(loans.reduce((s,l)=>s+l.emi,0)/avgMonthlyInc*100).toFixed(1):0}%`,c:''},
             {l:'CC Liability / Net Worth',v:`${netWorth>0?(ccLiab/netWorth*100).toFixed(1):0}%`,c:''},
-            {l:'Liquid Runway',v:`${runway>=99?'∞':runway.toFixed(1)} months`,c:runway>=6?'pos':runway>=3?'':'neg'},
+            {l:'Fund Runway (Liquid + FD)',v:`${runway>=99?'∞':runway.toFixed(1)} months`,c:runway>=6?'pos':runway>=3?'':'neg'},
+            {l:'↳ Liquid-only Runway',v:`${liquidRunway>=99?'∞':liquidRunway.toFixed(1)} months`,c:''},
             {l:'Net Worth',v:fmtINR(netWorth),c:netWorth>=0?'pos':'neg'},
           ].map(r=>(
             <div key={r.l} className="sr">
