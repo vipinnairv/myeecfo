@@ -2149,14 +2149,137 @@ function PageCC({data,setData,toast}){
 /* ══════════════════════════════════════
    LOANS
 ══════════════════════════════════════ */
+/* ── LoanCard: extracted so useState(showAmort) is at component top-level (Rules of Hooks) ── */
+function LoanCard({l,buildAmort,openEdit,del}){
+  const [showAmort,setShowAmort]=useState(false);
+  const amort=buildAmort(l);
+  const remInterest=amort.reduce((s,r)=>s+r.interest,0);
+  const futurePayout=amort.reduce((s,r)=>s+r.emi,0);
+  const rem=amort.length;
+  const tInt=Math.max(0,l.emi*l.tenure-l.original);
+  const pct=l.original>0?(l.original-l.outstanding)/l.original*100:0;
+  const curPhase=(l.phases&&l.phases.length?[...l.phases].sort((a,b)=>b.fromMonth-a.fromMonth).find(p=>1>=p.fromMonth)||l.phases[0]:null);
+  const curEmi=curPhase?curPhase.emi:l.emi;
+  const curRoi=curPhase?curPhase.roi:l.roi;
+  return(
+    <div className="card mb2">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
+        <div>
+          <div style={{fontWeight:800,fontSize:14}}>{l.bank} <span className="tag tb" style={{marginLeft:6,fontSize:10.5}}>{l.type}</span>
+            {l.phases&&l.phases.length>1&&<span className="tag to" style={{marginLeft:6,fontSize:9.5}}>Variable EMI</span>}
+          </div>
+          <div style={{fontSize:10.5,color:'var(--n400)',fontFamily:'var(--m)',marginTop:2}}>{l.accNo}</div>
+        </div>
+        <div style={{display:'flex',gap:7,alignItems:'center'}}>
+          <div style={{textAlign:'right'}}><div style={{fontSize:9.5,color:'var(--n400)',textTransform:'uppercase',fontWeight:600}}>Outstanding</div><div style={{fontFamily:'var(--m)',fontSize:16,fontWeight:700,color:'var(--r)'}}>{fmtINR(l.outstanding)}</div></div>
+          <button className="bic" onClick={()=>openEdit(l)}><Ic n="edit" s={11}/></button>
+          <button className="bic red" onClick={()=>del(l.id)}><Ic n="del" s={11}/></button>
+        </div>
+      </div>
+      <div className="g4 mb2" style={{gap:10}}>
+        {[
+          {l:'EMI/Month',v:fmtINR(curEmi)},
+          {l:'ROI',v:`${curRoi}% p.a.`},
+          {l:'Remaining',v:`${rem}/${l.tenure} mo`},
+          {l:'End Date',v:fmtDate(l.endDate)},
+          {l:'Loan Amount',v:fmtINR(l.original)},
+          {l:'Total Payable',v:fmtINR(l.emi*l.tenure)},
+          {l:'Total Interest',v:fmtINR(tInt)},
+          {l:'Months Paid',v:`${l.tenure-rem} of ${l.tenure}`},
+          {l:'Remaining Interest',v:fmtINR(remInterest),c:'var(--o)'},
+          {l:'Future Payout',v:fmtINR(futurePayout),c:'var(--r)'},
+        ].map(x=>(
+          <div key={x.l}><div style={{fontSize:9.5,color:'var(--n400)',textTransform:'uppercase',fontWeight:600,marginBottom:2}}>{x.l}</div><div style={{fontSize:12.5,fontWeight:700,color:x.c||''}}>{x.v}</div></div>
+        ))}
+      </div>
+      {/* Repayment progress */}
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+        <div className="prog" style={{flex:1,height:6}}><div className="pf" style={{width:`${pct}%`,background:'var(--g)'}}/></div>
+        <span style={{fontFamily:'var(--m)',fontSize:11,color:'var(--gd)',width:40,textAlign:'right'}}>{pct.toFixed(1)}%</span>
+        <span style={{fontSize:10.5,color:'var(--n400)'}}>repaid</span>
+      </div>
+      {/* EMI Phase history */}
+      {l.phases&&l.phases.length>1&&(
+        <div style={{marginBottom:8}}>
+          <div style={{fontSize:9.5,fontWeight:700,color:'var(--n400)',textTransform:'uppercase',letterSpacing:.5,marginBottom:5}}>EMI Revision History</div>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            {[...l.phases].sort((a,b)=>a.fromMonth-b.fromMonth).map((p,i)=>(
+              <div key={i} style={{background:'var(--n50)',border:'1px solid var(--n200)',borderRadius:6,padding:'4px 9px',fontSize:11}}>
+                <span style={{color:'var(--n500)'}}>Mo {p.fromMonth}+</span>
+                <span style={{fontWeight:700,marginLeft:5,fontFamily:'var(--m)'}}>{fmtINR(p.emi,true)}</span>
+                <span style={{color:'var(--n400)',marginLeft:4}}>{p.roi}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {/* Amortization toggle */}
+      <button className="btn btn-g btn-sm" style={{fontSize:11,padding:'4px 10px'}} onClick={()=>setShowAmort(v=>!v)}>
+        {showAmort?'▲ Hide':'▼ Show'} Amortization Schedule ({amort.length} installments)
+      </button>
+      {showAmort&&(
+        <div className="tw mt2" style={{maxHeight:320,overflowY:'auto'}}>
+          <table>
+            <thead><tr><th>#</th><th>Date</th><th className="num">Opening (₹)</th><th className="num">EMI (₹)</th><th className="num">Principal (₹)</th><th className="num">Interest (₹)</th><th className="num">Closing (₹)</th><th>ROI</th></tr></thead>
+            <tbody>
+              {amort.map(r=>(
+                <tr key={r.n}>
+                  <td style={{fontWeight:700,color:'var(--n400)',fontSize:11}}>{r.n}</td>
+                  <td style={{fontFamily:'var(--m)',fontSize:11}}>{fmtDate(r.date)}</td>
+                  <td className="num" style={{fontSize:11}}>{fmtINR(r.opening)}</td>
+                  <td className="num" style={{fontWeight:700}}>{fmtINR(r.emi)}</td>
+                  <td className="num pos" style={{fontSize:11}}>{fmtINR(r.principal)}</td>
+                  <td className="num" style={{color:'var(--o)',fontSize:11}}>{fmtINR(r.interest)}</td>
+                  <td className="num neg" style={{fontSize:11}}>{fmtINR(r.closing)}</td>
+                  <td><span className="tag to" style={{fontSize:9.5}}>{r.roi}%</span></td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot><tr className="tft">
+              <td colSpan={3} style={{fontWeight:700}}>Totals</td>
+              <td className="num bold">{fmtINR(futurePayout)}</td>
+              <td className="num pos bold">{fmtINR(amort.reduce((s,r)=>s+r.principal,0))}</td>
+              <td className="num bold" style={{color:'var(--o)'}}>{fmtINR(remInterest)}</td>
+              <td colSpan={2}/>
+            </tr></tfoot>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
 function PageLoans({data,setData,toast}){
   const {loans}=data;
-  const ef={bank:'',accNo:'XXXX-0000',type:'Personal Loan',original:'',outstanding:'',emi:'',roi:'',startDate:'',endDate:'',tenure:'60'};
+  const ef={bank:'',accNo:'XXXX-0000',type:'Personal Loan',original:'',outstanding:'',emi:'',roi:'',startDate:'',endDate:'',tenure:'60',phases:[]};
   const [modal,setModal]=useState(null);const [form,setForm]=useState(ef);
+  // Amortization engine: builds schedule from current outstanding using phases
+  const buildAmort=(l)=>{
+    const phases=l.phases&&l.phases.length?[...l.phases].sort((a,b)=>a.fromMonth-b.fromMonth):[{fromMonth:1,emi:l.emi,roi:l.roi}];
+    const now=new Date(),start=new Date(l.startDate||new Date());
+    const elapsed=Math.max(0,(now.getFullYear()-start.getFullYear())*12+(now.getMonth()-start.getMonth()));
+    const rows=[];let bal=l.outstanding;
+    for(let i=0;i<l.tenure-elapsed&&bal>0;i++){
+      const inst=elapsed+i+1;
+      const ph=[...phases].reverse().find(p=>inst>=p.fromMonth)||phases[0];
+      const intAmt=Math.round(bal*ph.roi/100/12);
+      const prin=Math.min(bal,ph.emi-intAmt);
+      const closing=Math.max(0,bal-prin);
+      const dt=new Date(l.startDate||new Date());dt.setMonth(dt.getMonth()+inst-1);
+      rows.push({n:inst,date:dt.toISOString().slice(0,10),opening:bal,emi:ph.emi,principal:prin,interest:intAmt,closing,roi:ph.roi});
+      bal=closing;
+    }
+    return rows;
+  };
   const tOS=loans.reduce((s,l)=>s+l.outstanding,0),tEMI=loans.reduce((s,l)=>s+l.emi,0);
   const bROI=tOS>0?(loans.reduce((s,l)=>s+l.roi*l.outstanding,0)/tOS).toFixed(2):0;
-  const calcEnd=(s,t)=>{if(!s||!t)return'';const d=new Date(s);d.setMonth(d.getMonth()+parseInt(t));return d.toISOString().slice(0,10);};
-  const calcRem=(s,t)=>{if(!s||!t)return+t||0;const e=new Date(calcEnd(s,t)),now=new Date();return Math.max(0,Math.round((e-now)/(30*24*3600*1000)));};
+  // First-payment-on-startDate convention: last payment = startDate + (tenure-1) months
+  const calcEnd=(s,t)=>{if(!s||!t)return'';const d=new Date(s);d.setMonth(d.getMonth()+parseInt(t)-1);return d.toISOString().slice(0,10);};
+  // Remaining = months from today to endDate (whole-month arithmetic, no rounding errors)
+  const calcRem=(endDate,startDate,tenure)=>{
+    if(endDate){const now=new Date(),e=new Date(endDate);return Math.max(0,(e.getFullYear()-now.getFullYear())*12+(e.getMonth()-now.getMonth()));}
+    if(!startDate||!tenure)return+tenure||0;
+    return calcRem(calcEnd(startDate,tenure),null,null);
+  };
   const openAdd=()=>{setForm(ef);setModal('add');};
   const loanFileRef=useRef();
   const handleLoanCSV=e=>{
@@ -2187,12 +2310,12 @@ function PageLoans({data,setData,toast}){
     const b=new Blob(['bank,accNo,type,original,outstanding,emi,roi,tenure,startDate,endDate\nHDFC Bank,XXXX-0001,Home Loan,5000000,4500000,42000,8.5,240,2024-01-15,2044-01-15\nSBI,XXXX-0002,Personal Loan,300000,200000,8500,11.5,48,2025-06-01,2029-06-01\n'],{type:'text/csv'});
     const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='finmanager-loan-template.csv';a.click();
   };
-  const openEdit=l=>{setForm({bank:l.bank,accNo:l.accNo,type:l.type,original:String(l.original),outstanding:String(l.outstanding),emi:String(l.emi),roi:String(l.roi),startDate:l.startDate||'',endDate:l.endDate||'',tenure:String(l.tenure)});setModal({eid:l.id});};
+  const openEdit=l=>{setForm({bank:l.bank,accNo:l.accNo,type:l.type,original:String(l.original),outstanding:String(l.outstanding),emi:String(l.emi),roi:String(l.roi),startDate:l.startDate||'',endDate:l.endDate||'',tenure:String(l.tenure),phases:l.phases||[]});setModal({eid:l.id});};
   const close=()=>{setModal(null);setForm(ef);};
   const save=()=>{
     if(!form.bank||!form.original)return;
     const end=form.endDate||calcEnd(form.startDate,form.tenure);
-    const e={bank:form.bank,accNo:form.accNo,type:form.type,original:+form.original,outstanding:+(form.outstanding||form.original),emi:+form.emi,roi:+form.roi,startDate:form.startDate||null,endDate:end||null,tenure:+form.tenure,remaining:calcRem(form.startDate,form.tenure)};
+    const e={bank:form.bank,accNo:form.accNo,type:form.type,original:+form.original,outstanding:+(form.outstanding||form.original),emi:+form.emi,roi:+form.roi,startDate:form.startDate||null,endDate:end||null,tenure:+form.tenure,phases:form.phases,remaining:calcRem(end,form.startDate,form.tenure)};
     if(modal==='add'){setData(d=>({...d,loans:[...d.loans,{id:uid(),...e}]}));toast('Loan added','g');}
     else{setData(d=>({...d,loans:d.loans.map(l=>l.id===modal.eid?{...l,...e}:l)}));toast('Updated','g');}
     close();
@@ -2208,6 +2331,33 @@ function PageLoans({data,setData,toast}){
       <div className="fg"><label>End Date (auto-calculated)</label><input type="date" value={form.endDate} onChange={e=>setForm(f=>({...f,endDate:e.target.value}))}/></div>
     </div>
     {form.emi&&form.tenure&&form.original&&(<div className="alert ai" style={{marginTop:10,marginBottom:0}}><Ic n="prov" s={13}/>Total payable: {fmtINR(+form.emi * +form.tenure)} · Interest: {fmtINR(Math.max(0,+form.emi * +form.tenure - +form.original))}</div>)}
+    {/* EMI / ROI Revision History */}
+    <div style={{marginTop:14,borderTop:'1px solid var(--n100)',paddingTop:12}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+        <div style={{fontSize:11,fontWeight:700,color:'var(--n600)',textTransform:'uppercase',letterSpacing:.5}}>EMI Revision History <span style={{color:'var(--n400)',fontWeight:400}}>(for variable-rate / restructured loans)</span></div>
+        <button type="button" className="btn btn-s btn-sm" style={{fontSize:11}} onClick={()=>setForm(f=>({...f,phases:[...f.phases,{fromMonth:f.tenure?Math.floor(+f.tenure/2):1,emi:+f.emi||0,roi:+f.roi||0}]}))}>
+          <Ic n="plus" s={11}/>Add Revision
+        </button>
+      </div>
+      {form.phases.length===0&&<div style={{fontSize:11.5,color:'var(--n400)',padding:'8px 0'}}>No revisions — single EMI &amp; ROI for full tenure.</div>}
+      {form.phases.length>0&&(
+        <div style={{border:'1px solid var(--n100)',borderRadius:'var(--r8)',overflow:'hidden'}}>
+          <table style={{width:'100%',borderCollapse:'collapse',fontSize:12}}>
+            <thead><tr style={{background:'var(--n50)'}}><th style={{padding:'6px 10px',textAlign:'left',fontSize:9.5,fontWeight:700,textTransform:'uppercase',color:'var(--n500)'}}>From Installment #</th><th style={{padding:'6px 10px',textAlign:'left',fontSize:9.5,fontWeight:700,textTransform:'uppercase',color:'var(--n500)'}}>New EMI (₹)</th><th style={{padding:'6px 10px',textAlign:'left',fontSize:9.5,fontWeight:700,textTransform:'uppercase',color:'var(--n500)'}}>New ROI (% p.a.)</th><th/></tr></thead>
+            <tbody>
+              {form.phases.map((ph,i)=>(
+                <tr key={i} style={{borderTop:'1px solid var(--n100)'}}>
+                  <td style={{padding:'5px 8px'}}><input type="number" min={1} max={form.tenure||999} value={ph.fromMonth} style={{width:80,padding:'4px 7px',border:'1.5px solid var(--n200)',borderRadius:5,fontSize:12,fontFamily:'var(--f)'}} onChange={e=>{const p=[...form.phases];p[i]={...p[i],fromMonth:+e.target.value};setForm(f=>({...f,phases:p}));}}/></td>
+                  <td style={{padding:'5px 8px'}}><input type="number" value={ph.emi} style={{width:100,padding:'4px 7px',border:'1.5px solid var(--n200)',borderRadius:5,fontSize:12,fontFamily:'var(--f)'}} onChange={e=>{const p=[...form.phases];p[i]={...p[i],emi:+e.target.value};setForm(f=>({...f,phases:p}));}}/></td>
+                  <td style={{padding:'5px 8px'}}><input type="number" step="0.01" value={ph.roi} style={{width:90,padding:'4px 7px',border:'1.5px solid var(--n200)',borderRadius:5,fontSize:12,fontFamily:'var(--f)'}} onChange={e=>{const p=[...form.phases];p[i]={...p[i],roi:+e.target.value};setForm(f=>({...f,phases:p}));}}/></td>
+                  <td style={{padding:'5px 8px'}}><button type="button" className="bic red" onClick={()=>setForm(f=>({...f,phases:f.phases.filter((_,j)=>j!==i)}))}><Ic n="del" s={11}/></button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   </>);
 
   return(
@@ -2259,32 +2409,7 @@ function PageLoans({data,setData,toast}){
           </table>
         </div>
       </div>
-      {loans.map(l=>{
-        const pct=l.original>0?(l.original-l.outstanding)/l.original*100:0;
-        const tInt=Math.max(0,l.emi*l.tenure-l.original);
-        return(
-          <div className="card mb2" key={l.id}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
-              <div><div style={{fontWeight:800,fontSize:14}}>{l.bank} <span className="tag tb" style={{marginLeft:6,fontSize:10.5}}>{l.type}</span></div><div style={{fontSize:10.5,color:'var(--n400)',fontFamily:'var(--m)',marginTop:2}}>{l.accNo}</div></div>
-              <div style={{display:'flex',gap:7,alignItems:'center'}}>
-                <div style={{textAlign:'right'}}><div style={{fontSize:9.5,color:'var(--n400)',textTransform:'uppercase',fontWeight:600}}>Outstanding</div><div style={{fontFamily:'var(--m)',fontSize:16,fontWeight:700,color:'var(--r)'}}>{fmtINR(l.outstanding)}</div></div>
-                <button className="bic" onClick={()=>openEdit(l)}><Ic n="edit" s={11}/></button>
-                <button className="bic red" onClick={()=>del(l.id)}><Ic n="del" s={11}/></button>
-              </div>
-            </div>
-            <div className="g4 mb2" style={{gap:10}}>
-              {[{l:'EMI/Month',v:fmtINR(l.emi)},{l:'ROI',v:`${l.roi}% p.a.`},{l:'Remaining',v:`${l.remaining}/${l.tenure} mo`},{l:'End Date',v:fmtDate(l.endDate)},{l:'Loan Amount',v:fmtINR(l.original)},{l:'Total Payable',v:fmtINR(l.emi*l.tenure)},{l:'Total Interest',v:fmtINR(tInt)},{l:'Months Paid',v:`${l.tenure-l.remaining} of ${l.tenure}`},{l:'Remaining Interest',v:fmtINR(Math.max(0,l.emi*(l.remaining||0)-l.outstanding)),c:'var(--o)'},{l:'Future Payout',v:fmtINR(l.emi*(l.remaining||0)),c:'var(--r)'}].map(x=>(
-                <div key={x.l}><div style={{fontSize:9.5,color:'var(--n400)',textTransform:'uppercase',fontWeight:600,marginBottom:2}}>{x.l}</div><div style={{fontSize:12.5,fontWeight:700,color:x.c||''}}>{x.v}</div></div>
-              ))}
-            </div>
-            <div style={{display:'flex',alignItems:'center',gap:8}}>
-              <div className="prog" style={{flex:1,height:6}}><div className="pf" style={{width:`${pct}%`,background:'var(--g)'}}/></div>
-              <span style={{fontFamily:'var(--m)',fontSize:11,color:'var(--gd)',width:40,textAlign:'right'}}>{pct.toFixed(1)}%</span>
-              <span style={{fontSize:10.5,color:'var(--n400)'}}>repaid</span>
-            </div>
-          </div>
-        );
-      })}
+      {loans.map(l=><LoanCard key={l.id} l={l} buildAmort={buildAmort} openEdit={openEdit} del={del}/>)}
       {modal&&<Modal title={modal==='add'?'Add Loan':'Edit Loan'} onClose={close} foot={<><button className="btn btn-s btn-sm" onClick={close}>Cancel</button><button className="btn btn-p btn-sm" onClick={save}><Ic n={modal==='add'?'plus':'ok'} s={12} c="#fff"/>{modal==='add'?'Add':'Save'}</button></>}>{LF}</Modal>}
     </div>
   );
