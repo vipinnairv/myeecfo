@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Personal FinManager – by Vipin Nair</title>
+<title>MyeeCFO – by Vipin Nair</title>
 <meta name="description" content="Personal Fund & Budget Manager with Google Drive sync"/>
 <!-- Google Identity Services (for OAuth2 login) -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -3132,7 +3132,7 @@ function PageData({data,setData,toast}){
         <div className="alert ai mb2" style={{marginBottom:10}}>
           <Ic n="prov" s={13}/>
           <div style={{fontSize:12}}>
-            Have a JSON export from an older version of Personal FinManager, FundFlow, or any prior release?<br/>
+            Have a JSON export from an older version of MyeeCFO, FundFlow, or any prior release?<br/>
             This importer <strong>auto-migrates</strong> your data — filling missing fields, converting old field names, and ensuring compatibility with the current schema.<br/>
             <strong>Supported:</strong> FundFlow v3, v4, v5, FinManager v1–v5, and any JSON with transactions/accounts/creditCards arrays.
           </div>
@@ -4860,7 +4860,7 @@ function App(){
         <div className="sb-head">
           <div className="sb-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg></div>
           <div>
-            <div className="sb-app" style={{fontSize:12}}>Personal FinManager</div>
+            <div className="sb-app" style={{fontSize:12}}>MyeeCFO</div>
             <div className="sb-period">by Vipin Nair · {periodLabel(data.profile.periodStart,data.profile.periodEnd)}</div>
           </div>
         </div>
@@ -6931,7 +6931,7 @@ window.PlannerRouter = PlannerRouter;
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <div style="position:fixed;bottom:0;left:var(--sb);right:0;background:#0f172a;color:#94a3b8;font-size:10.5px;font-family:'Plus Jakarta Sans',sans-serif;padding:6px 20px;display:flex;align-items:center;justify-content:space-between;z-index:9999;border-top:1px solid #1e293b;">
-  <span>© 2024–2026 <strong style="color:#fff">Vipin Nair</strong> · Personal FinManager · All Rights Reserved</span>
+  <span>© 2024–2026 <strong style="color:#fff">Vipin Nair</strong> · MyeeCFO · All Rights Reserved</span>
   <span>Suggestions &amp; Feedback: <a href="mailto:vipinnair@example.com" style="color:#6ee7b7;text-decoration:none">Send Feedback</a></span>
 </div>
 </body>
