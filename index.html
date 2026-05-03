@@ -35,48 +35,48 @@
   --xl:0 20px 25px -5px rgba(0,0,0,.08),0 8px 10px -6px rgba(0,0,0,.04);
   --r4:4px;--r6:6px;--r8:8px;--r12:12px;--r16:16px;--r20:20px;
   --f:'Plus Jakarta Sans',sans-serif;--m:'JetBrains Mono',monospace;
-  --sb:238px;
+  --sb:220px;
 }
-html{scroll-behavior:smooth}
-body{font-family:var(--f);background:var(--n50);color:var(--n900);line-height:1.5;-webkit-font-smoothing:antialiased}
-#root{display:flex;min-height:100vh}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--f);background:var(--n50);color:var(--n900);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+#root{display:flex;min-height:100vh;overflow-x:hidden}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--n200);border-radius:99px}
 
 /* ── SIDEBAR ─────────────────────────────────── */
-.sb{width:var(--sb);background:var(--W);border-right:1px solid var(--n100);position:fixed;inset:0 auto 0 0;display:flex;flex-direction:column;z-index:200;overflow-y:auto}
-.sb-head{padding:16px 14px 12px;border-bottom:1px solid var(--n100);display:flex;align-items:center;gap:10px;flex-shrink:0}
-.sb-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--g),var(--gd));border-radius:10px;display:grid;place-items:center;flex-shrink:0;box-shadow:0 3px 8px rgba(0,179,134,.3)}
-.sb-mark svg{width:18px;height:18px;fill:#fff}
-.sb-app{font-weight:800;font-size:14px;color:var(--n900);letter-spacing:-.3px;line-height:1.2}
-.sb-period{font-size:9.5px;color:var(--n400);font-weight:500}
-.sb-nav{flex:1;padding:8px 0;overflow-y:auto}
-.sb-group{padding:10px 12px 3px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--n400)}
-.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;margin:1px 5px;border-radius:var(--r6);cursor:pointer;font-size:12.5px;font-weight:500;color:var(--n500);transition:all .13s;position:relative;user-select:none}
+.sb{width:var(--sb);background:var(--W);border-right:1px solid var(--n100);position:fixed;inset:0 auto 0 0;display:flex;flex-direction:column;z-index:200;overflow-y:auto;overflow-x:hidden}
+.sb-head{padding:13px 12px 10px;border-bottom:1px solid var(--n100);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sb-mark{width:30px;height:30px;background:linear-gradient(135deg,var(--g),var(--gd));border-radius:9px;display:grid;place-items:center;flex-shrink:0;box-shadow:0 2px 6px rgba(0,179,134,.25)}
+.sb-mark svg{width:16px;height:16px;fill:#fff}
+.sb-app{font-weight:800;font-size:13px;color:var(--n900);letter-spacing:-.2px;line-height:1.2}
+.sb-period{font-size:9px;color:var(--n400);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-nav{flex:1;padding:6px 0;overflow-y:auto}
+.sb-group{padding:9px 11px 2px;font-size:8.5px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--n400)}
+.sb-item{display:flex;align-items:center;gap:7px;padding:7px 9px;margin:1px 4px;border-radius:var(--r6);cursor:pointer;font-size:12px;font-weight:500;color:var(--n500);transition:all .13s;position:relative;user-select:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-item:hover{background:var(--n50);color:var(--n800)}
 .sb-item.on{background:var(--gl);color:var(--gd);font-weight:700}
-.sb-item.on::before{content:'';position:absolute;left:-5px;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--g);border-radius:0 3px 3px 0}
-.sb-ic{width:15px;height:15px;flex-shrink:0;opacity:.65}
+.sb-item.on::before{content:'';position:absolute;left:-4px;top:50%;transform:translateY(-50%);width:3px;height:16px;background:var(--g);border-radius:0 3px 3px 0}
+.sb-ic{width:14px;height:14px;flex-shrink:0;opacity:.65}
 .sb-item.on .sb-ic{opacity:1}
-.sb-badge{margin-left:auto;font-size:9px;font-weight:700;background:var(--r);color:#fff;padding:1px 5px;border-radius:99px;min-width:17px;text-align:center}
-.sb-foot{padding:10px 8px;border-top:1px solid var(--n100);flex-shrink:0}
-.sb-user{display:flex;align-items:center;gap:9px;padding:7px;border-radius:var(--r8);cursor:pointer;transition:background .13s}
+.sb-badge{margin-left:auto;font-size:9px;font-weight:700;background:var(--r);color:#fff;padding:1px 5px;border-radius:99px;min-width:16px;text-align:center;flex-shrink:0}
+.sb-foot{padding:8px 7px;border-top:1px solid var(--n100);flex-shrink:0}
+.sb-user{display:flex;align-items:center;gap:8px;padding:6px;border-radius:var(--r8);cursor:pointer;transition:background .13s}
 .sb-user:hover{background:var(--n50)}
-.sb-av{width:30px;height:30px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:700;color:#fff;flex-shrink:0}
-.sb-uname{font-size:12px;font-weight:600;color:var(--n700)}
-.sb-uemail{font-size:10px;color:var(--n400)}
+.sb-av{width:28px;height:28px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:grid;place-items:center;font-size:10.5px;font-weight:700;color:#fff;flex-shrink:0}
+.sb-uname{font-size:11.5px;font-weight:600;color:var(--n700)}
+.sb-uemail{font-size:9.5px;color:var(--n400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
 
 /* ── MAIN ───────────────────────────────────── */
-.main{margin-left:var(--sb);flex:1;display:flex;flex-direction:column;min-height:100vh}
-.topbar{background:var(--W);border-bottom:1px solid var(--n100);height:52px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--xs)}
-.tb-left{display:flex;align-items:center;gap:10px}
-.tb-title{font-size:14px;font-weight:700;color:var(--n900)}
-.tb-right{display:flex;align-items:center;gap:7px}
-.page{padding:18px 20px 100px;flex:1;max-width:1400px;width:100%}
+.main{margin-left:var(--sb);flex:1;min-width:0;display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden;max-width:calc(100vw - var(--sb))}
+.topbar{background:var(--W);border-bottom:1px solid var(--n100);height:50px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--xs)}
+.tb-left{display:flex;align-items:center;gap:8px}
+.tb-title{font-size:13.5px;font-weight:700;color:var(--n900)}
+.tb-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.page{padding:16px 18px 40px;flex:1;max-width:1380px;width:100%}
 
 /* ── CARD ───────────────────────────────────── */
-.card{background:var(--W);border:1px solid var(--n100);border-radius:var(--r12);padding:16px 18px;box-shadow:var(--xs);transition:box-shadow .13s}
+.card{background:var(--W);border:1px solid var(--n100);border-radius:var(--r12);padding:14px 16px;box-shadow:var(--xs);transition:box-shadow .13s;min-width:0;overflow:hidden}
 .card:hover{box-shadow:var(--sm)}
 .card.flat{box-shadow:none}
 .cl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--n400);margin-bottom:4px}
@@ -87,11 +87,11 @@ body{font-family:var(--f);background:var(--n50);color:var(--n900);line-height:1.
 .ci svg{width:18px;height:18px}
 
 /* ── GRIDS ──────────────────────────────────── */
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.row{display:flex;gap:12px}
-.col{flex:1}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.row{display:flex;gap:12px;min-width:0}
+.col{flex:1;min-width:0}
 .mb1{margin-bottom:5px}.mb2{margin-bottom:10px}.mb3{margin-bottom:16px}.mb4{margin-bottom:22px}
 
 /* ── TABLE ──────────────────────────────────── */
@@ -117,13 +117,14 @@ tbody tr:hover td{background:#fafbfc}
 .tx{background:var(--n100);color:var(--n500)}.tp{background:var(--pl);color:var(--p)}
 
 /* ── FORM ───────────────────────────────────── */
-.fg{display:flex;flex-direction:column;gap:4px}
+.fg{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fg-full{grid-column:1/-1}
 .fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--n500)}
 .fg input,.fg select,.fg textarea{padding:8px 11px;border:1.5px solid var(--n200);border-radius:var(--r6);font-size:13px;font-family:var(--f);color:var(--n900);background:var(--W);outline:none;transition:border-color .13s,box-shadow .13s;width:100%}
 .fg input:focus,.fg select:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(0,179,134,.1)}
-.f2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.f3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
-.f4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.f2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.f3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.f4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 
 /* ── BUTTONS ─────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r6);font-size:12.5px;font-weight:600;font-family:var(--f);cursor:pointer;border:none;transition:all .13s;white-space:nowrap;line-height:1}
@@ -171,7 +172,7 @@ tbody tr:hover td{background:#fafbfc}
 /* ── TOAST ──────────────────────────────────── */
 .toast{position:fixed;bottom:20px;right:20px;z-index:2000;color:#fff;padding:10px 15px;border-radius:var(--r8);font-size:12.5px;font-weight:500;box-shadow:var(--xl);display:flex;align-items:center;gap:8px;animation:tin .22s ease}
 @keyframes tin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.toast.g{background:var(--gd)}.toast.r{background:var(--r)}.toast.x{background:var(--n800)}
+.toast.g{background:var(--gd)}.toast.r{background:var(--r)}.toast.x{background:var(--n800)}.toast.o{background:var(--o)}.toast.b{background:var(--bd)}
 
 /* ── DONUT ──────────────────────────────────── */
 .donut{position:relative;display:inline-flex;align-items:center;justify-content:center}
@@ -264,27 +265,85 @@ tbody tr:hover td{background:#fafbfc}
 .mt1{margin-top:4px}.mt2{margin-top:8px}.mt3{margin-top:13px}
 @keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .page>*{animation:fadein .2s ease both}
-@media(max-width:1280px){.g4{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:960px){.g3{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}}
-/* ── RESPONSIVE BREAKPOINTS (sidebar always visible) ────────── */
+/* ── RESPONSIVE BREAKPOINTS ────────── */
+/* 1366px laptops: main area ≈ 1146px → g4 stays 4-col (286px each) — OK */
+@media(max-width:1280px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .page{padding:14px 16px 36px}
+}
 @media(max-width:1100px){
-  .page{padding:14px 14px 100px}
+  .page{padding:12px 14px 32px}
   .g4{grid-template-columns:1fr 1fr}
   .g3{grid-template-columns:1fr 1fr}
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .ph{flex-wrap:wrap;gap:8px}
 }
+@media(max-width:960px){
+  .g3{grid-template-columns:1fr 1fr}
+  .g2{grid-template-columns:1fr}
+  .page{padding:10px 12px 28px}
+}
 @media(max-width:768px){
   .g4,.g3{grid-template-columns:1fr 1fr}
   .g2{grid-template-columns:1fr}
   .f3,.f4{grid-template-columns:1fr 1fr}
-  .topbar{padding:8px 12px}
+  .topbar{padding:6px 10px}
+  .tb-title{font-size:13px}
 }
 @media(max-width:480px){
   .g4,.g3{grid-template-columns:1fr}
   .f2,.f3,.f4{grid-template-columns:1fr}
   .ph .btn{font-size:11px;padding:6px 10px}
+  .page{padding:8px 10px 24px}
 }
+
+/* ── DARK MODE ──────────────────────────────── */
+[data-theme="dark"]{
+  --W:#1e293b;
+  --n50:#0f172a;--n100:#1e293b;--n200:#334155;--n300:#475569;
+  --n600:#cbd5e1;--n700:#e2e8f0;--n800:#f1f5f9;--n900:#f8fafc;
+  --gl:rgba(0,179,134,.14);--rl:rgba(220,38,38,.14);--bl:rgba(37,99,235,.14);
+  --ol:rgba(217,119,6,.14);--pl:rgba(124,58,237,.14);--tl:rgba(13,148,136,.14);
+  --xs:0 1px 3px rgba(0,0,0,.35);--sm:0 2px 8px rgba(0,0,0,.45);
+}
+[data-theme="dark"] body{background:var(--n50);color:var(--n900)}
+[data-theme="dark"] .card{box-shadow:0 1px 3px rgba(0,0,0,.35)}
+[data-theme="dark"] .topbar,[data-theme="dark"] .sb{background:var(--W);border-color:var(--n100)}
+[data-theme="dark"] .tw{background:var(--W);border-color:var(--n200)}
+[data-theme="dark"] table thead tr{background:rgba(255,255,255,.04)}
+[data-theme="dark"] table td{border-bottom-color:rgba(255,255,255,.05)}
+[data-theme="dark"] table tbody tr:hover td{background:rgba(255,255,255,.03)!important}
+[data-theme="dark"] .tft td{background:rgba(255,255,255,.05)!important}
+[data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea{background:var(--n50)!important;color:var(--n900)!important;border-color:var(--n200)!important}
+[data-theme="dark"] .mchip{background:var(--n100);border-color:var(--n200);color:var(--n600)}
+[data-theme="dark"] .mchip.on{background:var(--g);color:#fff;border-color:var(--g)}
+[data-theme="dark"] .btn-s{background:var(--n100);border-color:var(--n200);color:var(--n700)}
+[data-theme="dark"] .btn-s:hover{background:var(--n200)}
+[data-theme="dark"] .bic{background:var(--n100);border-color:var(--n200)}
+[data-theme="dark"] .bic:hover{background:var(--n200)}
+[data-theme="dark"] .modal{background:var(--W)}
+[data-theme="dark"] .pm-cc{background:rgba(146,64,14,.3);color:#fcd34d}
+[data-theme="dark"] .pm-upi{background:rgba(6,95,70,.3);color:#6ee7b7}
+[data-theme="dark"] .pm-neft{background:rgba(30,64,175,.3);color:#93c5fd}
+[data-theme="dark"] .pm-cash{background:rgba(55,65,81,.4);color:#d1d5db}
+[data-theme="dark"] .pm-dc{background:rgba(91,33,182,.3);color:#c4b5fd}
+[data-theme="dark"] .pm-wallet{background:rgba(157,23,77,.3);color:#f9a8d4}
+[data-theme="dark"] .tag.tx{background:var(--n200);color:var(--n600)}
+[data-theme="dark"] .prog{background:var(--n200)}
+[data-theme="dark"] .sr{border-bottom-color:var(--n200)}
+[data-theme="dark"] .bulk-bar{background:rgba(0,179,134,.12);border-color:rgba(0,179,134,.25)}
+
+/* ── QUICK ADD ──────────────────────────────── */
+.qa-btn{position:fixed;bottom:28px;right:28px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,179,134,.45);display:flex;align-items:center;justify-content:center;z-index:900;transition:transform .2s,box-shadow .2s;font-size:26px;line-height:1}
+.qa-btn:hover{transform:scale(1.1);box-shadow:0 6px 22px rgba(0,179,134,.55)}
+.qa-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:1500;backdrop-filter:blur(3px);animation:fadeIn .18s ease}
+.qa-sheet{position:fixed;bottom:0;left:0;right:0;z-index:1600;background:var(--W);border-radius:22px 22px 0 0;padding:0 0 32px;box-shadow:0 -6px 28px rgba(0,0,0,.18);animation:qaUp .24s cubic-bezier(.34,1.15,.64,1)}
+@keyframes qaUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.qa-handle{width:40px;height:4px;background:var(--n200);border-radius:99px;margin:12px auto 16px}
+/* ── BUDGET ALERT BADGE ──────────────────── */
+.budget-warn{background:var(--ol)!important;color:var(--o)!important;border-left:3px solid var(--o)!important}
+.budget-over{background:var(--rl)!important;color:var(--r)!important;border-left:3px solid var(--r)!important}
 
 /* ── CHECKBOX ─────────────────────────── */
 .cb-row td{transition:background .1s}
@@ -1022,6 +1081,7 @@ const SEED={
   ],
   goals:[],
   recurring:[],
+  investmentTxs:[],
 }
 
 /* ══════════════════════════════════════
@@ -1435,23 +1495,64 @@ function PageDashboard({data,setPage}){
   const budgetUsed=totalExp;
   const budgetPct=budgetTotal>0?Math.min(100,budgetUsed/budgetTotal*100):0;
 
-  // ── Financial Forecast ──────────────────────────────
-  const avgMonthlySavings=months.length>0?(totalInc-totalExp)/months.length:0;
-  const proj1yr=netWorth+avgMonthlySavings*12;
-  const proj3yr=netWorth+avgMonthlySavings*36;
-  const proj5yr=netWorth+avgMonthlySavings*60;
+  // ── Financial Forecast (CFO-grade) ─────────────────────
+  // Step 1: Days-elapsed averages (same as CFO page — avoids diluting by empty future months)
+  const fcStart=months.length>0?new Date(months[0].key+'-01'):new Date();
+  const fcEnd=months.length>0?new Date(months[months.length-1].key+'-28'):new Date();
+  const fcNow=new Date(Math.min(Date.now(),fcEnd.getTime()));
+  const fcDays=Math.max(1,Math.round((fcNow-fcStart)/86400000));
+  const avgMonthlyInc=totalInc/fcDays*30;
+  const avgMonthlyExp=totalExp/fcDays*30;
+  const cashSurplus=avgMonthlyInc-avgMonthlyExp; // after ALL recorded expenses (incl. EMI if tracked)
+
+  // Step 2: Loan breakdown — principal vs interest each month
+  const totalEmi=loans.reduce((s,l)=>s+(l.emi||0),0);
+  const monthlyInterestCost=loans.reduce((s,l)=>s+(l.outstanding||0)*((l.roi||0)/100/12),0);
+  const monthlyPrincipalRepaid=Math.max(0,totalEmi-monthlyInterestCost);
+  // True NW growth = cash surplus (bank grows) + principal repaid (loan liability shrinks)
+  const monthlyNWGrowth=cashSurplus+monthlyPrincipalRepaid;
+
+  // Step 3: Debt-free date — from ACTUAL loan end dates, NOT savings rate
+  const loanEndTimes=loans.filter(l=>l.endDate).map(l=>new Date(l.endDate).getTime());
+  const debtFreeDate=loanEndTimes.length>0?new Date(Math.max(...loanEndTimes)):null;
+  const monthsTillDebtFree=debtFreeDate?Math.max(0,Math.ceil((debtFreeDate.getTime()-Date.now())/86400000/30)):null;
+  const debtFreeStr=debtFreeDate?debtFreeDate.toLocaleString('en-IN',{month:'short',year:'numeric'}):null;
+
+  // Step 4: NW projections — FY-boundary-anchored (avoids "12 months flat" error when month already elapsed)
+  const projNW=(targetMonths)=>{
+    if(!monthsTillDebtFree||monthsTillDebtFree>=targetMonths){
+      return netWorth+monthlyNWGrowth*targetMonths;
+    }
+    const phase1=monthlyNWGrowth*monthsTillDebtFree;
+    const phase2=(cashSurplus+totalEmi)*(targetMonths-monthsTillDebtFree);
+    return netWorth+phase1+phase2;
+  };
+  // Anchor to FY end so "In 1 Year" = end of current financial year (e.g. Mar 2027 = 11mo if Apr already elapsed)
+  const fyEndDate=months.length>0?new Date(months[months.length-1].key+'-28'):new Date();
+  const _today=new Date();
+  const monthsToFYEnd=Math.max(1,Math.ceil((fyEndDate-_today)/86400000/30));
+  const m1=monthsToFYEnd;          // e.g. 11  → Mar 2027
+  const m3=monthsToFYEnd+24;       // e.g. 35  → Mar 2029
+  const m5=monthsToFYEnd+48;       // e.g. 59  → Mar 2031
+  const _tDate=(mo)=>{const d=new Date();d.setMonth(d.getMonth()+mo);return d.toLocaleString('en-IN',{month:'short',year:'numeric'});};
+  const tDate1=_tDate(m1);  // "Mar 2027"
+  const tDate3=_tDate(m3);  // "Mar 2029"
+  const tDate5=_tDate(m5);  // "Mar 2031"
+  const proj1yr=projNW(m1);
+  const proj3yr=projNW(m3);
+  const proj5yr=projNW(m5);
+
+  // Step 5: Goal ETAs — use cashSurplus as the investable amount
   const goals=data.goals||[];
   const goalForecasts=goals.map(g=>{
     const remaining=g.targetAmount-(g.currentAmount||0);
     if(remaining<=0)return{...g,status:'complete',monthsNeeded:0,etaDate:null};
-    if(avgMonthlySavings<=0)return{...g,status:'at-risk',monthsNeeded:null,etaDate:null};
-    const mn=Math.ceil(remaining/avgMonthlySavings);
+    if(cashSurplus<=0)return{...g,status:'at-risk',monthsNeeded:null,etaDate:null};
+    const mn=Math.ceil(remaining/cashSurplus);
     const eta=new Date();eta.setMonth(eta.getMonth()+mn);
     const tgt=g.targetDate?new Date(g.targetDate):null;
     return{...g,status:(!tgt||eta<=tgt)?'on-track':'behind',monthsNeeded:mn,etaDate:eta};
   });
-  const totalEmi=loans.reduce((s,l)=>s+l.emi,0);
-  const debtFreeMonths=avgMonthlySavings>0&&loanOS>0?Math.ceil(loanOS/avgMonthlySavings):null;
   // Category doughnut data (top 8 + Others)
   const allCatEntries=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
   const doughnutCats=allCatEntries.slice(0,8);
@@ -1709,82 +1810,153 @@ function PageDashboard({data,setPage}){
           })}
         </div>
       </div>
-      {/* ROW 5: Financial Forecast */}
-      <div className="card mb3">
-        <div className="sh mb3">
-          <div className="sh-t"><Ic n="budget" s={14} c="var(--b)"/>Financial Forecast</div>
-          <div style={{display:'flex',gap:8,alignItems:'center'}}>
-            <span style={{fontSize:11,color:'var(--n500)'}}>Avg monthly savings: </span>
-            <span style={{fontFamily:'var(--m)',fontSize:12,fontWeight:700,color:avgMonthlySavings>=0?'var(--g)':'var(--r)'}}>{avgMonthlySavings>=0?'+':''}{fmtINR(avgMonthlySavings,true)}/mo</span>
+      {/* ROW 5: Financial Forecast (CFO-grade) */}
+      <div className="card mb3" style={{padding:'20px 22px'}}>
+
+        {/* ── Header ── */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:34,height:34,borderRadius:9,background:'linear-gradient(135deg,#2563eb,#7c3aed)',display:'grid',placeItems:'center',flexShrink:0,boxShadow:'0 4px 10px rgba(37,99,235,.25)'}}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            </div>
+            <div>
+              <div style={{fontSize:15,fontWeight:800,color:'var(--n900)',letterSpacing:-.2}}>Financial Forecast</div>
+              <div style={{fontSize:10.5,color:'var(--n400)',marginTop:1}}>Based on <strong style={{color:'var(--n600)'}}>{fcDays} days</strong> of actual data</div>
+            </div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <span style={{fontSize:10,fontWeight:700,color:'var(--b)',background:'var(--bl)',border:'1px solid rgba(37,99,235,.2)',padding:'4px 10px',borderRadius:99,letterSpacing:.3,textTransform:'uppercase'}}>CFO View</span>
           </div>
         </div>
-        {/* Net Worth Projections */}
-        <div className="g3 mb3">
-          {[{l:'Net Worth Today',v:netWorth,sub:'Current snapshot',c:netWorth>=0?'var(--g)':'var(--r)'},
-            {l:'In 1 Year',v:proj1yr,sub:`${avgMonthlySavings>=0?'If you keep saving':'Even reducing debt'}`,c:proj1yr>=0?'var(--b)':'var(--r)'},
-            {l:'In 3 Years',v:proj3yr,sub:'Compound effect',c:proj3yr>=0?'var(--t)':'var(--r)'},
+
+        {/* ── Section 1: Monthly Pulse ── */}
+        <div style={{background:'var(--n50)',borderRadius:12,padding:'14px 16px',marginBottom:18,border:'1px solid var(--n100)'}}>
+          <div style={{fontSize:9.5,fontWeight:800,textTransform:'uppercase',letterSpacing:.8,color:'var(--n400)',marginBottom:14,display:'flex',alignItems:'center',gap:6}}>
+            <span style={{width:16,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>
+            Monthly Pulse · Annualised from actual data
+            <span style={{width:16,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>
+          </div>
+          <div className="g4" style={{gap:8}}>
+            {[
+              {l:'Avg Income',v:avgMonthlyInc,c:'var(--gd)',bg:'var(--gl)',icon:'inc',border:'rgba(0,179,134,.2)'},
+              {l:'Avg Expenses',v:avgMonthlyExp,c:'var(--r)',bg:'var(--rl)',icon:'exp',border:'rgba(220,38,38,.15)'},
+              {l:'Cash Surplus',v:cashSurplus,c:cashSurplus>=0?'var(--b)':'var(--r)',bg:cashSurplus>=0?'var(--bl)':'var(--rl)',icon:'pnl',border:cashSurplus>=0?'rgba(37,99,235,.15)':'rgba(220,38,38,.15)'},
+              {l:'EMI Load',v:totalEmi,c:'var(--o)',bg:'var(--ol)',icon:'loan',border:'rgba(217,119,6,.15)',sub:avgMonthlyInc>0?`${(totalEmi/avgMonthlyInc*100).toFixed(1)}% of income`:''},
+            ].map(x=>(
+              <div key={x.l} style={{background:x.bg,borderRadius:10,padding:'12px 14px',border:`1.5px solid ${x.border}`}}>
+                <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:8}}>
+                  <div style={{width:26,height:26,borderRadius:7,background:'var(--W)',display:'grid',placeItems:'center',boxShadow:'var(--xs)',flexShrink:0}}>
+                    <Ic n={x.icon} s={13} c={x.c}/>
+                  </div>
+                  <div style={{fontSize:9.5,fontWeight:700,textTransform:'uppercase',letterSpacing:.5,color:'var(--n500)'}}>{x.l}</div>
+                </div>
+                <div style={{fontFamily:'var(--m)',fontSize:17,fontWeight:800,color:x.c,letterSpacing:-.3}}>{x.v>=0?'':'-'}{fmtINR(Math.abs(x.v),true)}</div>
+                {x.sub&&<div style={{fontSize:10,color:'var(--o)',fontWeight:700,marginTop:3,background:'rgba(217,119,6,.1)',display:'inline-block',padding:'1px 6px',borderRadius:4}}>{x.sub}</div>}
+              </div>
+            ))}
+          </div>
+          <div style={{marginTop:12,paddingTop:12,borderTop:'1px dashed var(--n200)',display:'flex',gap:6,alignItems:'center',flexWrap:'wrap'}}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--g)" strokeWidth="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            <span style={{fontSize:11,color:'var(--n500)',fontWeight:600}}>True monthly NW growth:</span>
+            <span style={{fontFamily:'var(--m)',fontSize:12,fontWeight:800,color:'var(--g)',background:'var(--gl)',padding:'1px 8px',borderRadius:5}}>+{fmtINR(monthlyNWGrowth,true)}/mo</span>
+            <span style={{fontSize:10.5,color:'var(--n400)'}}>= Cash surplus <strong>{fmtINR(cashSurplus,true)}</strong> + Principal repaid <strong>{fmtINR(monthlyPrincipalRepaid,true)}</strong></span>
+          </div>
+        </div>
+
+        {/* ── Section 2: NW Trajectory ── */}
+        <div style={{fontSize:9.5,fontWeight:800,textTransform:'uppercase',letterSpacing:.8,color:'var(--n400)',marginBottom:12,display:'flex',alignItems:'center',gap:6}}>
+          <span style={{width:16,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>
+          Net Worth Trajectory · Assuming current income &amp; expense pattern
+          <span style={{width:16,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>
+        </div>
+        <div className="g4" style={{gap:10,marginBottom:18}}>
+          {[
+            {l:'Today',v:netWorth,sub:'Current balance sheet',date:null,mo:0,c:netWorth>=0?'var(--g)':'var(--r)',bg:netWorth>=0?'var(--gl)':'var(--rl)',border:netWorth>=0?'rgba(0,179,134,.2)':'rgba(220,38,38,.15)'},
+            {l:'In 1 Year',v:proj1yr,delta:proj1yr-netWorth,date:tDate1,mo:m1,c:'var(--b)',bg:'var(--bl)',border:'rgba(37,99,235,.15)'},
+            {l:'In 3 Years',v:proj3yr,delta:proj3yr-netWorth,date:tDate3,mo:m3,c:'var(--b)',bg:'var(--bl)',border:'rgba(37,99,235,.15)'},
+            {l:'In 5 Years',v:proj5yr,delta:proj5yr-netWorth,date:tDate5,mo:m5,c:'var(--p)',bg:'var(--pl)',border:'rgba(124,58,237,.15)',note:monthsTillDebtFree&&monthsTillDebtFree<=m5?'🏁 Loans cleared — EMI freed!':''},
           ].map(p=>(
-            <div key={p.l} style={{padding:'12px 14px',borderRadius:10,background:'var(--bg)',border:'1.5px solid var(--n150)'}}>
-              <div style={{fontSize:10,color:'var(--n400)',fontWeight:600,textTransform:'uppercase',letterSpacing:.5,marginBottom:4}}>{p.l}</div>
-              <div style={{fontFamily:'var(--m)',fontSize:18,fontWeight:800,color:p.c}}>{fmtINR(p.v,true)}</div>
-              <div style={{fontSize:10.5,color:'var(--n400)',marginTop:3}}>{p.sub}</div>
+            <div key={p.l} style={{borderRadius:12,background:p.bg,border:`1.5px solid ${p.border}`,position:'relative',overflow:'hidden',padding:'14px 14px 12px'}}>
+              {p.note&&<div style={{position:'absolute',top:0,left:0,right:0,background:'linear-gradient(90deg,var(--g),var(--gd))',color:'#fff',fontSize:8,fontWeight:800,textAlign:'center',padding:'3px 4px',letterSpacing:.4}}>{p.note}</div>}
+              {/* Label row: "In 1 Year" + date pill */}
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8,marginTop:p.note?12:0,flexWrap:'wrap',gap:4}}>
+                <div style={{fontSize:9.5,color:'var(--n500)',fontWeight:700,textTransform:'uppercase',letterSpacing:.5}}>{p.l}</div>
+                {p.date&&<div style={{fontSize:8.5,fontWeight:700,color:p.c,background:'var(--W)',border:`1px solid ${p.border}`,padding:'1px 6px',borderRadius:99,flexShrink:0}}>{p.date} · {p.mo}mo</div>}
+              </div>
+              <div style={{fontFamily:'var(--m)',fontSize:19,fontWeight:800,color:p.c,letterSpacing:-.5,lineHeight:1.1}}>{fmtINR(p.v,true)}</div>
+              {p.delta!==undefined&&<div style={{fontSize:11,color:p.delta>=0?'var(--gd)':'var(--r)',fontWeight:700,marginTop:5,display:'flex',alignItems:'center',gap:3}}>
+                <span style={{fontSize:13}}>{p.delta>=0?'▲':'▼'}</span>{fmtINR(Math.abs(p.delta),true)}
+              </div>}
+              {p.sub&&<div style={{fontSize:10,color:'var(--n500)',marginTop:4,fontStyle:'italic'}}>{p.sub}</div>}
             </div>
           ))}
         </div>
-        {/* Goal ETAs */}
-        {goalForecasts.length>0&&<div className="mb3">
-          <div style={{fontSize:11,fontWeight:700,color:'var(--n600)',marginBottom:10,textTransform:'uppercase',letterSpacing:.5}}>Goal Forecast</div>
+
+        {/* ── Section 3: Debt Targets ── */}
+        {(debtFreeDate||totalEmi>0)&&<>
+          <div style={{fontSize:9.5,fontWeight:800,textTransform:'uppercase',letterSpacing:.8,color:'var(--n400)',marginBottom:12,display:'flex',alignItems:'center',gap:6}}>
+            <span style={{width:16,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>
+            Debt Targets
+            <span style={{width:16,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>
+          </div>
+          <div className="g2" style={{gap:12,marginBottom:18}}>
+            {debtFreeDate&&<div style={{padding:'14px 16px',borderRadius:12,background:'var(--rl)',border:'1.5px solid rgba(220,38,38,.15)',display:'flex',gap:14,alignItems:'center'}}>
+              <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,var(--r),#b91c1c)',display:'grid',placeItems:'center',flexShrink:0,boxShadow:'0 4px 10px rgba(220,38,38,.25)'}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div>
+                <div style={{fontSize:9.5,color:'var(--r)',fontWeight:800,textTransform:'uppercase',letterSpacing:.5,marginBottom:4}}>Debt-Free Date</div>
+                <div style={{fontFamily:'var(--m)',fontSize:18,fontWeight:800,color:'var(--n800)',letterSpacing:-.3}}>{debtFreeStr}</div>
+                <div style={{fontSize:11,color:'var(--n500)',marginTop:3}}>{monthsTillDebtFree} months · Based on your loan schedule</div>
+              </div>
+            </div>}
+            {totalEmi>0&&<div style={{padding:'14px 16px',borderRadius:12,background:'var(--gl)',border:'1.5px solid rgba(0,179,134,.15)',display:'flex',gap:14,alignItems:'center'}}>
+              <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,var(--g),var(--gd))',display:'grid',placeItems:'center',flexShrink:0,boxShadow:'0 4px 10px rgba(0,179,134,.25)'}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+              </div>
+              <div>
+                <div style={{fontSize:9.5,color:'var(--gd)',fontWeight:800,textTransform:'uppercase',letterSpacing:.5,marginBottom:4}}>After Debt Freedom</div>
+                <div style={{fontFamily:'var(--m)',fontSize:18,fontWeight:800,color:'var(--n800)',letterSpacing:-.3}}>+{fmtINR(totalEmi,true)}/mo freed</div>
+                <div style={{fontSize:11,color:'var(--n500)',marginTop:3}}>Monthly surplus jumps to <strong style={{color:'var(--gd)'}}>{fmtINR(cashSurplus+totalEmi,true)}/mo</strong></div>
+              </div>
+            </div>}
+          </div>
+        </>}
+
+        {/* ── Section 4: Goal Forecasts ── */}
+        {goalForecasts.length>0&&<>
+          <div style={{fontSize:9.5,fontWeight:800,textTransform:'uppercase',letterSpacing:.8,color:'var(--n400)',marginBottom:12,display:'flex',alignItems:'center',gap:6}}>
+            <span style={{width:16,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>
+            Goal Forecasts · At current cash surplus of {fmtINR(cashSurplus,true)}/mo
+            <span style={{width:16,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>
+          </div>
           <div className="g2">
             {goalForecasts.map(g=>{
-              const statusColor=g.status==='complete'?'var(--g)':g.status==='on-track'?'var(--b)':g.status==='at-risk'?'var(--n400)':'var(--r)';
-              const statusLabel=g.status==='complete'?'✓ Complete':g.status==='on-track'?'✓ On Track':g.status==='at-risk'?'⚠ No Savings':'⚠ Behind';
+              const sc=g.status==='complete'?'var(--g)':g.status==='on-track'?'var(--b)':g.status==='at-risk'?'var(--n400)':'var(--r)';
+              const sl=g.status==='complete'?'✓ Complete':g.status==='on-track'?'✓ On Track':g.status==='at-risk'?'⚠ No Surplus':'⚠ Behind Schedule';
               const etaStr=g.etaDate?g.etaDate.toLocaleString('en-IN',{month:'short',year:'numeric'}):'–';
               const pct=g.targetAmount>0?Math.min(100,(g.currentAmount||0)/g.targetAmount*100):0;
               return(
-                <div key={g.id} style={{display:'flex',gap:10,padding:'10px 12px',borderRadius:8,border:'1.5px solid var(--n150)',background:'var(--bg)',alignItems:'flex-start'}}>
-                  <div style={{width:34,height:34,borderRadius:8,background:g.color||'var(--gl)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                    <Ic n="budget" s={14} c={g.color||'var(--g)'}/>
-                  </div>
+                <div key={g.id} style={{display:'flex',gap:12,padding:'13px 14px',borderRadius:10,border:`1.5px solid ${sc === 'var(--g)' ? 'rgba(0,179,134,.2)' : sc === 'var(--b)' ? 'rgba(37,99,235,.15)' : 'rgba(220,38,38,.15)'}`,background:'var(--n50)',alignItems:'flex-start'}}>
+                  <div style={{width:12,height:12,borderRadius:4,background:g.color||'var(--g)',flexShrink:0,marginTop:3,boxShadow:`0 2px 6px ${g.color||'var(--g)'}55`}}/>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
                       <span style={{fontSize:12.5,fontWeight:700,color:'var(--n800)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{g.name}</span>
-                      <span style={{fontSize:10.5,fontWeight:700,color:statusColor,flexShrink:0,marginLeft:6}}>{statusLabel}</span>
+                      <span style={{fontSize:9.5,fontWeight:700,color:sc,flexShrink:0,marginLeft:8,background:`${sc === 'var(--g)' ? 'rgba(0,179,134,.12)' : sc === 'var(--b)' ? 'rgba(37,99,235,.1)' : 'rgba(220,38,38,.1)'}`,padding:'2px 8px',borderRadius:99,border:`1px solid ${sc === 'var(--g)' ? 'rgba(0,179,134,.25)' : sc === 'var(--b)' ? 'rgba(37,99,235,.2)' : 'rgba(220,38,38,.2)'}`}}>{sl}</span>
                     </div>
-                    <div className="prog" style={{height:4,marginBottom:5}}><div className="pf" style={{width:`${pct}%`,background:g.color||'var(--g)'}}/></div>
+                    <div style={{height:5,borderRadius:99,background:'var(--n200)',marginBottom:6,overflow:'hidden'}}>
+                      <div style={{height:'100%',width:`${pct}%`,background:`linear-gradient(90deg,${g.color||'var(--g)'},${g.color||'var(--g)'}cc)`,borderRadius:99,transition:'width .4s ease'}}/>
+                    </div>
                     <div style={{display:'flex',justifyContent:'space-between',fontSize:10.5,color:'var(--n400)'}}>
-                      <span>{fmtINR(g.currentAmount||0,true)} of {fmtINR(g.targetAmount,true)}</span>
-                      <span style={{color:'var(--n600)',fontWeight:600}}>ETA: {etaStr}{g.monthsNeeded?` · ${g.monthsNeeded}mo`:''}</span>
+                      <span>{fmtINR(g.currentAmount||0,true)} / {fmtINR(g.targetAmount,true)} · <strong>{pct.toFixed(0)}%</strong></span>
+                      <span style={{color:'var(--n700)',fontWeight:700}}>ETA {etaStr}{g.monthsNeeded?` · ${g.monthsNeeded}mo`:''}</span>
                     </div>
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>}
-        {/* Debt-free + Savings rate insights */}
-        <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-          {debtFreeMonths&&<div style={{padding:'8px 14px',borderRadius:8,background:'var(--rl)',border:'1.5px solid rgba(239,68,68,.2)',display:'flex',gap:8,alignItems:'center'}}>
-            <Ic n="loan" s={13} c="var(--r)"/>
-            <div>
-              <div style={{fontSize:10,color:'var(--r)',fontWeight:700,textTransform:'uppercase',letterSpacing:.4}}>Debt-free estimate</div>
-              <div style={{fontSize:12,fontWeight:700,color:'var(--n700)'}}>{debtFreeMonths<=120?`~${debtFreeMonths} months`:'Over 10 years'} <span style={{color:'var(--n400)',fontWeight:400,fontSize:10.5}}>at current savings rate</span></div>
-            </div>
-          </div>}
-          {avgMonthlySavings>0&&<div style={{padding:'8px 14px',borderRadius:8,background:'var(--gl)',border:'1.5px solid rgba(0,179,134,.2)',display:'flex',gap:8,alignItems:'center'}}>
-            <Ic n="inc" s={13} c="var(--g)"/>
-            <div>
-              <div style={{fontSize:10,color:'var(--g)',fontWeight:700,textTransform:'uppercase',letterSpacing:.4}}>5-year wealth</div>
-              <div style={{fontSize:12,fontWeight:700,color:'var(--n700)'}}>{fmtINR(proj5yr,true)} <span style={{color:'var(--n400)',fontWeight:400,fontSize:10.5}}>at {fmtINR(avgMonthlySavings,true)}/mo</span></div>
-            </div>
-          </div>}
-          {totalEmi>0&&<div style={{padding:'8px 14px',borderRadius:8,background:'var(--bl)',border:'1.5px solid rgba(59,130,246,.2)',display:'flex',gap:8,alignItems:'center'}}>
-            <Ic n="exp" s={13} c="var(--b)"/>
-            <div>
-              <div style={{fontSize:10,color:'var(--b)',fontWeight:700,textTransform:'uppercase',letterSpacing:.4}}>Monthly EMI load</div>
-              <div style={{fontSize:12,fontWeight:700,color:'var(--n700)'}}>{fmtINR(totalEmi,true)}/mo <span style={{color:'var(--n400)',fontWeight:400,fontSize:10.5}}>{totalInc>0?`${(totalEmi/totalInc*months.length*100).toFixed(1)}% of income`:''}</span></div>
-            </div>
-          </div>}
-        </div>
+        </>}
       </div>
 
       {/* ROW 4: Loan Snapshot */}
@@ -3393,6 +3565,38 @@ function PageData({data,setData,toast}){
     if(!d.emergencyFund)d.emergencyFund={accountIds:[],targetMonths:6};
     if(!d.goals)d.goals=[];
     if(!d.recurring)d.recurring=[];
+    if(!d.investmentTxs)d.investmentTxs=[];
+    // Ensure profile.features exists
+    if(!d.profile.features)d.profile.features={investmentTracker:true};
+    // Ensure all goals have instruments array
+    d.goals=d.goals.map(g=>({...g,instruments:g.instruments||[]}));
+    // Migrate top-level investments[] → goal.instruments[] (Goal-First Architecture)
+    if(d.investments&&d.investments.length){
+      const gpId='__general_portfolio__';
+      d.investments.forEach(inv=>{
+        const targetGoalId=inv.goalId&&d.goals.find(g=>g.id===inv.goalId)?inv.goalId:gpId;
+        if(targetGoalId===gpId&&!d.goals.find(g=>g.id===gpId)){
+          d.goals=[...d.goals,{id:gpId,name:'General Portfolio',targetAmount:0,currentAmount:0,
+            targetDate:'',color:'#2563eb',notes:'Auto-created from migrated investments',instruments:[]}];
+        }
+        d.goals=d.goals.map(g=>{
+          if(g.id!==targetGoalId)return g;
+          if((g.instruments||[]).find(i=>i.id===inv.id))return g;
+          return{...g,instruments:[...g.instruments,{...inv,units:inv.units||0,currentNAV:inv.currentNAV||null,lastBuyNAV:inv.lastBuyNAV||null,lastNAVDate:inv.lastNAVDate||null}]};
+        });
+      });
+      delete d.investments;
+    } else { delete d.investments; }
+    // Migrate investmentTxs: ensure goalId field exists
+    d.investmentTxs=d.investmentTxs.map(tx=>{
+      if(tx.goalId)return tx;
+      const instrId=tx.instrumentId||tx.investmentId||null;
+      for(const g of d.goals){
+        if((g.instruments||[]).find(i=>i.id===instrId))
+          return{...tx,goalId:g.id,instrumentId:instrId};
+      }
+      return{...tx,instrumentId:instrId};
+    });
     // Ensure every transaction has required fields
     d.transactions=d.transactions.map(t=>({
       id:t.id||uid(),date:t.date||'',type:t.type||'expense',category:t.category||'Other Expense',
@@ -3953,6 +4157,25 @@ function PageProfile({data,setData,toast}){
               </div>
             )}
           </div>
+
+          {/* FEATURE MODULES SECTION */}
+          <div style={{marginTop:16,background:'var(--pl)',border:'1.5px solid rgba(124,58,237,.2)',borderRadius:8,padding:'14px 16px'}}>
+            <div style={{fontWeight:700,fontSize:13,color:'var(--p)',marginBottom:12,display:'flex',alignItems:'center',gap:7}}>🔧 Feature Modules</div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 12px',background:'var(--W)',borderRadius:8,border:'1px solid var(--n100)'}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:13}}>💰 Investment Tracker</div>
+                <div style={{fontSize:11,color:'var(--n400)',marginTop:2}}>Includes: Savings Goals · Investment Tracker · Financial Forecast</div>
+                <div style={{fontSize:10.5,color:'var(--n300)',marginTop:2}}>Turning OFF hides the tabs. Your data is preserved and restored when turned back ON.</div>
+              </div>
+              <button
+                onClick={()=>setData(d=>({...d,profile:{...d.profile,features:{...(d.profile.features||{}),investmentTracker:d.profile.features?.investmentTracker===false?true:false}}}))}
+                style={{padding:'7px 18px',borderRadius:99,fontWeight:700,fontSize:12,flexShrink:0,marginLeft:16,
+                  background:profile.features?.investmentTracker!==false?'var(--g)':'var(--n200)',
+                  color:profile.features?.investmentTracker!==false?'#fff':'var(--n500)',border:'none',cursor:'pointer'}}>
+                {profile.features?.investmentTracker!==false?'● ON':'○ OFF'}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -4433,7 +4656,33 @@ INC_SRC:${incCats||'none'}
 LOANS:${loanStr||'none'}
 CC:${ccStr||'none'}
 PROV:${provisions.length>0?provisions.slice(0,5).map(p=>`${p.type||p.entity}:${f(p.amount)}`).join(','):'none'}
-MAJOR_CATS:${(data.majorExpenseCategories||[]).join(',')||'none'}`.trim();
+MAJOR_CATS:${(data.majorExpenseCategories||[]).join(',')||'none'}
+INVESTMENTS:${(()=>{
+  const allInstrs=(data.goals||[]).flatMap(g=>(g.instruments||[]).map(i=>({...i,goalId:g.id,goalName:g.name})));
+  if(!allInstrs.length)return 'none';
+  const sipFV=(amt,rate,yr)=>{const r2=rate/100/12,n=Math.round(yr*12);return r2===0?amt*n:amt*(((1+r2)**n-1)/r2)*(1+r2);};
+  const totalMo=allInstrs.filter(i=>i.type!=='FD'&&i.type!=='PPF').reduce((s,i)=>s+i.amount,0);
+  const totalCorpus=allInstrs.reduce((s,i)=>s+(i.type==='FD'||i.type==='PPF'?(i.amount||0)*Math.pow(1+(i.returnRate||0)/100,i.years||0):sipFV(i.amount||0,i.returnRate||0,i.years||0)),0);
+  const details=allInstrs.map(i=>`${i.name}(${i.type}@${i.returnRate}%,${i.years}yr,Goal:${i.goalName})`).join(';');
+  return `Total:${f(totalMo)}/mo,CombinedCorpus:${f(totalCorpus)}|${details}`;
+})()}
+INVEST_TXS:${(()=>{
+  const itxs=data.investmentTxs||[];
+  if(!itxs.length)return 'none';
+  const totalInvested=itxs.reduce((s,t)=>s+t.amount,0);
+  const byInstr={};itxs.forEach(t=>{const k=t.instrumentId||t.investmentId||'?';byInstr[k]=(byInstr[k]||0)+t.amount;});
+  const allInstrs=(data.goals||[]).flatMap(g=>(g.instruments||[]));
+  return `TotalLogged:${f(totalInvested)},${Object.entries(byInstr).map(([id,v])=>{const i=allInstrs.find(x=>x.id===id);return `${i?i.name:id}:${f(v)}`;}).join(',')}`;
+})()}
+GOALS:${(()=>{
+  const gs=data.goals||[];
+  if(!gs.length)return 'none';
+  return gs.map(g=>{
+    const pct=g.targetAmount>0?(g.currentAmount/g.targetAmount*100).toFixed(0):0;
+    const instrCount=(g.instruments||[]).length;
+    return `${g.name}:Target${f(g.targetAmount)},Saved${f(g.currentAmount)}(${pct}%)${g.targetDate?',By'+g.targetDate:''}${instrCount?',Instruments:'+instrCount:''}`;
+  }).join('|');
+})()}`.trim();
   };
 
   /* ── Call AI API (Anthropic Claude / OpenAI GPT) ── */
@@ -4443,7 +4692,7 @@ MAJOR_CATS:${(data.majorExpenseCategories||[]).join(',')||'none'}`.trim();
     if(!isChat){setResult('');setActivePrompt(userPrompt);}
 
     const ctx=buildContext();
-    const systemPrompt=`You are an Indian personal finance advisor analyzing real data from "MyeeCFO". Use actual numbers (INR). Be specific, actionable. Reference 80C/80D/NPS/SIP where relevant. 3-5 prioritized tips. Celebrate wins before flagging concerns. Format with short paragraphs and dashes. Numbers in Lakhs(L)/Thousands(K). Never fabricate data.`;
+    const systemPrompt=`You are an expert Indian CFO and personal finance advisor analyzing real data from "MyeeCFO". The data includes income, expenses, loans, credit cards, savings goals, SIP/investment plans with projected corpus, and actual investment transaction logs. Use actual numbers (INR). Be specific and actionable. Reference 80C/80D/NPS/SIP/ELSS where relevant. Comment on investment plan health (is corpus sufficient for goals? Is return rate realistic?). Identify if savings goals will be met based on linked investments. Suggest reallocation if needed. 4-6 prioritized insights. Celebrate wins before flagging concerns. Format with short paragraphs and bullet points. Numbers in Lakhs(L)/Thousands(K). Never fabricate data not present in the context.`;
 
     const userMsg=isChat?userPrompt:`Here is my complete financial data:\n\n${ctx}\n\n---\n\nBased on this data, please: ${userPrompt}`;
     const messages=isChat
@@ -4876,94 +5125,869 @@ MAJOR_CATS:${(data.majorExpenseCategories||[]).join(',')||'none'}`.trim();
 
 
 /* ══════════════════════════════════════
+   INVESTMENT TRACKER
+══════════════════════════════════════ */
+function PageInvestmentTracker({data,setData,toast}){
+  const itxs=data.investmentTxs||[];
+  const goals=(data.goals||[]).filter(g=>(g.instruments||[]).length>0);
+  const allGoals=data.goals||[];
+
+  const TC={'SIP':'var(--g)','Mutual Fund':'var(--b)','RD':'var(--t)','FD':'var(--o)','PPF':'var(--p)'};
+  const TBG={'SIP':'var(--gl)','Mutual Fund':'var(--bl)','RD':'var(--tl)','FD':'var(--ol)','PPF':'var(--pl)'};
+
+  // ── Date-accurate corpus: each logged payment grows independently ──
+  const corpusNow=(instr)=>{
+    const txs=itxs.filter(t=>t.instrumentId===instr.id);
+    if(!txs.length)return 0;
+    const r=(instr.returnRate||0)/100/12;
+    const now=Date.now();
+    return txs.reduce((sum,tx)=>{
+      const mo=Math.max(0,(now-new Date(tx.date).getTime())/(86400000*30.44));
+      return sum+(tx.amount||0)*(r>0?Math.pow(1+r,mo):1);
+    },0);
+  };
+
+  // ── All instruments across goals, with stats ──
+  const allInstrs=goals.flatMap(g=>(g.instruments||[]).map(i=>({...i,goalId:g.id,goalName:g.name,goalColor:g.color})));
+  const instrStats=allInstrs.map(i=>{
+    const txs=itxs.filter(t=>t.instrumentId===i.id);
+    const totalInvested=txs.reduce((s,t)=>s+(t.amount||0),0);
+    const corpus=corpusNow(i);
+    const gain=corpus-totalInvested;
+    const tm=new Date().toISOString().slice(0,7);
+    const paidThisMonth=txs.some(t=>t.date.slice(0,7)===tm);
+    return{...i,txs,totalInvested,corpus,gain,paidThisMonth};
+  });
+
+  const totalInvestedAll=instrStats.reduce((s,p)=>s+p.totalInvested,0);
+  const totalCorpusAll=instrStats.reduce((s,p)=>s+p.corpus,0);
+  const totalGainAll=totalCorpusAll-totalInvestedAll;
+  const thisMonthTotal=instrStats.reduce((s,p)=>{const tm=new Date().toISOString().slice(0,7);return s+p.txs.filter(t=>t.date.slice(0,7)===tm).reduce((a,t)=>a+t.amount,0);},0);
+
+  // ── Log Contribution Modal ──
+  const EF={goalId:goals[0]?.id||'',instrumentId:'',amount:'',date:new Date().toISOString().slice(0,10),units:'',nav:'',notes:''};
+  const [form,setForm]=useState(EF);
+  const [modal,setModal]=useState(false);
+  const [selGoalFilter,setSelGoalFilter]=useState('all');
+  const ff=v=>setForm(f=>({...f,...v}));
+
+  const selGoal=allGoals.find(g=>g.id===form.goalId);
+  const selInstrList=selGoal?(selGoal.instruments||[]):[];
+  const selInstr=selInstrList.find(i=>i.id===form.instrumentId);
+  const isNAV=selInstr&&(selInstr.type==='SIP'||selInstr.type==='Mutual Fund');
+
+  const openAdd=(gId,iId)=>{
+    setForm({...EF,goalId:gId||goals[0]?.id||'',instrumentId:iId||''});
+    setModal(true);
+  };
+  const save=()=>{
+    if(!form.goalId||!form.instrumentId||!form.amount){toast('Select goal, instrument & amount','r');return;}
+    const tx={id:uid(),goalId:form.goalId,instrumentId:form.instrumentId,amount:+form.amount,
+      date:form.date,month:form.date.slice(0,7),notes:form.notes||'',
+      units:isNAV&&form.units?+form.units:0,nav:isNAV&&form.nav?+form.nav:null};
+    // Auto-update goal.currentAmount
+    setData(d=>({...d,
+      investmentTxs:[...(d.investmentTxs||[]),tx],
+      goals:d.goals.map(g=>{
+        if(g.id!==form.goalId)return g;
+        const updInstr=(g.instruments||[]).map(i=>{
+          if(i.id!==form.instrumentId)return i;
+          const newUnits=(i.units||0)+(tx.units||0);
+          const newNav=isNAV&&tx.nav?tx.nav:i.currentNAV;
+          return{...i,units:isNAV?newUnits:i.units,lastBuyNAV:isNAV&&tx.nav?tx.nav:i.lastBuyNAV,
+            currentNAV:isNAV&&tx.nav?newNav:i.currentNAV,
+            lastNAVDate:isNAV&&tx.nav?tx.date:i.lastNAVDate};
+        });
+        return{...g,currentAmount:(g.currentAmount||0)+(+form.amount),instruments:updInstr};
+      })
+    }));
+    setModal(false);
+    toast('Contribution logged · Goal updated ✓','g');
+  };
+  const delTx=id=>{
+    if(!window.confirm('Delete this entry? Goal amount will NOT be auto-reversed.'))return;
+    setData(d=>({...d,investmentTxs:d.investmentTxs.filter(t=>t.id!==id)}));
+    toast('Deleted','x');
+  };
+
+  const sortedTxs=[...itxs].sort((a,b)=>b.date.localeCompare(a.date));
+  const filtTxs=selGoalFilter==='all'?sortedTxs:sortedTxs.filter(t=>t.goalId===selGoalFilter);
+
+  return(
+    <div className="page">
+      <div className="ph mb3">
+        <div>
+          <div className="ptitle" style={{display:'flex',alignItems:'center',gap:8}}>
+            <div style={{width:32,height:32,borderRadius:9,background:'linear-gradient(135deg,#00b386,#f59e0b)',display:'grid',placeItems:'center',flexShrink:0}}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            Investment Tracker
+          </div>
+          <div className="psub">Log contributions · Auto-updates goal progress · Date-accurate compound corpus</div>
+        </div>
+        {goals.length>0&&<button className="btn btn-p" onClick={()=>openAdd()}><Ic n="plus" s={13} c="#fff"/>Log Contribution</button>}
+      </div>
+
+      {/* Gate: no goals with instruments */}
+      {goals.length===0?(
+        <div className="card" style={{textAlign:'center',padding:'40px 20px'}}>
+          <div style={{fontSize:36,marginBottom:10}}>📊</div>
+          <div style={{fontSize:14,fontWeight:700,color:'var(--n600)',marginBottom:6}}>No investment instruments found</div>
+          <div style={{fontSize:12,color:'var(--n400)',marginBottom:16}}>
+            Go to <strong>Savings Goals</strong>, create a goal, and add instruments (SIP / MF / RD / FD / PPF) inside it.
+            Then come back here to log contributions.
+          </div>
+          <button className="btn btn-p" style={{margin:'0 auto'}} onClick={()=>{}}>→ Go to Savings Goals</button>
+        </div>
+      ):(
+        <>
+        {/* ── Summary tiles ── */}
+        <div className="g4 mb3">
+          {[
+            {l:'Total Invested',v:totalInvestedAll,c:'var(--b)',bg:'var(--bl)',b:'rgba(37,99,235,.15)',sub:`across ${instrStats.filter(p=>p.totalInvested>0).length} instruments`},
+            {l:'Corpus Today',v:totalCorpusAll,c:'var(--g)',bg:'var(--gl)',b:'rgba(0,179,134,.2)',sub:totalGainAll>=0?`+${fmtINR(totalGainAll,true)} gains`:'–',gsub:totalGainAll>=0},
+            {l:'This Month',v:thisMonthTotal,c:'var(--o)',bg:'var(--ol)',b:'rgba(217,119,6,.15)',sub:`${instrStats.filter(p=>!p.paidThisMonth&&p.totalInvested>0).length} pending`},
+            {l:'Instruments',v:allInstrs.length,isCount:true,c:'var(--p)',bg:'var(--pl)',b:'rgba(124,58,237,.15)',sub:`across ${goals.length} goals`},
+          ].map(x=>(
+            <div key={x.l} style={{padding:'14px 16px',borderRadius:10,background:x.bg,border:`1.5px solid ${x.b}`}}>
+              <div style={{fontSize:9.5,fontWeight:700,textTransform:'uppercase',letterSpacing:.5,color:'var(--n500)',marginBottom:6}}>{x.l}</div>
+              <div style={{fontFamily:'var(--m)',fontSize:x.isCount?26:20,fontWeight:800,color:x.c}}>{x.isCount?x.v:fmtINR(x.v,true)}</div>
+              {x.sub&&<div style={{fontSize:10,color:x.gsub?'var(--gd)':'var(--n400)',marginTop:3,fontWeight:x.gsub?700:400}}>{x.sub}</div>}
+            </div>
+          ))}
+        </div>
+
+        {/* ── Per-goal sections ── */}
+        {goals.map(g=>{
+          const gInstrs=instrStats.filter(i=>i.goalId===g.id);
+          const gCorpus=gInstrs.reduce((s,i)=>s+i.corpus,0);
+          const gInvested=gInstrs.reduce((s,i)=>s+i.totalInvested,0);
+          const pct=g.targetAmount>0?Math.min(100,g.currentAmount/g.targetAmount*100):0;
+          return(
+            <div key={g.id} className="card mb3">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+                <div style={{display:'flex',alignItems:'center',gap:9}}>
+                  <div style={{width:10,height:10,borderRadius:99,background:g.color||'var(--g)',flexShrink:0}}/>
+                  <div style={{fontWeight:800,fontSize:14}}>🎯 {g.name}</div>
+                  <span style={{fontSize:10,color:'var(--n400)'}}>· Saved {fmtINR(g.currentAmount,true)} of {fmtINR(g.targetAmount,true)}</span>
+                </div>
+                <button className="btn btn-s btn-sm" onClick={()=>openAdd(g.id)}><Ic n="plus" s={11}/>Log</button>
+              </div>
+              {/* Goal progress bar */}
+              <div className="prog" style={{height:5,marginBottom:12}}><div className="pf" style={{width:`${pct}%`,background:g.color||'var(--g)'}}/></div>
+              {gInstrs.length===0?(
+                <div style={{fontSize:12,color:'var(--n400)',textAlign:'center',padding:'12px'}}>No instruments in this goal</div>
+              ):(
+                <div className="g2">
+                  {gInstrs.map(p=>{
+                    const investedPct=p.corpus>0?(p.totalInvested/p.corpus*100):100;
+                    const tc=TC[p.type]||'var(--n600)';
+                    const tbg=TBG[p.type]||'var(--n100)';
+                    return(
+                      <div key={p.id} style={{borderRadius:10,border:`1.5px solid ${p.color||'var(--n200)'}33`,overflow:'hidden'}}>
+                        <div style={{padding:'10px 12px',background:`${p.color||'#888'}12`,borderBottom:`1px solid ${p.color||'#888'}22`,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                          <div style={{display:'flex',alignItems:'center',gap:7}}>
+                            <div style={{width:24,height:24,borderRadius:7,background:p.color||'var(--n400)',display:'grid',placeItems:'center',flexShrink:0}}><Ic n="budget" s={11} c="#fff"/></div>
+                            <div>
+                              <div style={{fontSize:12.5,fontWeight:800}}>{p.name}</div>
+                              <div style={{fontSize:9.5,color:'var(--n500)'}}>{p.type==='FD'||p.type==='PPF'?fmtINR(p.amount,true):fmtINR(p.amount,true)+'/mo'} · {p.returnRate}% · {p.years}yr</div>
+                            </div>
+                          </div>
+                          <div style={{display:'flex',gap:5}}>
+                            <span style={{fontSize:9,fontWeight:700,color:tc,background:tbg,padding:'2px 6px',borderRadius:99}}>{p.type}</span>
+                            {!p.paidThisMonth&&p.totalInvested>0&&<span style={{fontSize:9,fontWeight:700,color:'var(--r)',background:'var(--rl)',padding:'2px 6px',borderRadius:99}}>⚠ Due</span>}
+                            {p.paidThisMonth&&<span style={{fontSize:9,fontWeight:700,color:'var(--g)',background:'var(--gl)',padding:'2px 6px',borderRadius:99}}>✓ Paid</span>}
+                          </div>
+                        </div>
+                        <div style={{padding:'10px 12px'}}>
+                          {p.totalInvested===0?(
+                            <div style={{textAlign:'center',padding:'8px',color:'var(--n400)',fontSize:11}}>
+                              No contributions yet
+                              <button style={{display:'block',margin:'6px auto 0',fontSize:10,padding:'3px 12px',borderRadius:5,border:'1.5px solid var(--n200)',background:'var(--W)',cursor:'pointer'}} onClick={()=>openAdd(g.id,p.id)}>+ First Contribution</button>
+                            </div>
+                          ):(
+                            <>
+                            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6,marginBottom:8}}>
+                              {[
+                                {l:'Invested',v:fmtINR(p.totalInvested,true),c:'var(--n700)'},
+                                {l:'Corpus Today',v:fmtINR(p.corpus,true),c:p.color||'var(--g)',bold:true},
+                                {l:'Gain',v:`+${fmtINR(p.gain,true)}`,c:'var(--gd)',bold:true},
+                                {l:'Entries',v:p.txs.length+' contributions',c:'var(--n500)'},
+                              ].map(x=>(
+                                <div key={x.l} style={{background:'var(--n50)',borderRadius:7,padding:'6px 9px'}}>
+                                  <div style={{fontSize:9,color:'var(--n400)',marginBottom:2}}>{x.l}</div>
+                                  <div style={{fontFamily:'var(--m)',fontSize:11.5,fontWeight:x.bold?800:600,color:x.c}}>{x.v}</div>
+                                </div>
+                              ))}
+                            </div>
+                            <div style={{height:5,borderRadius:99,background:'var(--n200)',overflow:'hidden',display:'flex',marginBottom:4}}>
+                              <div style={{width:`${investedPct}%`,background:(p.color||'#888')+'66'}}/>
+                              <div style={{flex:1,background:p.color||'var(--g)'}}/>
+                            </div>
+                            <div style={{display:'flex',justifyContent:'space-between',fontSize:9,color:'var(--n400)'}}>
+                              <span>Principal {investedPct.toFixed(0)}%</span>
+                              <span style={{color:'var(--gd)',fontWeight:700}}>Gains {(100-investedPct).toFixed(0)}%</span>
+                            </div>
+                            <button style={{marginTop:7,width:'100%',padding:'5px',borderRadius:6,border:'1.5px solid var(--n200)',background:'var(--W)',fontSize:10.5,cursor:'pointer',fontFamily:'var(--f)',fontWeight:600}} onClick={()=>openAdd(g.id,p.id)}>+ Log Contribution</button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {gInstrs.length>0&&<div style={{marginTop:10,paddingTop:8,borderTop:'1px solid var(--n100)',display:'flex',justifyContent:'space-between',alignItems:'center',fontSize:11.5}}>
+                <span style={{color:'var(--n500)'}}>Invested: <strong>{fmtINR(gInvested,true)}</strong></span>
+                <span style={{color:'var(--g)',fontWeight:700}}>Corpus: {fmtINR(gCorpus,true)}</span>
+              </div>}
+            </div>
+          );
+        })}
+
+        {/* ── Contribution Log ── */}
+        <div className="card">
+          <div className="sh mb3">
+            <div className="sh-t"><Ic n="pnl" s={13} c="var(--b)"/>Contribution Log</div>
+            <select value={selGoalFilter} onChange={e=>setSelGoalFilter(e.target.value)} style={{fontSize:11,padding:'4px 8px',border:'1.5px solid var(--n200)',borderRadius:6,background:'var(--W)'}}>
+              <option value="all">All Goals</option>
+              {goals.map(g=><option key={g.id} value={g.id}>{g.name}</option>)}
+            </select>
+          </div>
+          {filtTxs.length===0?(
+            <div style={{textAlign:'center',padding:'20px',color:'var(--n400)',fontSize:12}}>No contributions logged yet</div>
+          ):(
+            <div className="tw">
+              <table>
+                <thead><tr><th>Date</th><th>Goal</th><th>Instrument</th><th className="num">Amount</th><th className="num">Corpus (now)</th><th>Notes</th><th style={{width:40}}>Del</th></tr></thead>
+                <tbody>
+                  {filtTxs.map(tx=>{
+                    const gObj=allGoals.find(g=>g.id===tx.goalId);
+                    const instr=(gObj?.instruments||[]).find(i=>i.id===tx.instrumentId);
+                    const r=(instr?.returnRate||0)/100/12;
+                    const mo=Math.max(0,(Date.now()-new Date(tx.date).getTime())/(86400000*30.44));
+                    const txCorpus=(tx.amount||0)*(r>0?Math.pow(1+r,mo):1);
+                    return(
+                      <tr key={tx.id}>
+                        <td style={{fontFamily:'var(--m)',fontSize:11}}>{tx.date}</td>
+                        <td style={{fontSize:11}}>{gObj?<><span style={{width:7,height:7,borderRadius:99,background:gObj.color||'var(--g)',display:'inline-block',marginRight:5,verticalAlign:'middle'}}/>{gObj.name}</>:'–'}</td>
+                        <td style={{fontSize:11}}>{instr?<><span style={{fontSize:9,fontWeight:700,color:TC[instr.type]||'var(--n500)',background:TBG[instr.type]||'var(--n100)',padding:'1px 5px',borderRadius:4,marginRight:4}}>{instr.type}</span>{instr.name}</>:'–'}</td>
+                        <td className="num" style={{fontFamily:'var(--m)',fontWeight:700}}>{fmtINR(tx.amount,true)}</td>
+                        <td className="num" style={{fontFamily:'var(--m)',color:'var(--g)',fontWeight:700}}>{fmtINR(txCorpus,true)}</td>
+                        <td style={{color:'var(--n400)',fontSize:11}}>{tx.notes||'—'}</td>
+                        <td><button className="bic red" onClick={()=>delTx(tx.id)}><Ic n="del" s={11}/></button></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+        </>
+      )}
+
+      {/* ── Log Contribution Modal ── */}
+      {modal&&(
+        <div className="ov" onClick={()=>setModal(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()} style={{maxWidth:480}}>
+            <div className="mh"><div style={{fontWeight:700,fontSize:15}}>Log Contribution</div><button className="xb" onClick={()=>setModal(false)}>×</button></div>
+            <div style={{padding:'16px 20px 20px'}}>
+              <div className="f2 mb2">
+                <div className="fg fg-full"><label>Goal *</label>
+                  <select value={form.goalId} onChange={e=>ff({goalId:e.target.value,instrumentId:''})}>
+                    <option value="">— Select Goal —</option>
+                    {allGoals.filter(g=>(g.instruments||[]).length>0).map(g=><option key={g.id} value={g.id}>{g.name}</option>)}
+                  </select>
+                </div>
+                <div className="fg fg-full"><label>Instrument *</label>
+                  <select value={form.instrumentId} onChange={e=>ff({instrumentId:e.target.value,amount:String(selInstrList.find(i=>i.id===e.target.value)?.amount||'')})}>
+                    <option value="">— Select Instrument —</option>
+                    {selInstrList.map(i=><option key={i.id} value={i.id}>{i.name} ({i.type} · {fmtINR(i.amount,true)}/mo)</option>)}
+                  </select>
+                </div>
+                <div className="fg"><label>Amount (₹) *</label><input type="number" placeholder="0" value={form.amount} onChange={e=>ff({amount:e.target.value})}/></div>
+                <div className="fg"><label>Date</label><input type="date" value={form.date} onChange={e=>ff({date:e.target.value})}/></div>
+                {isNAV&&<>
+                  <div className="fg"><label>Units Purchased</label><input type="number" placeholder="e.g. 12.345" value={form.units} onChange={e=>ff({units:e.target.value})}/></div>
+                  <div className="fg"><label>NAV at Purchase (₹)</label><input type="number" placeholder="e.g. 48.50" value={form.nav} onChange={e=>ff({nav:e.target.value})}/></div>
+                </>}
+                <div className="fg fg-full"><label>Notes</label><input placeholder="e.g. April installment" value={form.notes||''} onChange={e=>ff({notes:e.target.value})}/></div>
+              </div>
+              {selInstr&&form.amount&&+form.amount>0&&<div style={{padding:'9px 12px',background:'var(--gl)',borderRadius:7,marginBottom:12,border:'1px solid rgba(0,179,134,.2)',fontSize:11,color:'var(--gd)'}}>
+                ✓ This contribution will be added to <strong>{selGoal?.name}</strong>'s saved amount automatically.
+              </div>}
+              <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
+                <button className="btn" onClick={()=>setModal(false)}>Cancel</button>
+                <button className="btn btn-p" onClick={save}>Log Contribution</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   FINANCIAL FORECAST
+══════════════════════════════════════ */
+function PageForecast({data,toast}){
+  const {transactions,accounts,creditCards,loans,profile,goals}=data;
+  // All instruments from goals (Goal-First Architecture)
+  const allInstrs=(goals||[]).flatMap(g=>(g.instruments||[]).map(i=>({...i,goalId:g.id,goalName:g.name,goalColor:g.color})));
+
+  // ── Days-elapsed averages ──
+  const pMonths=useMemo(()=>getPeriodMonths(profile.periodStart,profile.periodEnd),[profile.periodStart,profile.periodEnd]);
+  const pTxs=transactions.filter(t=>pMonths.some(m=>m.key===t.month));
+  const pInc=pTxs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const pExp=pTxs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const fcS=pMonths.length?new Date(pMonths[0].key+'-01'):new Date();
+  const fcE=pMonths.length?new Date(pMonths[pMonths.length-1].key+'-28'):new Date();
+  const fcN=new Date(Math.min(Date.now(),fcE.getTime()));
+  const fcD=Math.max(1,Math.round((fcN-fcS)/86400000));
+  const avgInc=pInc/fcD*30;
+  const avgExp=pExp/fcD*30;
+  const netSav=avgInc-avgExp;
+
+  // ── Liquid NW — matches Dashboard formula ──
+  const _bankBal=accounts.filter(a=>a.type==='bank').reduce((s,a)=>s+(a.balance||0),0);
+  const _cashBal=accounts.filter(a=>a.type==='cash'||a.type==='wallet').reduce((s,a)=>s+(a.balance||0),0);
+  const _fdBal=accounts.filter(a=>a.type==='fd').reduce((s,a)=>s+(a.balance||0),0);
+  const _ccLiab=creditCards.reduce((s,c)=>s+(c.payable||0)+(c.provision||0),0);
+  const _loanOS=loans.reduce((s,l)=>s+(l.outstanding||0),0);
+  const _provTotal=(data.provisions||[]).reduce((s,p)=>s+(p.amount||0),0);
+  const liquidNW=_bankBal+_cashBal+_fdBal-_ccLiab-_loanOS-_provTotal;
+
+  // ── Investment NW from instruments ──
+  const sipFV=(amt,rate,yr)=>{const r=rate/100/12,n=Math.round(yr*12);if(!amt||!yr)return 0;return r===0?amt*n:amt*(((1+r)**n-1)/r)*(1+r);};
+  const instrCurrentVal=(i)=>{
+    if((i.type==='SIP'||i.type==='Mutual Fund')&&(i.units||0)>0&&(i.currentNAV||i.lastBuyNAV)){
+      return (i.units||0)*(i.currentNAV||i.lastBuyNAV||0);
+    }
+    if(i.type==='FD'||i.type==='PPF'){return (i.amount||0)*Math.pow(1+(i.returnRate||0)/100,i.years||0);}
+    return sipFV(i.amount||0,i.returnRate||0,i.years||0);
+  };
+  const investmentNW=allInstrs.reduce((s,i)=>s+instrCurrentVal(i),0);
+  const totalNW=liquidNW+investmentNW;
+
+  // ── Loan helpers ──
+  const totalEmi=loans.reduce((s,l)=>s+(l.emi||0),0);
+  const monthlyInt=loans.reduce((s,l)=>s+(l.outstanding||0)*(l.roi||0)/100/12,0);
+  const monthlyPrin=Math.max(0,totalEmi-monthlyInt);
+  const loanEndTimes=loans.filter(l=>l.endDate).map(l=>new Date(l.endDate).getTime());
+  const moDebt=loanEndTimes.length?Math.max(0,Math.ceil((Math.max(...loanEndTimes)-Date.now())/86400000/30)):999;
+
+  // ── Investment totals ──
+  const totalMoInv=allInstrs.filter(i=>i.type!=='FD'&&i.type!=='PPF').reduce((s,i)=>s+(i.amount||0),0);
+  const liquidSav=netSav-totalMoInv;
+
+  // ── FV at projection month ──
+  const fvAt=(inv,mo)=>{
+    const mat=Math.round(inv.years*12),r=(inv.returnRate||0)/100/12;
+    if(mo<=mat){return r===0?(inv.amount||0)*mo:(inv.amount||0)*(((1+r)**mo-1)/r)*(1+r);}
+    return sipFV(inv.amount||0,inv.returnRate||0,inv.years||0)*(1+r)**(mo-mat);
+  };
+
+  // ── FY-aligned milestones ──
+  const fyEnd=pMonths.length?new Date(pMonths[pMonths.length-1].key+'-28'):new Date();
+  const _now=new Date();
+  const moFY=Math.max(1,Math.ceil((fyEnd-_now)/86400000/30));
+  const _tDate=mo=>{const d=new Date();d.setMonth(d.getMonth()+mo);return d.toLocaleString('en-IN',{month:'short',year:'2-digit'});};
+  const MS=[
+    {l:'Today',mo:0,c:'var(--n700)'},
+    {l:'FY End',mo:moFY,c:'var(--g)',d:_tDate(moFY)},
+    {l:'3 Years',mo:moFY+24,c:'var(--b)',d:_tDate(moFY+24)},
+    {l:'5 Years',mo:moFY+48,c:'var(--b)',d:_tDate(moFY+48)},
+    {l:'10 Years',mo:moFY+108,c:'var(--p)',d:_tDate(moFY+108)},
+  ];
+
+  // ── NW projection WITH compound investments ──
+  const projNW=mo=>{
+    if(mo===0)return totalNW;
+    const liq=liquidSav*mo+totalEmi*Math.max(0,mo-moDebt);
+    const corp=allInstrs.reduce((s,i)=>s+fvAt(i,mo),0);
+    const debt=monthlyPrin*Math.min(mo,moDebt);
+    return totalNW+liq+corp+debt;
+  };
+  // ── Baseline WITHOUT compound investments ──
+  const simNW=mo=>{
+    if(mo===0)return totalNW;
+    return totalNW+netSav*mo+monthlyPrin*Math.min(mo,moDebt)+totalEmi*Math.max(0,mo-moDebt);
+  };
+
+  // ── NAV staleness check (>7 days) ──
+  const staleNavInstrs=allInstrs.filter(i=>(i.type==='SIP'||i.type==='Mutual Fund')&&i.lastNAVDate&&(Date.now()-new Date(i.lastNAVDate))/86400000>7);
+
+  // ── Type meta ──
+  const TC={'SIP':'var(--g)','Mutual Fund':'var(--b)','RD':'var(--t)','FD':'var(--o)','PPF':'var(--p)'};
+  const TBG={'SIP':'var(--gl)','Mutual Fund':'var(--bl)','RD':'var(--tl)','FD':'var(--ol)','PPF':'var(--pl)'};
+
+  return(
+    <div className="page">
+      {/* ── Header ── */}
+      <div className="ph mb3">
+        <div>
+          <div className="ptitle" style={{display:'flex',alignItems:'center',gap:8}}>
+            <div style={{width:32,height:32,borderRadius:9,background:'linear-gradient(135deg,#00b386,#2563eb)',display:'grid',placeItems:'center',flexShrink:0}}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            </div>
+            Financial Forecast
+          </div>
+          <div className="psub">View-only · NW snapshot · Per-goal corpus projections · FY-aligned NW trajectory</div>
+        </div>
+        <span className="tag tb" style={{fontSize:10}}>📖 View Only · Edit instruments in Goals tab</span>
+      </div>
+
+      {/* ── NAV stale warning ── */}
+      {staleNavInstrs.length>0&&<div style={{padding:'10px 14px',background:'var(--ol)',border:'1.5px solid var(--o)',borderRadius:8,marginBottom:16,fontSize:11.5,color:'var(--n800)'}}>
+        ⚠ <strong>{staleNavInstrs.length} instrument(s)</strong> have NAV not updated in 7+ days ({staleNavInstrs.map(i=>i.name).join(', ')}). Update NAV in Savings Goals → instrument card.
+      </div>}
+
+      {/* ── Section 1: NW Snapshot ── */}
+      <div className="g3 mb3" style={{gap:12}}>
+        {[
+          {l:'Liquid Net Worth',v:liquidNW,c:'var(--b)',bg:'var(--bl)',b:'rgba(37,99,235,.2)',sub:'Bank+Cash+FD – Loans – CC – Provisions',icon:'💳'},
+          {l:'Investment NW',v:investmentNW,c:'var(--g)',bg:'var(--gl)',b:'rgba(0,179,134,.2)',sub:`${allInstrs.length} instruments across ${(goals||[]).filter(g=>(g.instruments||[]).length>0).length} goals`,icon:'📈'},
+          {l:'Total Net Worth',v:totalNW,c:totalNW>=0?'var(--p)':'var(--r)',bg:'var(--pl)',b:'rgba(124,58,237,.2)',sub:'Liquid + Investment NW',icon:'💎'},
+        ].map(x=>(
+          <div key={x.l} style={{padding:'16px 18px',borderRadius:12,background:x.bg,border:`1.5px solid ${x.b}`}}>
+            <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:8}}>
+              <span style={{fontSize:18}}>{x.icon}</span>
+              <div style={{fontSize:9.5,fontWeight:700,textTransform:'uppercase',letterSpacing:.5,color:'var(--n500)'}}>{x.l}</div>
+            </div>
+            <div style={{fontFamily:'var(--m)',fontSize:22,fontWeight:800,color:x.c,letterSpacing:-.4}}>{fmtINR(x.v,true)}</div>
+            <div style={{fontSize:10,color:'var(--n400)',marginTop:4}}>{x.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Section 2: Per-goal corpus summary ── */}
+      {(goals||[]).length>0&&(
+        <div className="card mb3">
+          <div className="sh mb3"><div className="sh-t"><Ic n="budget" s={13} c="var(--g)"/>Goal-wise Corpus Projections</div>
+            <span style={{fontSize:10,color:'var(--n400)'}}>Formula-based at maturity · Edit in Goals tab</span>
+          </div>
+          {(goals||[]).map(g=>{
+            const instrs=g.instruments||[];
+            if(instrs.length===0)return null;
+            const gCorpus=instrs.reduce((s,i)=>{
+              if(i.type==='FD'||i.type==='PPF')return s+(i.amount||0)*Math.pow(1+(i.returnRate||0)/100,i.years||0);
+              return s+sipFV(i.amount||0,i.returnRate||0,i.years||0);
+            },0);
+            const gPrincipal=instrs.reduce((s,i)=>{
+              if(i.type==='FD'||i.type==='PPF')return s+(i.amount||0);
+              return s+(i.amount||0)*(i.years||0)*12;
+            },0);
+            const covPct=g.targetAmount>0?(gCorpus/g.targetAmount*100):0;
+            const pct=g.targetAmount>0?Math.min(100,(g.currentAmount||0)/g.targetAmount*100):0;
+            return(
+              <div key={g.id} style={{padding:'12px 14px',borderRadius:10,border:`1.5px solid ${g.color||'var(--n200)'}33`,marginBottom:10,background:'var(--n50)'}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <div style={{width:10,height:10,borderRadius:99,background:g.color||'var(--g)',flexShrink:0}}/>
+                    <span style={{fontWeight:800,fontSize:13,color:'var(--n800)'}}>{g.name}</span>
+                    {g.targetDate&&<span style={{fontSize:10,color:'var(--n400)'}}>· by {fmtDate(g.targetDate)}</span>}
+                  </div>
+                  <div style={{textAlign:'right'}}>
+                    <div style={{fontSize:11,fontWeight:700,color:'var(--g)'}}>{fmtINR(gCorpus,true)} corpus</div>
+                    <div style={{fontSize:9.5,color:covPct>=100?'var(--gd)':'var(--o)',fontWeight:700}}>{covPct>=100?'✅ Covers target':covPct.toFixed(0)+'% coverage'}</div>
+                  </div>
+                </div>
+                {/* Saved progress */}
+                <div style={{fontSize:10,color:'var(--n500)',marginBottom:5}}>Saved: {fmtINR(g.currentAmount||0,true)} / {fmtINR(g.targetAmount,true)} ({pct.toFixed(1)}%)</div>
+                <div className="prog" style={{height:5,marginBottom:8}}><div className="pf" style={{width:`${pct}%`,background:g.color||'var(--g)'}}/></div>
+                {/* Instruments */}
+                <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+                  {instrs.map(i=>{
+                    const iCorpus=i.type==='FD'||i.type==='PPF'?(i.amount||0)*Math.pow(1+(i.returnRate||0)/100,i.years||0):sipFV(i.amount||0,i.returnRate||0,i.years||0);
+                    return(
+                      <div key={i.id} style={{flex:1,minWidth:160,padding:'8px 10px',background:'var(--W)',borderRadius:8,border:`1px solid ${i.color||'var(--n200)'}33`}}>
+                        <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:4}}>
+                          <span style={{width:6,height:6,borderRadius:99,background:i.color||'var(--g)',flexShrink:0}}/>
+                          <span style={{fontSize:11.5,fontWeight:700}}>{i.name}</span>
+                          <span style={{fontSize:9,fontWeight:700,color:TC[i.type]||'var(--n500)',background:TBG[i.type]||'var(--n100)',padding:'1px 5px',borderRadius:4}}>{i.type}</span>
+                        </div>
+                        <div style={{fontSize:10,color:'var(--n500)'}}>
+                          {i.type==='FD'||i.type==='PPF'?fmtINR(i.amount||0,true):fmtINR(i.amount||0,true)+'/mo'} · {i.returnRate}% · {i.years}yr
+                        </div>
+                        <div style={{fontFamily:'var(--m)',fontSize:13,fontWeight:800,color:'var(--g)',marginTop:4}}>{fmtINR(iCorpus,true)}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{display:'flex',gap:12,marginTop:8,paddingTop:6,borderTop:'1px dashed var(--n100)',fontSize:10.5}}>
+                  <span style={{color:'var(--n500)'}}>Principal: <strong>{fmtINR(gPrincipal,true)}</strong></span>
+                  <span style={{color:'var(--gd)',fontWeight:700}}>Gain: +{fmtINR(gCorpus-gPrincipal,true)}</span>
+                  {g.targetAmount>0&&<span style={{color:covPct>=100?'var(--g)':'var(--o)',fontWeight:700,marginLeft:'auto'}}>Target: {fmtINR(g.targetAmount,true)}</span>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Section 3: NW Trajectory ── */}
+      <div className="card mb3">
+        <div className="sh mb3">
+          <div className="sh-t"><Ic n="budget" s={13} c="var(--b)"/>Net Worth Trajectory · {allInstrs.length>0?'With Compound Investments':'Cash Flow Only'}</div>
+          {allInstrs.length>0&&<span className="tag tg" style={{fontSize:10}}>Compound</span>}
+        </div>
+        <div className="g3" style={{gap:10,marginBottom:allInstrs.length>0?20:0}}>
+          {MS.map(ms=>{
+            const wInv=projNW(ms.mo),wOut=simNW(ms.mo);
+            const bonus=wInv-wOut;
+            const delta=wInv-totalNW;
+            return(
+              <div key={ms.l} style={{borderRadius:12,border:'1.5px solid var(--n100)',padding:'14px 14px 12px',background:'var(--n50)'}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:7}}>
+                  <div style={{fontSize:9.5,color:'var(--n500)',fontWeight:700,textTransform:'uppercase',letterSpacing:.5}}>{ms.l}</div>
+                  {ms.d&&<div style={{fontSize:8.5,fontWeight:700,color:ms.c,background:`${ms.c}18`,padding:'1px 6px',borderRadius:99}}>{ms.d}</div>}
+                </div>
+                <div style={{fontFamily:'var(--m)',fontSize:20,fontWeight:800,color:ms.mo===0?'var(--n800)':ms.c,letterSpacing:-.4}}>{fmtINR(wInv,true)}</div>
+                {ms.mo>0&&<div style={{fontSize:11,color:delta>=0?'var(--gd)':'var(--r)',fontWeight:700,marginTop:5}}>{delta>=0?'▲':'▼'} {fmtINR(Math.abs(delta),true)}</div>}
+                {ms.mo>0&&allInstrs.length>0&&bonus>100&&<div style={{fontSize:9.5,color:'var(--g)',marginTop:4,background:'var(--gl)',padding:'2px 7px',borderRadius:5,display:'inline-block',fontWeight:700}}>+{fmtINR(bonus,true)} from compounding</div>}
+              </div>
+            );
+          })}
+        </div>
+        {/* Compound vs Linear comparison */}
+        {allInstrs.length>0&&(
+          <>
+          <div style={{fontSize:9.5,fontWeight:800,textTransform:'uppercase',letterSpacing:.7,color:'var(--n400)',marginBottom:12,display:'flex',alignItems:'center',gap:6}}>
+            <span style={{width:14,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>Power of Compound Investing
+            <span style={{width:14,height:2,background:'var(--n300)',borderRadius:99,display:'inline-block'}}/>
+          </div>
+          <div className="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>Milestone</th>
+                  <th className="num">Without Investing<br/><span style={{fontWeight:400,color:'var(--n400)',fontSize:9}}>linear only</span></th>
+                  <th className="num">With Investments<br/><span style={{fontWeight:400,color:'var(--g)',fontSize:9}}>compound</span></th>
+                  <th className="num">Bonus</th>
+                  <th className="num">Corpus</th>
+                </tr>
+              </thead>
+              <tbody>
+                {MS.filter(m=>m.mo>0).map(ms=>{
+                  const wInv=projNW(ms.mo),wOut=simNW(ms.mo);
+                  const bonus=wInv-wOut;
+                  const corp=allInstrs.reduce((s,i)=>s+fvAt(i,ms.mo),0);
+                  return(
+                    <tr key={ms.l}>
+                      <td style={{fontWeight:700}}>{ms.l}<span style={{fontSize:9,color:'var(--n400)',fontWeight:400}}> ({ms.d})</span></td>
+                      <td className="num" style={{fontFamily:'var(--m)',color:'var(--n500)'}}>{fmtINR(wOut,true)}</td>
+                      <td className="num" style={{fontFamily:'var(--m)',fontWeight:800,color:ms.c}}>{fmtINR(wInv,true)}</td>
+                      <td className="num">{bonus>100?<span style={{color:'var(--gd)',fontWeight:700}}>+{fmtINR(bonus,true)}</span>:'–'}</td>
+                      <td className="num" style={{fontWeight:700,color:'var(--g)'}}>{fmtINR(corp,true)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          </>
+        )}
+      </div>
+
+      {/* Monthly breakdown */}
+      <div className="card">
+        <div className="sh mb3"><div className="sh-t"><Ic n="pnl" s={13} c="var(--b)"/>Monthly Savings Snapshot</div>
+          <span style={{fontSize:10,color:'var(--n400)'}}>Based on {fcD} days of actual data</span>
+        </div>
+        <div className="g3" style={{gap:10}}>
+          {[
+            {l:'Avg Monthly Income',v:avgInc,c:'var(--gd)',bg:'var(--gl)',b:'rgba(0,179,134,.2)'},
+            {l:'Avg Monthly Expenses',v:avgExp,c:'var(--r)',bg:'var(--rl)',b:'rgba(220,38,38,.15)'},
+            {l:'Net Savings / Month',v:netSav,c:netSav>=0?'var(--b)':'var(--r)',bg:netSav>=0?'var(--bl)':'var(--rl)',b:netSav>=0?'rgba(37,99,235,.15)':'rgba(220,38,38,.15)'},
+          ].map(x=>(
+            <div key={x.l} style={{padding:'14px 16px',borderRadius:10,background:x.bg,border:`1.5px solid ${x.b}`}}>
+              <div style={{fontSize:9.5,fontWeight:700,textTransform:'uppercase',letterSpacing:.5,color:'var(--n500)',marginBottom:6}}>{x.l}</div>
+              <div style={{fontFamily:'var(--m)',fontSize:20,fontWeight:800,color:x.c}}>{x.v<0?'-':'+'}{fmtINR(Math.abs(x.v),true)}</div>
+            </div>
+          ))}
+        </div>
+        {totalMoInv>0&&<div style={{marginTop:12,padding:'10px 12px',background:'var(--n50)',borderRadius:8,border:'1px solid var(--n100)',fontSize:11,display:'flex',gap:16,flexWrap:'wrap'}}>
+          <span>💰 Invested/mo: <strong style={{color:'var(--g)'}}>{fmtINR(totalMoInv,true)}</strong></span>
+          <span>💧 Liquid savings: <strong style={{color:liquidSav>=0?'var(--b)':'var(--r)'}}>{fmtINR(Math.abs(liquidSav),true)}</strong></span>
+          <span>📊 Investment ratio: <strong>{netSav>0?(totalMoInv/netSav*100).toFixed(0):0}% of net savings</strong></span>
+        </div>}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
    SAVINGS GOALS
 ══════════════════════════════════════ */
 function PageGoals({data,setData,toast}){
   const goals=data.goals||[];
   const COLORS=['#00b386','#2563eb','#d97706','#7c3aed','#0d9488','#dc2626'];
-  const ef={name:'',targetAmount:'',currentAmount:'0',targetDate:'',color:'#00b386',notes:''};
+  const INV_TYPES=['SIP','Mutual Fund','RD','FD','PPF'];
+  // SIP/MF FV formula
+  const sipFV=(amt,rate,yr)=>{const r2=rate/100/12,n=Math.round(yr*12);if(!amt||!yr)return 0;return r2===0?amt*n:amt*(((1+r2)**n-1)/r2)*(1+r2);};
+  // Lump-sum FV (for FD/RD/PPF where full corpus sits post-maturity — here we use SIP-FV since contributions are periodic)
+  const getCorpus=(instr)=>{
+    if(!instr.amount||!instr.years)return 0;
+    if(instr.type==='SIP'||instr.type==='Mutual Fund'||instr.type==='RD'){
+      // If NAV-based: use units × currentNAV
+      if((instr.type==='SIP'||instr.type==='Mutual Fund')&&(instr.units||0)>0&&(instr.currentNAV||instr.lastBuyNAV)){
+        return (instr.units||0)*(instr.currentNAV||instr.lastBuyNAV||0);
+      }
+      return sipFV(instr.amount,instr.returnRate||0,instr.years);
+    }
+    // FD/PPF — lump-sum compound
+    return instr.amount*(1+instr.returnRate/100)**instr.years;
+  };
+  // Goal form state
+  const ef={name:'',targetAmount:'',currentAmount:'0',targetDate:'',color:'#00b386',notes:'',instruments:[]};
   const [form,setForm]=useState(ef);
-  const [modal,setModal]=useState(null); // null | 'add' | {eid}
-  const [contribId,setContribId]=useState(null);
-  const [contribAmt,setContribAmt]=useState('');
+  const [modal,setModal]=useState(null);
+  // Instrument sub-form inside modal
+  const efi={name:'',type:'SIP',amount:'',returnRate:'12',years:'5',color:'#2563eb',units:'',currentNAV:'',lastBuyNAV:'',lastNAVDate:''};
+  const [instrForm,setInstrForm]=useState(efi);
+  const [instrEdit,setInstrEdit]=useState(null); // null | instrId
+  const [navEditId,setNavEditId]=useState(null);
+  const [navVal,setNavVal]=useState('');
+
   const open=()=>{setForm(ef);setModal('add');};
-  const openEdit=g=>{setForm({name:g.name,targetAmount:String(g.targetAmount),currentAmount:String(g.currentAmount),targetDate:g.targetDate||'',color:g.color||'#00b386',notes:g.notes||''});setModal({eid:g.id});};
-  const close=()=>{setModal(null);setForm(ef);};
+  const openEdit=g=>{
+    setForm({name:g.name,targetAmount:String(g.targetAmount),currentAmount:String(g.currentAmount||0),
+      targetDate:g.targetDate||'',color:g.color||'#00b386',notes:g.notes||'',
+      instruments:(g.instruments||[]).map(i=>({...i}))});
+    setModal({eid:g.id});
+  };
+  const close=()=>{setModal(null);setForm(ef);setInstrForm(efi);setInstrEdit(null);};
   const save=()=>{
     if(!form.name||!form.targetAmount)return;
-    const e={name:form.name,targetAmount:+form.targetAmount,currentAmount:+form.currentAmount||0,targetDate:form.targetDate||'',color:form.color,notes:form.notes};
+    const e={name:form.name,targetAmount:+form.targetAmount,currentAmount:+form.currentAmount||0,
+      targetDate:form.targetDate||'',color:form.color,notes:form.notes,instruments:form.instruments||[]};
     if(modal==='add'){setData(d=>({...d,goals:[...d.goals,{id:uid(),...e}]}));toast('Goal added','g');}
     else{setData(d=>({...d,goals:d.goals.map(g=>g.id===modal.eid?{...g,...e}:g)}));toast('Goal updated','g');}
     close();
   };
-  const del=id=>{if(!window.confirm('Delete this goal?'))return;setData(d=>({...d,goals:d.goals.filter(g=>g.id!==id)}));toast('Deleted','x');};
-  const logContrib=()=>{
-    const amt=parseFloat(contribAmt);if(!amt||isNaN(amt))return;
-    setData(d=>({...d,goals:d.goals.map(g=>g.id===contribId?{...g,currentAmount:Math.min(g.targetAmount,g.currentAmount+amt)}:g)}));
-    toast(`+${fmtINR(amt)} logged`,'g');setContribId(null);setContribAmt('');
+  const del=id=>{if(!window.confirm('Delete this goal and all its instruments?'))return;setData(d=>({...d,goals:d.goals.filter(g=>g.id!==id)}));toast('Deleted','x');};
+
+  // Instrument CRUD inside form
+  const addInstr=()=>{
+    if(!instrForm.name||!instrForm.amount)return;
+    const ni={id:uid(),name:instrForm.name,type:instrForm.type,amount:+instrForm.amount,
+      returnRate:+instrForm.returnRate||0,years:+instrForm.years||1,color:instrForm.color,
+      units:+instrForm.units||0,currentNAV:instrForm.currentNAV?+instrForm.currentNAV:null,
+      lastBuyNAV:instrForm.lastBuyNAV?+instrForm.lastBuyNAV:null,lastNAVDate:instrForm.lastNAVDate||null};
+    if(instrEdit){
+      setForm(f=>({...f,instruments:f.instruments.map(i=>i.id===instrEdit?{...i,...ni,id:i.id}:i)}));
+      toast('Instrument updated','g');
+    } else {
+      setForm(f=>({...f,instruments:[...f.instruments,ni]}));
+      toast('Instrument added','g');
+    }
+    setInstrForm(efi);setInstrEdit(null);
   };
+  const editInstr=instr=>{
+    setInstrForm({name:instr.name,type:instr.type,amount:String(instr.amount),returnRate:String(instr.returnRate||0),
+      years:String(instr.years||1),color:instr.color||'#2563eb',units:String(instr.units||''),
+      currentNAV:String(instr.currentNAV||''),lastBuyNAV:String(instr.lastBuyNAV||''),lastNAVDate:instr.lastNAVDate||''});
+    setInstrEdit(instr.id);
+  };
+  const delInstr=id=>setForm(f=>({...f,instruments:f.instruments.filter(i=>i.id!==id)}));
+
+  // Update NAV inline on goal card (read mode)
+  const saveNav=(goalId,instrId)=>{
+    const nav=parseFloat(navVal);if(!nav||isNaN(nav))return;
+    setData(d=>({...d,goals:d.goals.map(g=>g.id!==goalId?g:{...g,
+      instruments:(g.instruments||[]).map(i=>i.id!==instrId?i:{...i,currentNAV:nav,lastNAVDate:new Date().toISOString().slice(0,10)})})}));
+    toast('NAV updated','g');setNavEditId(null);setNavVal('');
+  };
+
+  // Summary stats
   const totalTarget=goals.reduce((s,g)=>s+g.targetAmount,0);
   const totalSaved=goals.reduce((s,g)=>s+g.currentAmount,0);
+  const totalCorpus=goals.reduce((s,g)=>{
+    const instrCorpus=(g.instruments||[]).reduce((ss,i)=>ss+getCorpus(i),0);
+    return s+instrCorpus;
+  },0);
+  const {transactions:allTxs,profile}=data;
+  const pMonths=useMemo(()=>getPeriodMonths(profile.periodStart,profile.periodEnd),[profile.periodStart,profile.periodEnd]);
+  const pTxs=allTxs.filter(t=>pMonths.some(m=>m.key===t.month));
+  const pInc=pTxs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const pExp=pTxs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const gfcStart=pMonths.length>0?new Date(pMonths[0].key+'-01'):new Date();
+  const gfcEnd=pMonths.length>0?new Date(pMonths[pMonths.length-1].key+'-28'):new Date();
+  const gfcNow=new Date(Math.min(Date.now(),gfcEnd.getTime()));
+  const gfcDays=Math.max(1,Math.round((gfcNow-gfcStart)/86400000));
+  const avgSavings=pInc/gfcDays*30 - pExp/gfcDays*30;
+  const getGoalForecast=g=>{
+    const remaining=Math.max(0,g.targetAmount-(g.currentAmount||0));
+    if(remaining<=0)return{status:'complete',label:'✅ Goal Reached!',color:'var(--g)',mn:0};
+    if(avgSavings<=0)return{status:'at-risk',label:'⚠ No surplus',color:'var(--r)',mn:null};
+    const mn=Math.ceil(remaining/avgSavings);
+    const eta=new Date();eta.setMonth(eta.getMonth()+mn);
+    const etaStr=eta.toLocaleString('en-IN',{month:'short',year:'numeric'});
+    const tgt=g.targetDate?new Date(g.targetDate):null;
+    const onTrack=!tgt||(eta<=tgt);
+    return{status:onTrack?'on-track':'behind',label:onTrack?`✓ ETA ${etaStr}`:`⚠ Behind · ETA ${etaStr}`,color:onTrack?'#2563eb':'var(--r)',mn};
+  };
+
+  // Goal form JSX
   const GF=(
-    <div className="f2 mb2">
-      <div className="fg"><label>Goal Name</label><input placeholder="e.g. House Down Payment" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))}/></div>
-      <div className="fg"><label>Target Amount (₹)</label><input type="number" value={form.targetAmount} onChange={e=>setForm(f=>({...f,targetAmount:e.target.value}))}/></div>
-      <div className="fg"><label>Amount Saved So Far (₹)</label><input type="number" value={form.currentAmount} onChange={e=>setForm(f=>({...f,currentAmount:e.target.value}))}/></div>
-      <div className="fg"><label>Target Date</label><input type="date" value={form.targetDate} onChange={e=>setForm(f=>({...f,targetDate:e.target.value}))}/></div>
-      <div className="fg"><label>Color</label>
-        <div style={{display:'flex',gap:6,marginTop:4}}>{COLORS.map(c=><div key={c} onClick={()=>setForm(f=>({...f,color:c}))} style={{width:22,height:22,borderRadius:99,background:c,cursor:'pointer',border:form.color===c?'3px solid var(--n800)':'3px solid transparent'}}/> )}</div>
+    <div>
+      <div className="f2 mb2">
+        <div className="fg"><label>Goal Name</label><input placeholder="e.g. House Down Payment" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))}/></div>
+        <div className="fg"><label>Target Amount (₹)</label><input type="number" value={form.targetAmount} onChange={e=>setForm(f=>({...f,targetAmount:e.target.value}))}/></div>
+        <div className="fg"><label>Amount Saved So Far (₹)</label><input type="number" value={form.currentAmount} onChange={e=>setForm(f=>({...f,currentAmount:e.target.value}))}/></div>
+        <div className="fg"><label>Target Date</label><input type="date" value={form.targetDate} onChange={e=>setForm(f=>({...f,targetDate:e.target.value}))}/></div>
+        <div className="fg"><label>Color</label>
+          <div style={{display:'flex',gap:6,marginTop:4}}>{COLORS.map(c=><div key={c} onClick={()=>setForm(f=>({...f,color:c}))} style={{width:22,height:22,borderRadius:99,background:c,cursor:'pointer',border:form.color===c?'3px solid var(--n800)':'3px solid transparent'}}/> )}</div>
+        </div>
+        <div className="fg"><label>Notes</label><input placeholder="Optional notes" value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))}/></div>
       </div>
-      <div className="fg"><label>Notes</label><input placeholder="Optional notes" value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))}/></div>
+
+      {/* Instruments sub-section */}
+      <div style={{background:'var(--bl)',border:'1px solid rgba(37,99,235,.2)',borderRadius:8,padding:'12px 14px',marginBottom:8}}>
+        <div style={{fontWeight:700,fontSize:12,color:'var(--b)',marginBottom:10}}>📈 Investment Instruments</div>
+        {/* Existing instruments list */}
+        {(form.instruments||[]).length>0&&<div style={{marginBottom:10}}>
+          {form.instruments.map(i=>{
+            const corpus=getCorpus(i);
+            return(
+              <div key={i.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 8px',background:'var(--W)',borderRadius:6,marginBottom:5,border:'1px solid var(--n100)'}}>
+                <div style={{flex:1}}>
+                  <span style={{fontWeight:700,fontSize:12,color:'var(--n800)'}}>{i.name}</span>
+                  <span style={{fontSize:10.5,color:'var(--n400)',marginLeft:8}}>{i.type} · {fmtINR(i.amount,true)}/mo · {i.returnRate}% · {i.years}yr</span>
+                  {corpus>0&&<span style={{fontSize:10,color:'var(--g)',marginLeft:8}}>→ {fmtINR(corpus,true)}</span>}
+                </div>
+                <div style={{display:'flex',gap:4}}>
+                  <button className="bic" onClick={()=>editInstr(i)}><Ic n="edit" s={10}/></button>
+                  <button className="bic red" onClick={()=>delInstr(i.id)}><Ic n="del" s={10}/></button>
+                </div>
+              </div>
+            );
+          })}
+        </div>}
+        {/* Add/Edit instrument inline form */}
+        <div style={{background:'var(--W)',borderRadius:6,padding:'10px',border:'1px solid var(--n100)'}}>
+          <div style={{fontSize:11,fontWeight:700,color:'var(--n600)',marginBottom:8}}>{instrEdit?'Edit Instrument':'+ Add Instrument'}</div>
+          <div className="f2" style={{marginBottom:8}}>
+            <div className="fg"><label style={{fontSize:10.5}}>Name</label><input placeholder="e.g. HDFC SIP" value={instrForm.name} onChange={e=>setInstrForm(f=>({...f,name:e.target.value}))}/></div>
+            <div className="fg"><label style={{fontSize:10.5}}>Type</label><select value={instrForm.type} onChange={e=>setInstrForm(f=>({...f,type:e.target.value}))}>
+              {INV_TYPES.map(t=><option key={t} value={t}>{t}</option>)}
+            </select></div>
+            <div className="fg"><label style={{fontSize:10.5}}>{instrForm.type==='FD'||instrForm.type==='PPF'?'Principal (₹)':'Monthly (₹)'}</label><input type="number" placeholder="0" value={instrForm.amount} onChange={e=>setInstrForm(f=>({...f,amount:e.target.value}))}/></div>
+            <div className="fg"><label style={{fontSize:10.5}}>Return Rate (%)</label><input type="number" placeholder="12" value={instrForm.returnRate} onChange={e=>setInstrForm(f=>({...f,returnRate:e.target.value}))}/></div>
+            <div className="fg"><label style={{fontSize:10.5}}>Duration (Years)</label><input type="number" placeholder="5" value={instrForm.years} onChange={e=>setInstrForm(f=>({...f,years:e.target.value}))}/></div>
+            <div className="fg"><label style={{fontSize:10.5}}>Color</label>
+              <div style={{display:'flex',gap:5,marginTop:3}}>{COLORS.map(c=><div key={c} onClick={()=>setInstrForm(f=>({...f,color:c}))} style={{width:18,height:18,borderRadius:99,background:c,cursor:'pointer',border:instrForm.color===c?'2.5px solid var(--n800)':'2.5px solid transparent'}}/> )}</div>
+            </div>
+            {(instrForm.type==='SIP'||instrForm.type==='Mutual Fund')&&<>
+              <div className="fg"><label style={{fontSize:10.5}}>Units Held</label><input type="number" placeholder="0" value={instrForm.units} onChange={e=>setInstrForm(f=>({...f,units:e.target.value}))}/></div>
+              <div className="fg"><label style={{fontSize:10.5}}>Current NAV (₹)</label><input type="number" placeholder="0" value={instrForm.currentNAV} onChange={e=>setInstrForm(f=>({...f,currentNAV:e.target.value}))}/></div>
+            </>}
+          </div>
+          <div style={{display:'flex',gap:6}}>
+            <button className="btn btn-p btn-sm" onClick={addInstr}><Ic n={instrEdit?'ok':'plus'} s={11} c="#fff"/>{instrEdit?'Update':'Add'}</button>
+            {instrEdit&&<button className="btn btn-g btn-sm" onClick={()=>{setInstrForm(efi);setInstrEdit(null);}}>Cancel</button>}
+          </div>
+        </div>
+      </div>
     </div>
   );
+
   return(
     <div className="page">
       <div className="ph">
-        <div><div className="ptitle">Savings Goals</div><div className="psub">Track targets · Log contributions · See monthly requirement</div></div>
+        <div><div className="ptitle">Savings Goals</div><div className="psub">Goal-first · Instruments inside goals · Formula corpus projections</div></div>
         <button className="btn btn-p" onClick={open}><Ic n="plus" s={13} c="#fff"/>Add Goal</button>
       </div>
-      <div className="g3 mb3">
-        <div className="card"><div className="cl">Total Goals</div><div className="cv b">{goals.length}</div><div className="cm">{goals.filter(g=>g.currentAmount>=g.targetAmount).length} completed</div></div>
+      <div className="g4 mb3">
+        <div className="card"><div className="cl">Total Goals</div><div className="cv b">{goals.length}</div><div className="cm">{goals.filter(g=>g.currentAmount>=g.targetAmount&&g.targetAmount>0).length} completed</div></div>
         <div className="card"><div className="cl">Total Target</div><div className="cv">{fmtINR(totalTarget,true)}</div><div className="cm">across all goals</div></div>
         <div className="card"><div className="cl">Total Saved</div><div className="cv g">{fmtINR(totalSaved,true)}</div><div className="cm">{totalTarget>0?(totalSaved/totalTarget*100).toFixed(1):0}% of targets</div></div>
+        <div className="card"><div className="cl">Projected Corpus</div><div className="cv p">{fmtINR(totalCorpus,true)}</div><div className="cm" style={{color:totalCorpus>=totalTarget?'var(--g)':'var(--o)'}}>{totalTarget>0?`${(totalCorpus/totalTarget*100).toFixed(0)}% of target`:'at maturity'}</div></div>
       </div>
       <div className="g3">
         {goals.map(g=>{
           const pct=g.targetAmount>0?Math.min(100,g.currentAmount/g.targetAmount*100):0;
-          const done=pct>=100;
+          const done=pct>=100&&g.targetAmount>0;
           const monthsLeft=g.targetDate?Math.max(1,(new Date(g.targetDate)-new Date())/86400000/30):null;
           const needed=monthsLeft?Math.max(0,(g.targetAmount-g.currentAmount)/monthsLeft):null;
+          const fc=getGoalForecast(g);
+          const instrs=g.instruments||[];
+          const totalInstrCorpus=instrs.reduce((s,i)=>s+getCorpus(i),0);
+          const totalInstrMo=instrs.filter(i=>i.type!=='FD'&&i.type!=='PPF').reduce((s,i)=>s+i.amount,0);
+          const covPct=g.targetAmount>0?(totalInstrCorpus/g.targetAmount*100):0;
           return(
             <div key={g.id} className="card" style={{borderTop:`3px solid ${g.color||'var(--g)'}`}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10}}>
                 <div style={{fontWeight:800,fontSize:14,color:'var(--n800)'}}>{g.name}</div>
-                <div style={{display:'flex',gap:5}}>
+                <div style={{display:'flex',gap:5,alignItems:'center'}}>
+                  <span style={{fontSize:10,fontWeight:700,color:fc.color,background:`${fc.color}18`,padding:'2px 7px',borderRadius:99,whiteSpace:'nowrap'}}>{fc.label}</span>
                   <button className="bic" onClick={()=>openEdit(g)}><Ic n="edit" s={11}/></button>
                   <button className="bic red" onClick={()=>del(g.id)}><Ic n="del" s={11}/></button>
                 </div>
               </div>
-              <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+              {/* Progress */}
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:5}}>
                 <span style={{fontFamily:'var(--m)',fontSize:13,fontWeight:700,color:g.color||'var(--g)'}}>{fmtINR(g.currentAmount,true)}</span>
                 <span style={{fontFamily:'var(--m)',fontSize:12,color:'var(--n400)'}}>of {fmtINR(g.targetAmount,true)}</span>
               </div>
-              <div className="prog" style={{height:8,marginBottom:8}}><div className="pf" style={{width:`${pct}%`,background:g.color||'var(--g)'}}/></div>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-                <span style={{fontSize:11.5,fontWeight:700,color:done?'var(--g)':'var(--n500)'}}>{done?'✅ Goal Reached!':`${pct.toFixed(1)}% complete`}</span>
-                {!done&&monthsLeft&&<span style={{fontSize:11,color:'var(--o)',fontWeight:600}}>{fmtINR(Math.round(needed),true)}/mo needed</span>}
+              <div className="prog" style={{height:7,marginBottom:7}}><div className="pf" style={{width:`${pct}%`,background:g.color||'var(--g)'}}/></div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+                <span style={{fontSize:11.5,fontWeight:700,color:done?'var(--g)':'var(--n500)'}}>{done?'✅ Reached!':`${pct.toFixed(1)}% saved`}</span>
+                {!done&&monthsLeft&&<span style={{fontSize:11,color:'var(--o)',fontWeight:600}}>{fmtINR(Math.round(needed||0),true)}/mo needed</span>}
               </div>
-              {g.targetDate&&<div style={{fontSize:11,color:'var(--n400)',marginBottom:10}}>Target: {fmtDate(g.targetDate)}{monthsLeft&&` · ${Math.ceil(monthsLeft)} months left`}</div>}
-              {g.notes&&<div style={{fontSize:11,color:'var(--n500)',background:'var(--n50)',borderRadius:6,padding:'6px 10px',marginBottom:10}}>{g.notes}</div>}
-              {!done&&(
-                contribId===g.id?(
-                  <div style={{display:'flex',gap:6,alignItems:'center'}}>
-                    <input type="number" placeholder="Amount" value={contribAmt} onChange={e=>setContribAmt(e.target.value)} style={{flex:1,padding:'6px 10px',border:'1.5px solid var(--n200)',borderRadius:6,fontSize:12,fontFamily:'var(--f)'}} autoFocus/>
-                    <button className="btn btn-p btn-sm" onClick={logContrib}>Add</button>
-                    <button className="btn btn-g btn-sm" onClick={()=>{setContribId(null);setContribAmt('');}}>✕</button>
-                  </div>
-                ):(
-                  <button className="btn btn-s btn-sm w100" style={{justifyContent:'center'}} onClick={()=>setContribId(g.id)}><Ic n="plus" s={11}/>Log Contribution</button>
-                )
-              )}
+              {g.targetDate&&<div style={{fontSize:11,color:'var(--n400)',marginBottom:8}}>🗓 {fmtDate(g.targetDate)}{monthsLeft&&` · ${Math.ceil(monthsLeft)} mo left`}</div>}
+              {g.notes&&<div style={{fontSize:11,color:'var(--n500)',background:'var(--n50)',borderRadius:6,padding:'5px 9px',marginBottom:8}}>{g.notes}</div>}
+              {/* Instruments */}
+              {instrs.length>0&&<div style={{background:'var(--bl)',borderRadius:8,padding:'8px 10px',border:'1px solid rgba(37,99,235,.13)'}}>
+                <div style={{fontSize:9.5,fontWeight:800,color:'var(--b)',marginBottom:7,textTransform:'uppercase',letterSpacing:.4}}>📈 Instruments · {instrs.length}</div>
+                {instrs.map(i=>{
+                  const ic=getCorpus(i);
+                  const hasNAV=(i.type==='SIP'||i.type==='Mutual Fund');
+                  const navStale=hasNAV&&i.lastNAVDate&&((Date.now()-new Date(i.lastNAVDate))/86400000>7);
+                  return(
+                    <div key={i.id} style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'5px 0',borderBottom:'1px dashed rgba(37,99,235,.12)'}}>
+                      <div style={{flex:1}}>
+                        <div style={{display:'flex',alignItems:'center',gap:5}}>
+                          <span style={{width:6,height:6,borderRadius:2,background:i.color||'var(--g)',display:'inline-block',flexShrink:0}}/>
+                          <span style={{fontSize:11.5,fontWeight:700,color:'var(--n800)'}}>{i.name}</span>
+                          <span style={{fontSize:9.5,background:'rgba(37,99,235,.1)',color:'var(--b)',borderRadius:4,padding:'1px 5px',fontWeight:700}}>{i.type}</span>
+                          {navStale&&<span style={{fontSize:9,color:'var(--o)',fontWeight:700}}>NAV stale</span>}
+                        </div>
+                        <div style={{fontSize:10.5,color:'var(--n500)',paddingLeft:11,marginTop:2}}>
+                          {i.type!=='FD'&&i.type!=='PPF'?`₹${(i.amount||0).toLocaleString('en-IN')}/mo`:`₹${(i.amount||0).toLocaleString('en-IN')}`} · {i.returnRate}% · {i.years}yr
+                          {hasNAV&&(i.units||0)>0&&<span style={{marginLeft:6,color:'var(--n400)'}}>· {i.units} units @{i.currentNAV||i.lastBuyNAV||0}</span>}
+                        </div>
+                        {/* NAV update inline */}
+                        {hasNAV&&navEditId===i.id&&(
+                          <div style={{display:'flex',gap:5,marginTop:5,paddingLeft:11}}>
+                            <input type="number" placeholder="New NAV ₹" value={navVal} onChange={e=>setNavVal(e.target.value)}
+                              style={{width:110,padding:'4px 8px',fontSize:11,border:'1.5px solid var(--b)',borderRadius:5,fontFamily:'var(--f)'}} autoFocus/>
+                            <button className="btn btn-p btn-sm" style={{padding:'3px 10px',fontSize:10}} onClick={()=>saveNav(g.id,i.id)}>Save</button>
+                            <button className="btn btn-g btn-sm" style={{padding:'3px 8px',fontSize:10}} onClick={()=>{setNavEditId(null);setNavVal('');}}>✕</button>
+                          </div>
+                        )}
+                      </div>
+                      <div style={{textAlign:'right',flexShrink:0,marginLeft:8}}>
+                        <div style={{fontSize:11.5,fontFamily:'var(--m)',fontWeight:700,color:'var(--g)'}}>{fmtINR(ic,true)}</div>
+                        <div style={{fontSize:9.5,color:'var(--n400)'}}>corpus</div>
+                        {hasNAV&&navEditId!==i.id&&<button className="bic" style={{fontSize:9,marginTop:2}} onClick={()=>{setNavEditId(i.id);setNavVal(String(i.currentNAV||''));}}>NAV↑</button>}
+                      </div>
+                    </div>
+                  );
+                })}
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:6,paddingTop:4,borderTop:'1px solid rgba(37,99,235,.18)'}}>
+                  {totalInstrMo>0&&<span style={{fontSize:10,color:'var(--b)',fontWeight:700}}>{fmtINR(totalInstrMo,true)}/mo invested</span>}
+                  <span style={{fontSize:10.5,fontWeight:800,color:covPct>=100?'var(--g)':'var(--o)'}}>
+                    {covPct>=100?`✅ Corpus covers goal`:`Corpus ${covPct.toFixed(0)}% of target`}
+                    {' · '}<span style={{color:'var(--g)'}}>{fmtINR(totalInstrCorpus,true)}</span>
+                  </span>
+                </div>
+              </div>}
+              {instrs.length===0&&<div style={{fontSize:11,color:'var(--n400)',textAlign:'center',padding:'8px',background:'var(--n50)',borderRadius:6}}>
+                No instruments yet · Edit goal to add SIP / MF / RD / FD / PPF
+              </div>}
             </div>
           );
         })}
@@ -4986,17 +6010,18 @@ const FREQ_OPTS=['monthly','weekly','quarterly','yearly'];
 function PageRecurring({data,setData,toast}){
   const {transactions,expenseCategories,incomeCategories}=data;
   const recurring=data.recurring||[];
-  const ef={type:'expense',category:'',desc:'',amount:'',paymentMode:'',merchant:'',frequency:'monthly',startDate:new Date().toISOString().slice(0,10),active:true};
+  const goals=data.goals||[];
+  const ef={type:'expense',category:'',desc:'',amount:'',paymentMode:'',merchant:'',frequency:'monthly',startDate:new Date().toISOString().slice(0,10),active:true,goalId:'',investmentId:''};
   const [form,setForm]=useState(ef);
   const [modal,setModal]=useState(null);
   const cats=form.type==='expense'?expenseCategories:incomeCategories;
   const open=()=>{setForm(ef);setModal('add');};
-  const openEdit=r=>{setForm({type:r.type,category:r.category,desc:r.desc,amount:String(r.amount),paymentMode:r.paymentMode||'',merchant:r.merchant||'',frequency:r.frequency,startDate:r.startDate||new Date().toISOString().slice(0,10),active:r.active});setModal({eid:r.id});};
+  const openEdit=r=>{setForm({type:r.type,category:r.category,desc:r.desc,amount:String(r.amount),paymentMode:r.paymentMode||'',merchant:r.merchant||'',frequency:r.frequency,startDate:r.startDate||new Date().toISOString().slice(0,10),active:r.active,goalId:r.goalId||'',investmentId:r.investmentId||''});setModal({eid:r.id});};
   const close=()=>{setModal(null);setForm(ef);};
   const save=()=>{
     if(!form.category||!form.amount)return;
     const nextDate=form.startDate;
-    const e={type:form.type,category:form.category,desc:form.desc,amount:+form.amount,paymentMode:form.paymentMode||'',merchant:form.merchant||'',frequency:form.frequency,startDate:form.startDate,nextDate,active:form.active};
+    const e={type:form.type,category:form.category,desc:form.desc,amount:+form.amount,paymentMode:form.paymentMode||'',merchant:form.merchant||'',frequency:form.frequency,startDate:form.startDate,nextDate,active:form.active,goalId:form.goalId||'',investmentId:form.investmentId||''};
     if(modal==='add'){setData(d=>({...d,recurring:[...d.recurring,{id:uid(),...e}]}));toast('Recurring rule added','g');}
     else{setData(d=>({...d,recurring:d.recurring.map(r=>r.id===modal.eid?{...r,...e}:r)}));toast('Updated','g');}
     close();
@@ -5029,6 +6054,18 @@ function PageRecurring({data,setData,toast}){
           <option value="">– Mode –</option>{PAYMENT_MODES.map(m=><option key={m} value={m}>{m}</option>)}
         </select></div>
         <div className="fg"><label>Start / Next Date</label><input type="date" value={form.startDate} onChange={e=>setForm(f=>({...f,startDate:e.target.value}))}/></div>
+        <div className="fg"><label>🎯 Link to Savings Goal (optional)</label>
+          <select value={form.goalId||''} onChange={e=>setForm(f=>({...f,goalId:e.target.value}))}>
+            <option value="">— No goal —</option>
+            {goals.map(g=><option key={g.id} value={g.id}>{g.name} (₹{g.targetAmount?.toLocaleString('en-IN')})</option>)}
+          </select>
+        </div>
+        {form.goalId&&<div className="fg"><label>📈 Link to Instrument (optional)</label>
+          <select value={form.investmentId||''} onChange={e=>setForm(f=>({...f,investmentId:e.target.value}))}>
+            <option value="">— No instrument —</option>
+            {(goals.find(g=>g.id===form.goalId)?.instruments||[]).map(i=><option key={i.id} value={i.id}>{i.name} ({i.type})</option>)}
+          </select>
+        </div>}
       </div>
     </>
   );
@@ -5080,13 +6117,80 @@ function PageRecurring({data,setData,toast}){
 }
 
 /* ══════════════════════════════════════
+   QUICK ADD (floating bottom-sheet)
+══════════════════════════════════════ */
+function QuickAdd({data,setData,toast,onClose}){
+  const [type,setType]=useState('expense');
+  const [amount,setAmount]=useState('');
+  const [category,setCategory]=useState('');
+  const [date,setDate]=useState(new Date().toISOString().slice(0,10));
+  const [merchant,setMerchant]=useState('');
+  const cats=type==='expense'?data.expenseCategories:data.incomeCategories;
+  const amtRef=useRef();
+  useEffect(()=>{setTimeout(()=>amtRef.current&&amtRef.current.focus(),120);},[]);
+  const save=()=>{
+    if(!amount||isNaN(+amount)||+amount<=0||!category)return;
+    setData(d=>({...d,transactions:[...d.transactions,{id:uid(),date,type,category,desc:'',amount:+amount,month:date.slice(0,7),paymentMode:'',merchant}]}));
+    toast(`${type==='expense'?'−':'+'}${fmtINR(+amount,true)} · ${category}`,type==='expense'?'x':'g');
+    onClose();
+  };
+  const handleKey=e=>{if(e.key==='Enter')save();if(e.key==='Escape')onClose();};
+  return(<>
+    <div className="qa-overlay" onClick={onClose}/>
+    <div className="qa-sheet" onKeyDown={handleKey}>
+      <div className="qa-handle"/>
+      <div style={{padding:'0 20px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+          <div style={{fontSize:15,fontWeight:800,color:'var(--n900)'}}>Quick Add Transaction</div>
+          <button className="bic" onClick={onClose} style={{width:28,height:28}}><Ic n="del" s={12}/></button>
+        </div>
+        {/* Type toggle */}
+        <div className="tgl mb3" style={{width:'100%',marginBottom:14}}>
+          <button className={`tgo${type==='expense'?' on':''}`} style={{flex:1}} onClick={()=>{setType('expense');setCategory('');}}>💸 Expense</button>
+          <button className={`tgo${type==='income'?' on':''}`} style={{flex:1}} onClick={()=>{setType('income');setCategory('');}}>💰 Income</button>
+        </div>
+        {/* Amount — big, prominent */}
+        <div style={{position:'relative',marginBottom:14}}>
+          <span style={{position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',fontFamily:'var(--m)',fontSize:22,fontWeight:700,color:'var(--n400)',pointerEvents:'none'}}>₹</span>
+          <input ref={amtRef} type="number" placeholder="0" value={amount} onChange={e=>setAmount(e.target.value)}
+            style={{width:'100%',padding:'14px 14px 14px 38px',fontSize:26,fontWeight:800,fontFamily:'var(--m)',border:`2px solid ${type==='expense'?'var(--r)':'var(--g)'}`,borderRadius:12,color:'var(--n900)',background:'var(--W)',outline:'none',letterSpacing:-1}}/>
+        </div>
+        {/* Category */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:14}}>
+          <div className="fg">
+            <label>Category</label>
+            <select value={category} onChange={e=>setCategory(e.target.value)}>
+              <option value="">– Select –</option>
+              {cats.map(c=><option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="fg">
+            <label>Date</label>
+            <input type="date" value={date} onChange={e=>setDate(e.target.value)}/>
+          </div>
+        </div>
+        {/* Merchant (optional) */}
+        <div className="fg" style={{marginBottom:18}}>
+          <label>Merchant / Vendor <span style={{fontWeight:400,textTransform:'none',color:'var(--n400)'}}>optional</span></label>
+          <input list="qa-merchant-list" placeholder="e.g. Swiggy, DMart…" value={merchant} onChange={e=>setMerchant(e.target.value)}/>
+          <datalist id="qa-merchant-list">{[...new Set(data.transactions.filter(t=>t.merchant).map(t=>t.merchant))].map(m=><option key={m} value={m}/>)}</datalist>
+        </div>
+        <button className="btn btn-p w100" onClick={save} style={{fontSize:14,padding:'12px',justifyContent:'center',borderRadius:10}}>
+          <Ic n="plus" s={14} c="#fff"/>Add {type==='expense'?'Expense':'Income'}
+        </button>
+      </div>
+    </div>
+  </>);
+}
+
+/* ══════════════════════════════════════
    APP ROOT
 ══════════════════════════════════════ */
 const NAV=[
   {s:'Overview',items:[{id:'dashboard',l:'Dashboard',n:'home'},{id:'fund',l:'Fund Balance',n:'fund'},{id:'pnl',l:'P & L Statement',n:'pnl'}]},
-  {s:'Transactions',items:[{id:'expense',l:'Expense Tracker',n:'exp'},{id:'income',l:'Income Tracker',n:'inc'},{id:'budget',l:'Budget vs Actual',n:'budget'},{id:'provision',l:'Provisions',n:'prov'}]},
+  {s:'Transactions',items:[{id:'expense',l:'Expense Tracker',n:'exp'},{id:'invtracker',l:'Investment Tracker',n:'budget'},{id:'income',l:'Income Tracker',n:'inc'},{id:'budget',l:'Budget vs Actual',n:'budget'},{id:'provision',l:'Provisions',n:'prov'}]},
   {s:'Liabilities',items:[{id:'cc',l:'Credit Cards',n:'cc'},{id:'loan',l:'Loan Tracker',n:'loan'}]},
-  {s:'Analysis',items:[{id:'cfo',l:'CFO Dashboard',n:'pnl'},{id:'debt',l:'Debt Optimizer',n:'loan'},{id:'ai',l:'AI Insights',n:'ai'}]},
+  {s:'Analysis',items:[{id:'cfo',l:'CFO Dashboard',n:'pnl'},{id:'forecast',l:'Financial Forecast',n:'pnl'},{id:'debt',l:'Debt Optimizer',n:'loan'},{id:'ai',l:'AI Insights',n:'ai'}]},
   {s:'Planning',items:[{id:'goals',l:'Savings Goals',n:'budget'},{id:'recurring',l:'Recurring Transactions',n:'inc'},{id:'planner',l:'🎯 Financial Planner',n:'budget'}]},
   {s:'System',items:[
     {id:'master',l:'Master Settings',n:'gear'},
@@ -5095,7 +6199,7 @@ const NAV=[
     {id:'profile',l:'Profile & Period',n:'user'},
   ]},
 ];
-const PT={dashboard:'Dashboard',fund:'Fund Balance',pnl:'P & L Statement',expense:'Expense Tracker',income:'Income Tracker',budget:'Budget vs Actual',provision:'Provisions',cc:'Credit Cards',loan:'Loan Tracker',cfo:'CFO Dashboard',debt:'Debt Optimizer',ai:'AI Insights',master:'Master Settings',data:'Data Management',drive:'Google Drive Sync',profile:'Profile & Period',planner:'Financial Planner',goals:'Savings Goals',recurring:'Recurring Transactions'};
+const PT={dashboard:'Dashboard',fund:'Fund Balance',pnl:'P & L Statement',expense:'Expense Tracker',invtracker:'Investment Tracker',income:'Income Tracker',budget:'Budget vs Actual',provision:'Provisions',cc:'Credit Cards',loan:'Loan Tracker',cfo:'CFO Dashboard',forecast:'Financial Forecast',debt:'Debt Optimizer',ai:'AI Insights',master:'Master Settings',data:'Data Management',drive:'Google Drive Sync',profile:'Profile & Period',planner:'Financial Planner',goals:'Savings Goals',recurring:'Recurring Transactions'};
 
 function PlannerHost(){ return window.PlannerRouter ? React.createElement(window.PlannerRouter) : React.createElement("div",{},"Loading planner…"); }
 
@@ -5201,10 +6305,39 @@ function App(){
   const [toast,setToast]=useState(null);
   const showToast=(msg,type)=>setToast({msg,type});
   const [mobMenu,setMobMenu]=useState(false);
+  const [quickAdd,setQuickAdd]=useState(false);
+
+  // ── Dark Mode ──────────────────────────────────
+  const [darkMode,setDarkMode]=useState(()=>localStorage.getItem('dm')==='1');
+  useEffect(()=>{
+    document.documentElement.setAttribute('data-theme',darkMode?'dark':'light');
+    localStorage.setItem('dm',darkMode?'1':'0');
+  },[darkMode]);
 
   const ccAlerts=data.creditCards.filter(c=>{const d=daysDiff(c.dueDate);return d!==null&&d<=3&&d>=0&&c.payable>0;}).length;
   const recurringDue=(data.recurring||[]).filter(r=>r.active&&r.nextDate&&r.nextDate<=new Date().toISOString().slice(0,10)).length;
   const months=useMemo(()=>getPeriodMonths(data.profile.periodStart,data.profile.periodEnd),[data.profile.periodStart,data.profile.periodEnd]);
+
+  // ── Budget Alerts ──────────────────────────────
+  const budgetAlertRef=useRef(new Set());
+  const periodTxsForAlert=data.transactions.filter(t=>months.some(m=>m.key===t.month));
+  const budgetOverItems=useMemo(()=>data.expenseCategories.filter(cat=>{
+    const lim=data.budgetLimits[cat];if(!lim)return false;
+    const spent=periodTxsForAlert.filter(t=>t.type==='expense'&&t.category===cat).reduce((s,t)=>s+t.amount,0);
+    return spent>=(lim*months.length)*0.8;
+  }),[data.transactions,data.budgetLimits,months]);
+  const budgetAlerts=budgetOverItems.length;
+  useEffect(()=>{
+    if(!months.length)return;
+    data.expenseCategories.forEach(cat=>{
+      const lim=data.budgetLimits[cat];if(!lim)return;
+      const spent=periodTxsForAlert.filter(t=>t.type==='expense'&&t.category===cat).reduce((s,t)=>s+t.amount,0);
+      const total=lim*months.length;const pct=total>0?spent/total*100:0;
+      const key100=`${cat}-100`;const key80=`${cat}-80`;
+      if(pct>=100&&!budgetAlertRef.current.has(key100)){budgetAlertRef.current.add(key100);showToast(`🚨 Budget exceeded: ${cat}`,'r');}
+      else if(pct>=80&&!budgetAlertRef.current.has(key80)){budgetAlertRef.current.add(key80);showToast(`⚠️ Budget at ${pct.toFixed(0)}%: ${cat}`,'x');}
+    });
+  },[data.transactions,data.budgetLimits]);
 
   const rp=()=>{
     const p={data,setData,toast:showToast,setPage:setPg};
@@ -5213,6 +6346,7 @@ function App(){
       case 'fund': return <PageFund {...p}/>;
       case 'pnl': return <PagePnL {...p}/>;
       case 'expense': return <PageTx {...p} type="expense"/>;
+      case 'invtracker': return <PageInvestmentTracker {...p}/>;
       case 'income': return <PageTx {...p} type="income"/>;
       case 'budget': return <PageBudget {...p}/>;
       case 'provision': return <PageProvision {...p}/>;
@@ -5223,6 +6357,7 @@ function App(){
       case 'drive': return <PageDriveSync {...p} syncMode={syncMode} toggleSyncMode={toggleSyncMode}/>;
       case 'profile': return <PageProfile {...p}/>;
       case 'cfo': return <PageCFO {...p}/>;
+      case 'forecast': return <PageForecast {...p}/>;
       case 'debt': return <PageDebtOptimizer {...p}/>;
       case 'ai': return <PageAI {...p}/>;
       case 'goals': return <PageGoals {...p}/>;
@@ -5243,20 +6378,35 @@ function App(){
           </div>
         </div>
         <nav className="sb-nav">
-          {NAV.map(g=>(
-            <div key={g.s}>
-              <div className="sb-group">{g.s}</div>
-              {g.items.map(item=>(
-                <div key={item.id} className={`sb-item ${pg===item.id?'on':''}`} onClick={()=>setPg(item.id)}>
-                  <span className="sb-ic"><Ic n={item.n} s={14}/></span>
-                  {item.l}
-                  {item.id==='cc'&&ccAlerts>0&&<span className="sb-badge">{ccAlerts}</span>}
-                  {item.id==='recurring'&&recurringDue>0&&<span className="sb-badge">{recurringDue}</span>}
-                  {item.id==='ai'&&<span style={{marginLeft:'auto',fontSize:8,fontWeight:800,background:'linear-gradient(135deg,#7c3aed,#0d9488)',color:'#fff',padding:'2px 6px',borderRadius:99,letterSpacing:.3}}>AI</span>}
-                </div>
-              ))}
-            </div>
-          ))}
+          {(()=>{
+            const invEnabled=data.profile.features?.investmentTracker!==false;
+            const GATED=['goals','invtracker','forecast'];
+            return NAV.map(g=>(
+              <div key={g.s}>
+                <div className="sb-group">{g.s}</div>
+                {g.items.map(item=>{
+                  const disabled=GATED.includes(item.id)&&!invEnabled;
+                  return(
+                    <div key={item.id}
+                      className={`sb-item ${pg===item.id&&!disabled?'on':''} ${disabled?'sb-disabled':''}`}
+                      style={disabled?{opacity:.45,cursor:'not-allowed'}:{}}
+                      onClick={()=>{
+                        if(disabled){toast('Enable Investment Tracker in Profile → Feature Modules','o');setPg('profile');}
+                        else setPg(item.id);
+                      }}>
+                      <span className="sb-ic"><Ic n={item.n} s={14}/></span>
+                      {item.l}
+                      {disabled&&<span style={{marginLeft:'auto',fontSize:9,opacity:.8}}>🔒</span>}
+                      {!disabled&&item.id==='cc'&&ccAlerts>0&&<span className="sb-badge">{ccAlerts}</span>}
+                      {!disabled&&item.id==='recurring'&&recurringDue>0&&<span className="sb-badge">{recurringDue}</span>}
+                      {!disabled&&item.id==='budget'&&budgetAlerts>0&&<span className="sb-badge" style={{background:'var(--o)'}}>{budgetAlerts}</span>}
+                      {!disabled&&item.id==='ai'&&<span style={{marginLeft:'auto',fontSize:8,fontWeight:800,background:'linear-gradient(135deg,#7c3aed,#0d9488)',color:'#fff',padding:'2px 6px',borderRadius:99,letterSpacing:.3}}>AI</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            ));
+          })()}
         </nav>
         <div className="sb-foot">
           <div className="sb-user" onClick={()=>setPg('profile')}>
@@ -5285,6 +6435,20 @@ function App(){
               </div>
             )}
             <span className="tag tx" style={{fontSize:10}}>{fmtDate(new Date().toISOString().slice(0,10))}</span>
+            {/* Dark mode toggle */}
+            <button onClick={()=>setDarkMode(d=>!d)} title={darkMode?'Switch to Light Mode':'Switch to Dark Mode'}
+              style={{background:'none',border:'1.5px solid var(--n200)',borderRadius:8,cursor:'pointer',padding:'5px 9px',display:'flex',alignItems:'center',gap:5,color:'var(--n600)',fontSize:11.5,fontWeight:600,fontFamily:'var(--f)',transition:'all .13s'}}
+              onMouseEnter={e=>e.currentTarget.style.borderColor='var(--g)'} onMouseLeave={e=>e.currentTarget.style.borderColor='var(--n200)'}>
+              {darkMode?'☀ Light':'🌙 Dark'}
+            </button>
+            {/* Budget alerts bell */}
+            {budgetAlerts>0&&(
+              <button onClick={()=>setPg('budget')} title={`${budgetAlerts} budget categor${budgetAlerts===1?'y':'ies'} at/near limit`}
+                style={{position:'relative',background:'none',border:'none',cursor:'pointer',padding:5,display:'flex',alignItems:'center'}}>
+                <Ic n="bell" s={16} c="var(--o)"/>
+                <span style={{position:'absolute',top:-2,right:-2,background:'var(--o)',color:'#fff',borderRadius:'50%',width:14,height:14,fontSize:8,fontWeight:700,display:'grid',placeItems:'center'}}>{budgetAlerts}</span>
+              </button>
+            )}
             {ccAlerts>0&&(
               <button onClick={()=>setPg('cc')} style={{position:'relative',background:'none',border:'none',cursor:'pointer',padding:5,display:'flex'}}>
                 <Ic n="bell" s={16} c="var(--r)"/>
@@ -5305,6 +6469,14 @@ function App(){
       </main>
 
       {toast&&<Toast msg={toast.msg} type={toast.type} onClose={()=>setToast(null)}/>}
+
+      {/* Floating Quick-Add button */}
+      {!quickAdd&&<button className="qa-btn" onClick={()=>setQuickAdd(true)} title="Quick Add Transaction">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>}
+
+      {/* Quick-Add bottom sheet */}
+      {quickAdd&&<QuickAdd data={data} setData={setData} toast={showToast} onClose={()=>setQuickAdd(false)}/>}
     </>
   );
 }
